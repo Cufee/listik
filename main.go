@@ -2,10 +2,13 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/cufee/shopping-list/internal/pages"
 	"github.com/cufee/shopping-list/internal/pages/app"
 	g "github.com/maragudk/gomponents"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
@@ -18,7 +21,7 @@ func main() {
 	http.Handle("/login", createHandler(pages.Index()))
 	http.Handle("/sign-up", createHandler(pages.Index()))
 
-	panic(http.ListenAndServe("localhost:8081", nil))
+	panic(http.ListenAndServe("localhost:"+os.Getenv("PORT"), nil))
 }
 
 func createHandler(title string, body g.Node) http.HandlerFunc {

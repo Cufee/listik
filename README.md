@@ -7,10 +7,12 @@
 
 ## Development
 ### Requirements
-- `go`, check the version in `go.mod`
-- `air` [cosmtrek/air](https://github.com/cosmtrek/air)
+- [`go`](https://go.dev/)
+  - check the version in `go.mod`
+- [`cosmtrek/air`](https://github.com/cosmtrek/air)
+- Setup `.env` by running `cp .env.example .env` and adjust values where needed
 
-### Start
+### Start the app locally
 ```
 air
 ```
