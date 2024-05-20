@@ -1,6 +1,8 @@
 package components
 
 import (
+	"os"
+
 	g "github.com/maragudk/gomponents"
 	hx "github.com/maragudk/gomponents-htmx"
 	c "github.com/maragudk/gomponents/components"
@@ -21,7 +23,7 @@ func Navbar(currentPath string) g.Node {
 	return b.Navbar(
 		hx.Boost("true"),
 		b.NavbarBrand(
-			NavbarLink("/", "Shopping List", currentPath == "/"),
+			NavbarLink("/", os.Getenv("APP_NAME"), currentPath == "/"),
 		),
 		b.NavbarStart(
 			h.Class("is-active"),
@@ -33,12 +35,12 @@ func Navbar(currentPath string) g.Node {
 			b.NavbarItem(
 				b.Buttons(
 					h.A(
-						h.Href("/app"),
+						h.Href("/sign-up"),
 						h.Class("button is-primary"),
 						h.Strong(g.Text("Sign Up")),
 					),
 					h.A(
-						h.Href("/app"),
+						h.Href("/login"),
 						h.Class("button is-light"),
 						h.Strong(g.Text("Log In")),
 					),
@@ -56,7 +58,7 @@ func AppNavbar(currentPath string) g.Node {
 	return b.Navbar(
 		hx.Boost("true"),
 		b.NavbarBrand(
-			NavbarLink("/app", "Shopping List", currentPath == "/app"),
+			NavbarLink("/app", os.Getenv("APP_NAME"), currentPath == "/app"),
 		),
 		b.NavbarEnd(
 			h.Class("is-active"),
