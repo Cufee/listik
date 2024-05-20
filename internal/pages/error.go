@@ -2,6 +2,7 @@ package pages
 
 import (
 	"github.com/cufee/shopping-list/internal/components"
+
 	g "github.com/maragudk/gomponents"
 	h "github.com/maragudk/gomponents/html"
 )

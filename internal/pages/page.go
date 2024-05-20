@@ -16,8 +16,8 @@ type Page struct {
 }
 
 type options struct {
-	title string
 	head  []g.Node
+	title string
 }
 
 var defaultOptions = options{
@@ -26,13 +26,23 @@ var defaultOptions = options{
 
 type Option func(op *options) error
 
+/*
+	Adds a title to the current page
+
+- passing this option multiple times will chain titles, not replace
+*/
 func WithTitle(title string) Option {
 	return func(op *options) error {
+		if title == "" {
+			// This error is non critical and should not block functionality
+			return nil
+		}
 		op.title += " - " + title
 		return nil
 	}
 }
 
+// Create a new Page from body and options
 func NewPage(body g.Node, opts ...Option) (Page, error) {
 	options := defaultOptions
 	for _, o := range opts {
@@ -47,22 +57,28 @@ func NewPage(body g.Node, opts ...Option) (Page, error) {
 	}, nil
 }
 
+/*
+Render the current page into a g.Node
+
+This should probably accept some kind of props to determine the navbar
+*/
 func (p Page) Node(path string) g.Node {
 	// HTML5 boilerplate document
 	return html5(c.HTML5Props{
 		Title:    p.options.title,
 		Language: "en",
 		Head: append([]g.Node{
+			// Always include the required scripts and styles
 			h.Link(h.Href("https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"), h.Rel("stylesheet")),
 			h.Script(h.Src("https://unpkg.com/htmx.org@1.9.12")),
-		}, p.options.head...),
+		},
+			p.options.head...,
+		),
 		Body: []g.Node{
 			g.If(strings.HasPrefix(path, "/app"), components.AppNavbar(path)),
 			g.If(!strings.HasPrefix(path, "/app"), components.Navbar(path)),
-			components.Container(
-				components.Section(p.body),
-				Footer(),
-			),
+			components.Section(p.body),
+			components.Footer(),
 		},
 	})
 }
@@ -81,8 +97,4 @@ func html5(p c.HTML5Props) g.Node {
 			h.Body(g.Group(p.Body)),
 		),
 	)
-}
-
-func Footer() g.Node {
-	return h.Footer()
 }

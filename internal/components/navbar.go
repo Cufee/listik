@@ -17,14 +17,12 @@ type PageLink struct {
 
 func Navbar(currentPath string) g.Node {
 	links := []PageLink{
-		{Path: "/about", Name: "About"},
+		{Path: "/about/", Name: "About"},
 	}
 
 	return b.Navbar(
 		hx.Boost("true"),
-		b.NavbarBrand(
-			NavbarLink("/", os.Getenv("APP_NAME"), currentPath == "/"),
-		),
+		branding("/", currentPath == "/"),
 		b.NavbarStart(
 			h.Class("is-active"),
 			g.Group(g.Map(links, func(l PageLink) g.Node {
@@ -52,14 +50,12 @@ func Navbar(currentPath string) g.Node {
 
 func AppNavbar(currentPath string) g.Node {
 	links := []PageLink{
-		{Path: "/app/settings", Name: "Settings"},
+		{Path: "/app/settings/", Name: "Settings"},
 	}
 
 	return b.Navbar(
 		hx.Boost("true"),
-		b.NavbarBrand(
-			NavbarLink("/app", os.Getenv("APP_NAME"), currentPath == "/app"),
-		),
+		branding("/app", currentPath == "/app/"),
 		b.NavbarEnd(
 			h.Class("is-active"),
 			g.Group(g.Map(links, func(l PageLink) g.Node {
@@ -78,5 +74,18 @@ func NavbarLink(path, text string, active bool) g.Node {
 			"navbar-item": true,
 		},
 		g.Text(text),
+	)
+}
+
+func branding(href string, highlight bool) any {
+	return b.NavbarBrand(
+		h.A(
+			h.Href(href),
+			c.Classes{
+				"is-active":   highlight,
+				"navbar-item": true,
+			},
+			h.Strong(g.Text(os.Getenv("APP_NAME"))),
+		),
 	)
 }
