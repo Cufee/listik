@@ -1,4 +1,4 @@
-# Shopping List (temp name)
+# Listik
 
 ## Dependencies
 - [Gomponents](https://www.gomponents.com/)

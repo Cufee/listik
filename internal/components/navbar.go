@@ -34,12 +34,12 @@ func Navbar(currentPath string) g.Node {
 				b.Buttons(
 					h.A(
 						h.Href("/sign-up"),
-						h.Class("button is-primary"),
+						h.Class("button is-primary is-small"),
 						h.Strong(g.Text("Sign Up")),
 					),
 					h.A(
 						h.Href("/login"),
-						h.Class("button is-light"),
+						h.Class("button is-light is-small"),
 						h.Strong(g.Text("Log In")),
 					),
 				),
@@ -85,7 +85,12 @@ func branding(href string, highlight bool) any {
 				"is-active":   highlight,
 				"navbar-item": true,
 			},
-			h.Strong(g.Text(os.Getenv("APP_NAME"))),
+
+			Icon(20),
+			h.Span(
+				h.Class("pl-1"),
+				h.Strong(g.Text(os.Getenv("APP_NAME"))),
+			),
 		),
 	)
 }

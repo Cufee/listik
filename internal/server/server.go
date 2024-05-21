@@ -1,6 +1,7 @@
 package server
 
 import (
+	"io/fs"
 	"net/http"
 
 	"github.com/cufee/shopping-list/internal/pages"
@@ -12,8 +13,10 @@ import (
 )
 
 // Create a new echo.Echo instance with all routes registered
-func New() *echo.Echo {
+func New(assets fs.FS) *echo.Echo {
 	e := echo.New()
+	e.StaticFS("/static", assets)
+
 	e.Pre(middleware.AddTrailingSlash()) // echo does not route correctly when a `/` route is attached to a group, this is to fix that issue
 
 	e.GET("/", fromPage(pages.Index))
@@ -57,7 +60,7 @@ func fromPage(handler func() (pages.Page, error)) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		page, err := handler()
 		if err != nil {
-			return c.Redirect(http.StatusTemporaryRedirect, "/error?message="+err.Error())
+			return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Failed to load this page&context="+err.Error())
 		}
 		return page.Node(c.Path()).Render(c.Response().Writer)
 	}
