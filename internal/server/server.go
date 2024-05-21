@@ -15,7 +15,9 @@ import (
 // Create a new echo.Echo instance with all routes registered
 func New(assets fs.FS) *echo.Echo {
 	e := echo.New()
-	e.StaticFS("/static", assets)
+	if assets != nil {
+		e.StaticFS("/static", assets)
+	}
 
 	e.Pre(middleware.AddTrailingSlash()) // echo does not route correctly when a `/` route is attached to a group, this is to fix that issue
 
