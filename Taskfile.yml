@@ -19,3 +19,9 @@ tasks:
   db-migrate-deploy:
     desc: sync production database with migrations
     cmd: go run github.com/steebchen/prisma-client-go migrate deploy
+
+  dev:
+    desc: Start a local dev server
+    deps:
+      - db-push
+    cmd: air
