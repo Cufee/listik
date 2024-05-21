@@ -1,0 +1,21 @@
+version: "3"
+
+dotenv:
+  - ".env"
+
+tasks:
+  db-push:
+    desc: sync the database with the schema for development
+    cmd: go run github.com/steebchen/prisma-client-go db push
+
+  db-generate:
+    desc: re-generate the Go client
+    cmd: go run github.com/steebchen/prisma-client-go generate
+
+  db-migrate-dev:
+    desc: for production use, create a migration locally
+    cmd: go run github.com/steebchen/prisma-client-go migrate dev
+
+  db-migrate-deploy:
+    desc: sync production database with migrations
+    cmd: go run github.com/steebchen/prisma-client-go migrate deploy

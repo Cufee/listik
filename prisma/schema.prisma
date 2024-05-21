@@ -1,0 +1,184 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator db {
+  provider = "go run github.com/steebchen/prisma-client-go"
+}
+
+//
+// === START: Users/Sessions/Auth ===
+//
+
+model User {
+  id             String @id @default(cuid())
+  name           String
+  profilePicture String
+
+  sessions Session[]
+
+  redeemedInvites GroupInvite[] @relation("redeemedBy")
+  createdInvites  GroupInvite[] @relation("createdBy")
+
+  membeships GroupMember[]
+  listItems  ListItem[]
+  lists      List[]
+  tags       ItemTag[]
+
+  locked Boolean @default(false) // An account can be locked due to user deletion or ban
+
+  @@index([locked])
+  @@map("users")
+}
+
+model Session {
+  id          String @id @default(cuid())
+  cookieValue String @unique // should be derived from identifier + some salt/timestamp
+  identifier  String // should be something like a hashed IP address, the goal is to prevent cookie stealing
+
+  createdAt DateTime @default(now())
+  lastUsed  DateTime @default(now())
+
+  label String?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@index([userId])
+  @@index([cookieValue])
+  @@index([lastUsed(sort: Desc)])
+  @@map("sessions")
+}
+
+//
+// === END: Users/Sessions/Auth ===
+//
+
+//
+// === START: Groups/Lists/Items ===
+//
+
+// A group is a collection of users and lists
+// a list should be a part of a group and each group can have an arbitrary number of members
+model Group {
+  id String @id @default(cuid())
+
+  name String
+
+  lists   List[]
+  tags    ItemTag[]
+  members GroupMember[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id      String @id @default(cuid())
+  group   Group  @relation(fields: [groupId], references: [id])
+  groupId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  permissions String
+
+  @@index([userId])
+  @@index([groupId])
+  @@map("group_members")
+}
+
+model GroupInvite {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime @default(now())
+
+  redeemedBy User[] @relation("redeemedBy")
+
+  createdBy   User   @relation("createdBy", fields: [createdById], references: [id])
+  createdById String
+
+  useLimit Int @default(1)
+  useCount Int @default(0)
+
+  enabled Boolean @default(true)
+  code    String  @unique
+
+  @@index([createdById])
+  @@index([code, enabled])
+  @@map("group_invites")
+}
+
+// Custom tags added to items by users
+// tags belong to a group and refer back to user (not member) for tracking
+model ItemTag {
+  id String @id @default(cuid())
+
+  name  String
+  desc  String?
+  icon  String?
+  color String  @default("#ffffff")
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  group   Group  @relation(fields: [groupId], references: [id])
+  groupId String
+
+  @@index([groupId])
+  @@index([createdById])
+  @@map("item_tags")
+}
+
+// A list should always belong to a specific Group
+// links back to a user instead of member because memberships can be removed, while the lists stay
+model List {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  desc      String?
+
+  group   Group  @relation(fields: [groupId], references: [id])
+  groupId String
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  items ListItem[]
+
+  @@index([groupId])
+  @@index([createdById])
+  @@index([updatedAt(sort: Desc)])
+  @@map("lists")
+}
+
+// An item in a list
+// links back to a user instead of member because memberships can be removed, while the items stay
+model ListItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  name  String
+  desc  String?
+  price String?
+
+  checked Boolean @default(false)
+
+  list   List   @relation(fields: [listId], references: [id])
+  listId String
+
+  @@index([checked])
+  @@index([createdById])
+  @@index([listId])
+  @@map("list_items")
+}
+
+//
+// === END: Groups/Lists/Items ===
+//
