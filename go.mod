@@ -6,8 +6,6 @@ require (
 	github.com/a-h/templ v0.2.697
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.12.0
-	github.com/maragudk/gomponents v0.20.2
-	github.com/maragudk/gomponents-htmx v0.5.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/steebchen/prisma-client-go v0.37.0
 )
