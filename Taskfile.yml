@@ -31,4 +31,5 @@ tasks:
     desc: Start a local dev server
     deps:
       - db-push
-    cmd: air
+    cmds:
+      - air

@@ -4,11 +4,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/cufee/shopping-list/internal/pages"
+	"github.com/a-h/templ"
 	"github.com/cufee/shopping-list/prisma/db"
 
 	"github.com/cufee/shopping-list/internal/server/handlers"
-	"github.com/cufee/shopping-list/internal/server/handlers/app"
+	"github.com/cufee/shopping-list/internal/templates/pages"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -32,21 +32,21 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 		}
 	})
 
-	e.GET("/", staticPage(pages.Index))
-	e.GET("/error/", withContext(handlers.Error))
-	e.GET("/about/", staticPage(pages.About))
-	e.GET("/login/", staticPage(pages.Login))
-	e.GET("/sign-up/", staticPage(pages.SignUp))
+	e.GET("/", staticPage(pages.Index()))
+	// e.GET("/error/", withContext(handlers.Error))
+	// e.GET("/about/", staticPage(pages.About))
+	// e.GET("/login/", staticPage(pages.Login))
+	// e.GET("/sign-up/", staticPage(pages.SignUp))
 
 	eApp := e.Group("/app")
 	eApp.Use(sessionCheckMiddleware(db))
 
-	eApp.GET("/", withContext(app.Home))
+	// eApp.GET("/", withContext(app.Home))
 
-	eApp.GET("/:groupId/", withContext(app.GroupOverview))
-	eApp.GET("/:groupId/list/:listId/", withContext(app.List))
+	// eApp.GET("/:groupId/", withContext(app.GroupOverview))
+	// eApp.GET("/:groupId/list/:listId/", withContext(app.List))
 
-	eApp.GET("/settings/", withContext(app.Settings))
+	// eApp.GET("/settings/", withContext(app.Settings))
 
 	e.GET("/*", pageNotFound)
 	return e
@@ -71,9 +71,9 @@ func withContext(h func(*handlers.Context) error) func(c echo.Context) error {
 }
 
 // Create an echo handler from Page
-func staticPage(handler func() (pages.Page, error)) echo.HandlerFunc {
+func staticPage(page templ.Component) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(*handlers.Context)
-		return cc.RenderPage(handler())
+		return pages.Wrapper(page).Render(cc.Request().Context(), cc.Response().Writer)
 	}
 }
