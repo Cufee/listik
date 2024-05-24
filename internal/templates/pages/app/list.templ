@@ -1,0 +1,19 @@
+package app
+
+import "github.com/cufee/shopping-list/prisma/db"
+
+type List struct {
+	List *db.ListModel
+}
+
+templ (props List) Render() {
+	<article>
+		<hgroup>
+			<header>{ props.List.Name }</header>
+			if desc, ok := props.List.Desc(); ok {
+				{ desc }
+			}
+		</hgroup>
+		<footer></footer>
+	</article>
+}

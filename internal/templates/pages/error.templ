@@ -1,0 +1,21 @@
+package pages
+
+templ Error(message, details string) {
+	<center class="d-flex flex-column align-items-center">
+		<hgroup>
+			<h1>oh no...</h1>
+			<h3>
+				if message != "" {
+					{ message }
+				} else {
+					something went terribly wrong, though we have no idea what it might be :)
+				}
+			</h3>
+		</hgroup>
+		if details != "" {
+			<p>
+				<cite>{ details }</cite>
+			</p>
+		}
+	</center>
+}

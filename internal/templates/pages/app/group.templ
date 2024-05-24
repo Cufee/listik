@@ -1,0 +1,31 @@
+package app
+
+import "github.com/cufee/shopping-list/prisma/db"
+import "fmt"
+
+type Group struct {
+	Group *db.GroupModel
+	Lists []db.ListModel
+}
+
+templ (props Group) Render() {
+	<div class="d-flex flex-row justify-content-between">
+		<hgroup>
+			<h3>{ props.Group.Name }</h3>
+			if props.Group.Desc != "" {
+				<p>{ props.Group.Desc }</p>
+			}
+		</hgroup>
+		<div>
+			<button>new list</button>
+		</div>
+	</div>
+	<hr/>
+	if len(props.Lists) == 0 {
+		<center>
+			<h5>this group has no lists</h5>
+		</center>
+	} else {
+		<h4>lists ({ fmt.Sprint(len(props.Lists)) }):</h4>
+	}
+}

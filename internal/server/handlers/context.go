@@ -23,6 +23,11 @@ func (c *Context) RenderPage(page templ.Component) error {
 	return pages.Wrapper(c.Path(), c.Authenticated(), page).Render(c.Request().Context(), c.Response().Writer)
 }
 
+func (c *Context) Redirect(code int, path string) error {
+	c.Response().Header().Set("HX-Redirect", path)
+	return c.Context.Redirect(code, path)
+}
+
 func (c *Context) SetUser(user *db.UserModel) {
 	if user != nil {
 		c.authenticated = true

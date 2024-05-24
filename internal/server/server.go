@@ -8,6 +8,7 @@ import (
 	"github.com/cufee/shopping-list/prisma/db"
 
 	"github.com/cufee/shopping-list/internal/server/handlers"
+	"github.com/cufee/shopping-list/internal/server/handlers/api"
 	"github.com/cufee/shopping-list/internal/server/handlers/app"
 	"github.com/cufee/shopping-list/internal/templates/pages"
 	"github.com/labstack/echo/v4"
@@ -34,13 +35,17 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	})
 
 	e.GET("/", staticPage(pages.Index()))
-	// e.GET("/error/", withContext(handlers.Error)))
+	e.GET("/error/", withContext(handlers.Error))
 	e.GET("/login/", staticPage(pages.Login()))
 
-	eApp := e.Group("/app")
-	eApp.Use(sessionCheckMiddleware(db))
+	appGroup := e.Group("/app", sessionCheckMiddleware(db))
+	appGroup.GET("/", withContext(app.Home))
+	appGroup.GET("/group/:groupId/", withContext(app.Group))
+	appGroup.GET("/group/:groupId/list/:listId/", withContext(app.List))
+	appGroup.GET("/settings/", withContext(app.Settings))
 
-	eApp.GET("/", withContext(app.Home))
+	apiGroup := e.Group("/api", sessionCheckMiddleware(db))
+	apiGroup.POST("/groups/", withContext(api.CreateGroup))
 
 	e.GET("/*", pageNotFound)
 	return e

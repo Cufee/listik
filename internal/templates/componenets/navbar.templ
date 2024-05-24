@@ -8,14 +8,14 @@ templ Navbar(path string, authenticated bool) {
 		<ul>
 			<li>
 				<span>□</span>
-				<a href="/" class={ navLinkClass(path, "/") }><strong>{ os.Getenv("APP_NAME") }</strong></a>
+				<a href={ templ.URL(ifElse(authenticated, "/app", "/")) } class={ navLinkClass(path, ifElse(authenticated, "/app", "/")) }><strong>{ os.Getenv("APP_NAME") }</strong></a>
 			</li>
 		</ul>
 		<ul>
 			if !authenticated {
-				<li><a href="/login" class={ navLinkClass(path, "/login") }>Login</a></li>
+				<li><a href="/login" class={ navLinkClass(path, "/login") }>login</a></li>
 			} else {
-				<li><a href="/settings" class={ navLinkClass(path, "/settings") }>Settings</a></li>
+				<li><a href="/app/settings" class={ navLinkClass(path, "/app/settings") }>settings</a></li>
 			}
 		</ul>
 	</nav>
@@ -29,4 +29,11 @@ func navLinkClass(path, requiredPath string) string {
 		return "contrast"
 	}
 	return "secondary"
+}
+
+func ifElse(condition bool, onTrue, onFalse string) string {
+	if condition {
+		return onTrue
+	}
+	return onFalse
 }

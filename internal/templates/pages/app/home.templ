@@ -1,5 +1,21 @@
 package app
 
-templ Home() {
-	<div>Home</div>
+import "github.com/cufee/shopping-list/prisma/db"
+
+type Home struct {
+	Groups []db.GroupModel
+}
+
+templ (props Home) Render() {
+	<div class="grid">
+		for _, group := range props.Groups {
+			<a href={ templ.URL("/app/group/" + group.ID) } class="secondary">
+				<article>
+					<header>{ group.Name }</header>
+					{ group.Desc }
+					<footer></footer>
+				</article>
+			</a>
+		}
+	</div>
 }
