@@ -2,9 +2,8 @@ package pages
 
 import (
 	"os"
-	"strings"
 
-	"github.com/cufee/shopping-list/internal/components"
+	"github.com/cufee/shopping-list/internal/components/bulma"
 	g "github.com/maragudk/gomponents"
 	c "github.com/maragudk/gomponents/components"
 	h "github.com/maragudk/gomponents/html"
@@ -16,8 +15,10 @@ type Page struct {
 }
 
 type options struct {
-	head  []g.Node
-	title string
+	head   []g.Node
+	title  string
+	navbar g.Node
+	foorer g.Node
 }
 
 var defaultOptions = options{
@@ -25,6 +26,15 @@ var defaultOptions = options{
 }
 
 type Option func(op *options) error
+
+type Options []Option
+
+func (o Options) Add(opts ...Option) Options {
+	for _, newOption := range opts {
+		o = append(o, newOption)
+	}
+	return o
+}
 
 /*
 	Adds a title to the current page
@@ -42,6 +52,22 @@ func WithTitle(title string) Option {
 	}
 }
 
+// Adds a navbar node to the page
+func WithNavbar(nav g.Node) Option {
+	return func(op *options) error {
+		op.navbar = nav
+		return nil
+	}
+}
+
+// Adds a footer node to the page
+func WithFooter(node g.Node) Option {
+	return func(op *options) error {
+		op.foorer = node
+		return nil
+	}
+}
+
 // Create a new Page from body and options
 func NewPage(body g.Node, opts ...Option) (Page, error) {
 	options := defaultOptions
@@ -55,6 +81,11 @@ func NewPage(body g.Node, opts ...Option) (Page, error) {
 		options: options,
 		body:    body,
 	}, nil
+}
+
+// Set an option on the page
+func (p *Page) SetOption(option Option) {
+	option(&p.options)
 }
 
 /*
@@ -75,10 +106,9 @@ func (p Page) Node(path string) g.Node {
 			p.options.head...,
 		),
 		Body: []g.Node{
-			g.If(strings.HasPrefix(path, "/app"), components.AppNavbar(path)),
-			g.If(!strings.HasPrefix(path, "/app"), components.Navbar(path)),
-			components.Section(p.body),
-			components.Footer(),
+			p.options.navbar,
+			bulma.Section(bulma.None(), p.body),
+			p.options.foorer,
 		},
 	})
 }

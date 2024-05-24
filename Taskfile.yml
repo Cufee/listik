@@ -3,22 +3,29 @@ version: "3"
 dotenv:
   - ".env"
 
+vars:
+  PRISMA_CLIENT: github.com/steebchen/prisma-client-go@v0.37.0
+
 tasks:
+  prisma:
+    desc: run a custom prisma command by adding `-- some command` to this task
+    cmd: go run {{ .PRISMA_CLIENT }} {{ .CLI_ARGS }}
+
   db-push:
     desc: sync the database with the schema for development
-    cmd: go run github.com/steebchen/prisma-client-go db push
+    cmd: go run {{ .PRISMA_CLIENT }} db push
 
   db-generate:
     desc: re-generate the Go client
-    cmd: go run github.com/steebchen/prisma-client-go generate
+    cmd: go run {{ .PRISMA_CLIENT }} generate
 
   db-migrate-dev:
     desc: for production use, create a migration locally
-    cmd: go run github.com/steebchen/prisma-client-go migrate dev
+    cmd: go run {{ .PRISMA_CLIENT }} migrate dev
 
   db-migrate-deploy:
     desc: sync production database with migrations
-    cmd: go run github.com/steebchen/prisma-client-go migrate deploy
+    cmd: go run {{ .PRISMA_CLIENT }} migrate deploy
 
   dev:
     desc: Start a local dev server

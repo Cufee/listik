@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/cufee/shopping-list/internal/components"
+	"github.com/cufee/shopping-list/internal/components/bulma"
 	"github.com/cufee/shopping-list/internal/pages"
 	g "github.com/maragudk/gomponents"
 	hx "github.com/maragudk/gomponents-htmx"
@@ -10,7 +10,7 @@ import (
 
 func Settings() (pages.Page, error) {
 	return pages.NewPage(
-		components.Container(
+		bulma.Content(bulma.None(),
 			h.A(
 				hx.Boost("true"),
 				h.Href("/"),

@@ -5,34 +5,48 @@ import (
 	"net/http"
 
 	"github.com/cufee/shopping-list/internal/pages"
-	"github.com/cufee/shopping-list/internal/pages/app"
+	"github.com/cufee/shopping-list/prisma/db"
 
 	"github.com/cufee/shopping-list/internal/server/handlers"
+	"github.com/cufee/shopping-list/internal/server/handlers/app"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 // Create a new echo.Echo instance with all routes registered
-func New(assets fs.FS) *echo.Echo {
+func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	e := echo.New()
 	if assets != nil {
 		e.StaticFS("/static", assets)
 	}
 
-	e.Pre(middleware.AddTrailingSlash()) // echo does not route correctly when a `/` route is attached to a group, this is to fix that issue
+	// echo does not route correctly when a `/` route is attached to a group, this is to fix that issue
+	e.Pre(middleware.AddTrailingSlash())
 
-	e.GET("/", fromPage(pages.Index))
+	// Setup custom context on all routes
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cc := &handlers.Context{Context: c}
+			cc.SetDatabaseClient(db)
+			return next(cc)
+		}
+	})
+
+	e.GET("/", staticPage(pages.Index))
 	e.GET("/error/", withContext(handlers.Error))
-	e.GET("/about/", fromPage(pages.About))
-	e.GET("/login/", fromPage(pages.Login))
-	e.GET("/sign-up/", fromPage(pages.SignUp))
+	e.GET("/about/", staticPage(pages.About))
+	e.GET("/login/", staticPage(pages.Login))
+	e.GET("/sign-up/", staticPage(pages.SignUp))
 
 	eApp := e.Group("/app")
-	eApp.GET("/", fromPage(app.Home))
-	eApp.GET("/settings/", fromPage(app.Settings))
+	eApp.Use(sessionCheckMiddleware(db))
 
-	eApp.GET("/list/", redirect("/app"))
-	eApp.GET("/list/:id/", withContext(handlers.ViewList))
+	eApp.GET("/", withContext(app.Home))
+
+	eApp.GET("/:groupId/", withContext(app.GroupOverview))
+	eApp.GET("/:groupId/list/:listId/", withContext(app.List))
+
+	eApp.GET("/settings/", withContext(app.Settings))
 
 	e.GET("/*", pageNotFound)
 	return e
@@ -52,18 +66,14 @@ func redirect(path string) func(c echo.Context) error {
 // Convert a custom context handler into an echo handler
 func withContext(h func(*handlers.Context) error) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		cc := &handlers.Context{Context: c}
-		return h(cc)
+		return h(c.(*handlers.Context))
 	}
 }
 
 // Create an echo handler from Page
-func fromPage(handler func() (pages.Page, error)) echo.HandlerFunc {
+func staticPage(handler func() (pages.Page, error)) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		page, err := handler()
-		if err != nil {
-			return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Failed to load this page&context="+err.Error())
-		}
-		return page.Node(c.Path()).Render(c.Response().Writer)
+		cc := c.(*handlers.Context)
+		return cc.RenderPage(handler())
 	}
 }

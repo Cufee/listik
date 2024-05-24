@@ -3,11 +3,11 @@ package components
 import (
 	"os"
 
+	"github.com/cufee/shopping-list/internal/components/bulma"
 	g "github.com/maragudk/gomponents"
 	hx "github.com/maragudk/gomponents-htmx"
 	c "github.com/maragudk/gomponents/components"
 	h "github.com/maragudk/gomponents/html"
-	b "github.com/willoma/bulma-gomponents"
 )
 
 type PageLink struct {
@@ -20,18 +20,16 @@ func Navbar(currentPath string) g.Node {
 		{Path: "/about/", Name: "About"},
 	}
 
-	return b.Navbar(
-		hx.Boost("true"),
+	return bulma.Navbar(bulma.With(hx.Boost("true")),
 		branding("/", currentPath == "/"),
-		b.NavbarStart(
-			h.Class("is-active"),
+		bulma.NavbarStart(bulma.Class("is-active"),
 			g.Group(g.Map(links, func(l PageLink) g.Node {
-				return NavbarLink(l.Path, l.Name, currentPath == l.Path)
+				return navbarLink(l.Path, l.Name, currentPath == l.Path)
 			})),
 		),
-		b.NavbarEnd(
-			b.NavbarItem(
-				b.Buttons(
+		bulma.NavbarEnd(bulma.None(),
+			bulma.NavbarItem(bulma.None(),
+				bulma.Buttons(bulma.None(),
 					h.A(
 						h.Href("/sign-up"),
 						h.Class("button is-primary is-small"),
@@ -53,20 +51,18 @@ func AppNavbar(currentPath string) g.Node {
 		{Path: "/app/settings/", Name: "Settings"},
 	}
 
-	return b.Navbar(
-		hx.Boost("true"),
+	return bulma.Navbar(bulma.With(hx.Boost("true")),
 		branding("/app", currentPath == "/app/"),
-		b.NavbarEnd(
-			h.Class("is-active"),
+		bulma.NavbarEnd(bulma.Class("is-active"),
 			g.Group(g.Map(links, func(l PageLink) g.Node {
-				return NavbarLink(l.Path, l.Name, currentPath == l.Path)
+				return navbarLink(l.Path, l.Name, currentPath == l.Path)
 			})),
 		),
 	)
 }
 
 // NavbarLink is a link in the Navbar.
-func NavbarLink(path, text string, active bool) g.Node {
+func navbarLink(path, text string, active bool) g.Node {
 	return h.A(
 		h.Href(path),
 		c.Classes{
@@ -77,15 +73,9 @@ func NavbarLink(path, text string, active bool) g.Node {
 	)
 }
 
-func branding(href string, highlight bool) any {
-	return b.NavbarBrand(
-		h.A(
-			h.Href(href),
-			c.Classes{
-				"is-active":   highlight,
-				"navbar-item": true,
-			},
-
+func branding(href string, highlight bool) g.Node {
+	return bulma.NavbarBrand(bulma.None(),
+		bulma.A(bulma.With(h.Href(href)).Class("navbar-item").ClassIf("is-active", highlight),
 			Icon(20),
 			h.Span(
 				h.Class("pl-1"),
@@ -93,4 +83,5 @@ func branding(href string, highlight bool) any {
 			),
 		),
 	)
+
 }

@@ -1,8 +1,7 @@
 package pages
 
 import (
-	"github.com/cufee/shopping-list/internal/components"
-
+	"github.com/cufee/shopping-list/internal/components/bulma"
 	g "github.com/maragudk/gomponents"
 	h "github.com/maragudk/gomponents/html"
 )
@@ -13,7 +12,7 @@ func Error(message string, context string) (Page, error) {
 	}
 
 	return NewPage(
-		components.Container(
+		bulma.Content(bulma.None(),
 			h.Div(
 				h.Class("notification is-danger"),
 				h.Strong(g.Text("Something went wrong")),

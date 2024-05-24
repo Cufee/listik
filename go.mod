@@ -7,7 +7,8 @@ require (
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/maragudk/gomponents v0.20.2
 	github.com/maragudk/gomponents-htmx v0.5.0
-	github.com/willoma/bulma-gomponents v0.11.1
+	github.com/shopspring/decimal v1.4.0
+	github.com/steebchen/prisma-client-go v0.37.0
 )
 
 require (
@@ -15,10 +16,8 @@ require (
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/steebchen/prisma-client-go v0.37.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/willoma/gomplements v0.6.1 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect

@@ -3,14 +3,14 @@ package pages
 import (
 	"os"
 
-	"github.com/cufee/shopping-list/internal/components"
+	"github.com/cufee/shopping-list/internal/components/bulma"
 	g "github.com/maragudk/gomponents"
 	h "github.com/maragudk/gomponents/html"
 )
 
 func Login() (Page, error) {
 	return NewPage(
-		components.Container(
+		bulma.Content(bulma.None(),
 			h.H1(g.Text("Login page")),
 			h.A(
 				h.Href("/app"),
@@ -24,7 +24,7 @@ func Login() (Page, error) {
 
 func SignUp() (Page, error) {
 	return NewPage(
-		components.Container(
+		bulma.Content(bulma.None(),
 			h.H1(g.Text("Create an account")),
 			h.A(
 				h.Href("/app"),
@@ -38,7 +38,7 @@ func SignUp() (Page, error) {
 
 func Logout() (Page, error) {
 	return NewPage(
-		components.Container(
+		bulma.Content(bulma.None(),
 			h.H1(g.Text("You were logged out of "+os.Getenv("APP_NAME"))),
 		),
 		WithTitle("Logged Out"),
