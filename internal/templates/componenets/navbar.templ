@@ -1,16 +1,32 @@
 package components
 
 import "os"
+import "strings"
 
-templ Navbar() {
-	<nav>
+templ Navbar(path string, authenticated bool) {
+	<nav hx-boost="true">
 		<ul>
-			<li><strong>{ os.Getenv("APP_NAME") }</strong></li>
+			<li>
+				<span>□</span>
+				<a href="/" class={ navLinkClass(path, "/") }><strong>{ os.Getenv("APP_NAME") }</strong></a>
+			</li>
 		</ul>
 		<ul>
-			<li><a href="#" class="contrast">About</a></li>
-			<li><a href="#" class="secondary">Services</a></li>
-			<li><a href="#" class="secondary">Products</a></li>
+			if !authenticated {
+				<li><a href="/login" class={ navLinkClass(path, "/login") }>Login</a></li>
+			} else {
+				<li><a href="/settings" class={ navLinkClass(path, "/settings") }>Settings</a></li>
+			}
 		</ul>
 	</nav>
+}
+
+func navLinkClass(path, requiredPath string) string {
+	if !strings.HasSuffix(requiredPath, "/") {
+		requiredPath += "/"
+	}
+	if path == requiredPath {
+		return "contrast"
+	}
+	return "secondary"
 }

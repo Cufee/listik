@@ -3,8 +3,8 @@ package app
 import (
 	"net/http"
 
-	"github.com/cufee/shopping-list/internal/pages/app"
 	"github.com/cufee/shopping-list/internal/server/handlers"
+	"github.com/cufee/shopping-list/internal/templates/pages/app"
 	"github.com/cufee/shopping-list/prisma/db"
 )
 
@@ -16,14 +16,15 @@ func Home(c *handlers.Context) error {
 
 	// If this user has no groups, they should go through the onboarding flow
 	if len(memberships) == 0 {
-		return c.RenderPage(app.OnboardingGroups())
+		return c.RenderPage(app.Home())
 	}
 
 	// id := c.Param("id")
-	return c.RenderPage(app.Home(app.HomePageProps{}))
+	return c.RenderPage(app.Home())
 }
 
 func Settings(c *handlers.Context) error {
 	// id := c.Param("id")
-	return c.RenderPage(app.Settings())
+	// return c.RenderPage(app.Settings())
+	return nil
 }

@@ -7,7 +7,7 @@ import (
 
 var appName = os.Getenv("APP_NAME")
 
-templ Wrapper(body templ.Component) {
+templ Wrapper(path string, authenticated bool, body templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -15,11 +15,12 @@ templ Wrapper(body templ.Component) {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<meta name="color-scheme" content="light dark"/>
 			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css"/>
+			<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 			<title>{ appName }</title>
 		</head>
 		<body>
 			<main class="container">
-				@components.Navbar()
+				@components.Navbar(path, authenticated)
 				@body
 			</main>
 		</body>
