@@ -2,6 +2,7 @@ package app
 
 import "github.com/cufee/shopping-list/prisma/db"
 import "fmt"
+import "github.com/cufee/shopping-list/internal/templates/componenets"
 
 type Group struct {
 	Group *db.GroupModel
@@ -10,22 +11,34 @@ type Group struct {
 
 templ (props Group) Render() {
 	<div class="d-flex flex-row justify-content-between">
-		<hgroup>
-			<h3>{ props.Group.Name }</h3>
-			if props.Group.Desc != "" {
-				<p>{ props.Group.Desc }</p>
-			}
-		</hgroup>
-		<div>
-			<button>new list</button>
-		</div>
+		@components.PageHeader(props.Group.Name, components.WithDescription(props.Group.Desc), manageGroupButton())
+		<div class="divider"></div>
 	</div>
-	<hr/>
-	if len(props.Lists) == 0 {
-		<center>
-			<h5>this group has no lists</h5>
-		</center>
-	} else {
-		<h4>lists ({ fmt.Sprint(len(props.Lists)) }):</h4>
-	}
+	<div class="flex flex-row flex-wrap gap-2">
+		for _, list := range props.Lists {
+			<a class="flex-grow basis-1/3 bg-base-200 hover:bg-base-300 rounded-lg" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", list.GroupID, list.ID)) }>
+				@components.ListCard(list)
+			</a>
+		}
+		@newCreateListDialog(props.Group)
+	</div>
+}
+
+templ manageGroupButton() {
+	<div class="tooltip tooltip-left" data-tip="Manage Group">
+		<button class="btn btn-primary">
+			@components.IconCog("1.25rem")
+		</button>
+	</div>
+}
+
+func newCreateListDialog(group *db.GroupModel) templ.Component {
+	dialog := components.CreateListDialog{GroupID: group.ID}
+	return dialog.Render(createListButton(dialog.ShowScript()))
+}
+
+templ createListButton(actionScript templ.ComponentScript) {
+	<button class="flex-grow basis-1/3 bg-base-200 hover:bg-base-300 rounded-lg" onclick={ actionScript }>
+		@components.Card{Body: components.Text("Create a new list", "text-xl", "font-bold", "btn-link", "m-auto", "text-nowrap")}.Render()
+	</button>
 }

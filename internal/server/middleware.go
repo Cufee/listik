@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const bypassUserID = "clwi6195d0000w6bqu9vhnc0h"
+const bypassUserID = "clwl1gix500005gkhkfkxaso6"
 
 func sessionCheckMiddleware(client *db.PrismaClient) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {

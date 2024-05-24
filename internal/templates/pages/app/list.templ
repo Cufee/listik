@@ -1,19 +1,23 @@
 package app
 
 import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/templates/componenets"
 
 type List struct {
 	List *db.ListModel
 }
 
 templ (props List) Render() {
-	<article>
-		<hgroup>
-			<header>{ props.List.Name }</header>
-			if desc, ok := props.List.Desc(); ok {
-				{ desc }
-			}
-		</hgroup>
-		<footer></footer>
-	</article>
+	<div class="d-flex flex-row justify-content-between">
+		@components.PageHeader(props.List.Name, components.WithDescription(props.List.Desc), manageListButton())
+	</div>
+	<div class="divider"></div>
+}
+
+templ manageListButton() {
+	<div class="tooltip tooltip-left" data-tip="Manage List">
+		<button class="btn btn-primary">
+			@components.IconCog("1.25rem")
+		</button>
+	</div>
 }

@@ -4,21 +4,22 @@ import "os"
 import "strings"
 
 templ Navbar(path string, authenticated bool) {
-	<nav hx-boost="true">
-		<ul>
-			<li>
-				<span>□</span>
-				<a href={ templ.URL(ifElse(authenticated, "/app", "/")) } class={ navLinkClass(path, ifElse(authenticated, "/app", "/")) }><strong>{ os.Getenv("APP_NAME") }</strong></a>
-			</li>
-		</ul>
-		<ul>
-			if !authenticated {
-				<li><a href="/login" class={ navLinkClass(path, "/login") }>login</a></li>
-			} else {
-				<li><a href="/app/settings" class={ navLinkClass(path, "/app/settings") }>settings</a></li>
-			}
-		</ul>
-	</nav>
+	<div class="navbar no-animation" hx-boost="true">
+		<div class="flex-1">
+			<a href={ templ.URL(ifElse(authenticated, "/app", "/")) } class={ "btn btn-primary text-xl " + navLinkClass(path, ifElse(authenticated, "/app", "/")) }>
+				□ { os.Getenv("APP_NAME") }
+			</a>
+		</div>
+		<div class="flex-none">
+			<ul class="menu menu-horizontal">
+				if !authenticated {
+					<li><a href="/login" class={ "btn btn-sm btn-ghost " + navLinkClass(path, "/login") }>Login</a></li>
+				} else {
+					<li><a href="/app/settings" class={ "btn btn-sm btn-ghost " + navLinkClass(path, "/app/settings") }>Settings</a></li>
+				}
+			</ul>
+		</div>
+	</div>
 }
 
 func navLinkClass(path, requiredPath string) string {
@@ -26,9 +27,9 @@ func navLinkClass(path, requiredPath string) string {
 		requiredPath += "/"
 	}
 	if path == requiredPath {
-		return "contrast"
+		return "btn-active"
 	}
-	return "secondary"
+	return ""
 }
 
 func ifElse(condition bool, onTrue, onFalse string) string {

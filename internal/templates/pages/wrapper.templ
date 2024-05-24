@@ -9,20 +9,22 @@ var appName = os.Getenv("APP_NAME")
 
 templ Wrapper(path string, authenticated bool, body templ.Component) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" data-theme="sunset">
 		<head>
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<meta name="color-scheme" content="light dark"/>
-			<link rel="stylesheet" href="/static/pico.min.css"/>
-			<link rel="stylesheet" href="/static/bootstrap-grid.min.css"/>
+			<meta name="color-scheme" content="dark"/>
+			<link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css"/>
 			<script src="https://unpkg.com/htmx.org@1.9.12"></script>
-			<title>{ appName }</title>
+			<script src="https://cdn.tailwindcss.com"></script>
+			<title>□ { appName }</title>
 		</head>
 		<body>
-			<main class="container" style="min-height: 100vh;">
+			<main class="mx-auto min-h-screen max-w-7xl">
 				@components.Navbar(path, authenticated)
-				@body
+				<div class="px-4">
+					@body
+				</div>
 			</main>
 		</body>
 	</html>

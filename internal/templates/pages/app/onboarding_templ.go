@@ -29,7 +29,7 @@ func OnboardingGroups() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<center><div style=\"max-width: 24rem;\"><hgroup><h3>lets create your first group!</h3><p>groups help you organize your lists and manage users</p></hgroup><hr><form autocomplete=\"off\"><fieldset><label>group name <input type=\"text\" name=\"name\" placeholder=\"my awesome group\" aria-label=\"group name\"></label> <label>Description <input type=\"text\" name=\"description\" placeholder=\"this is our family weekly shopping group\" aria-label=\"group description\"></label></fieldset><button hx-post=\"/api/groups/\" hx-trigger=\"click\">Create</button></form></div></center>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<center><div style=\"max-width: 24rem;\"><hgroup><h3>lets create your first group!</h3><p>groups help you organize your lists and manage users</p></hgroup><hr><form autocomplete=\"off\"><fieldset><label>group name <input type=\"text\" name=\"name\" placeholder=\"my awesome group\" aria-label=\"group name\"></label> <label>description <input type=\"text\" name=\"description\" placeholder=\"this is our family weekly shopping group\" aria-label=\"group description\"></label></fieldset><button hx-post=\"/api/groups/\" hx-trigger=\"click\">create</button></form></div></center>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

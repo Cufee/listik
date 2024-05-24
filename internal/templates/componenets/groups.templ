@@ -1,0 +1,78 @@
+package components
+
+import "github.com/cufee/shopping-list/prisma/db"
+
+type CreateGroupDialog struct {
+	StartOpen bool
+	Header    string
+
+	Dialog
+}
+
+func (d *CreateGroupDialog) ID() string {
+	if d.id == "" {
+		return "create-group-dialog"
+	}
+	return d.id
+}
+
+templ createGroupHeader() {
+	<div class="flex flex-col items-center gap-1">
+		<span class="text-xl font-bold">
+			Create a new group
+		</span>
+		<div class="divider my-1"></div>
+	</div>
+}
+
+templ createGroupBody() {
+	<form autocomplete="off" class="flex flex-col gap-6 form-control">
+		<fieldset class="flex flex-col gap-2">
+			<div class="form-control">
+				<div class="label">
+					<span class="label-text-alt text-lg">Name</span>
+				</div>
+				<input class="input input-bordered grow" type="text" name="name" placeholder="My awesome group" aria-label="group name"/>
+			</div>
+			<div class="form-control">
+				<div class="label flex flex-row justify-between">
+					<span class="label-text-alt text-lg">Description</span>
+					<span class="badge badge-info">Optional</span>
+				</div>
+				<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="this is our family weekly shopping group" aria-label="group description"></textarea>
+			</div>
+		</fieldset>
+		<button class="btn btn-primary" hx-post="/api/groups/" hx-trigger="click">
+			Create
+		</button>
+	</form>
+}
+
+func (dialog CreateGroupDialog) Render(button templ.Component) templ.Component {
+	dialog.header = createGroupHeader()
+	dialog.body = createGroupBody()
+	dialog.actionButton = button
+	return dialog.Dialog.Render()
+}
+
+templ GroupCard(group db.GroupModel) {
+	@Card{
+		Title: group.Name,
+		Body:  groupCardBody(group),
+	}.Render()
+}
+
+templ groupCardBody(group db.GroupModel) {
+	<div class="flex flex-col gap-3 justify-between grow">
+		<span class="text-lg text-neutral-content">
+			if desc, ok := group.Desc(); ok && desc != "" {
+				{ desc }
+			} else {
+				...
+			}
+		</span>
+		<span class="text-sm text-neutral-content">
+			{ group.CreatedAt.String() }
+		</span>
+	</div>
+}

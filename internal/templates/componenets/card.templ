@@ -1,0 +1,25 @@
+package components
+
+type Card struct {
+	Title   string
+	Body    templ.Component
+	Actions templ.Component
+}
+
+templ (c Card) Render() {
+	<div class="card h-full w-full">
+		<div class="card-body">
+			if c.Title != "" {
+				<span class="card-title text-xl font-bold">{ c.Title }</span>
+			}
+			if c.Body != nil {
+				@c.Body
+			}
+			if c.Actions != nil {
+				<div class="card-actions justify-end">
+					@c.Actions
+				</div>
+			}
+		</div>
+	</div>
+}

@@ -46,6 +46,7 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 
 	apiGroup := e.Group("/api", sessionCheckMiddleware(db))
 	apiGroup.POST("/groups/", withContext(api.CreateGroup))
+	apiGroup.POST("/groups/:groupId/list/", withContext(api.CreateList))
 
 	e.GET("/*", pageNotFound)
 	return e

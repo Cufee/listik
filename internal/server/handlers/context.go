@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/a-h/templ"
 	"github.com/cufee/shopping-list/internal/templates/pages"
 	"github.com/cufee/shopping-list/prisma/db"
@@ -24,7 +26,10 @@ func (c *Context) RenderPage(page templ.Component) error {
 }
 
 func (c *Context) Redirect(code int, path string) error {
-	c.Response().Header().Set("HX-Redirect", path)
+	if c.Request().Header.Get("HX-Request") == "true" {
+		c.Response().Header().Set("HX-Redirect", path)
+		return c.String(http.StatusOK, "")
+	}
 	return c.Context.Redirect(code, path)
 }
 
