@@ -10,17 +10,15 @@ type Group struct {
 }
 
 templ (props Group) Render() {
-	<div class="d-flex flex-row justify-content-between">
-		@components.PageHeader(props.Group.Name, components.WithDescription(props.Group.Desc), manageGroupButton())
-		<div class="divider"></div>
-	</div>
+	@components.PageHeader(props.Group.Name, components.WithDescription(props.Group.Desc), manageGroupButton())
+	<div class="divider"></div>
 	<div class="flex flex-row flex-wrap gap-2">
 		for _, list := range props.Lists {
-			<a class="flex-grow basis-1/3 bg-base-200 hover:bg-base-300 rounded-lg" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", list.GroupID, list.ID)) }>
+			<a class="flex-grow text-balance bg-base-200 hover:bg-base-300 rounded-lg" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", list.GroupID, list.ID)) } hx-boost="true">
 				@components.ListCard(list)
 			</a>
 		}
-		@newCreateListDialog(props.Group)
+		@CreateListDialog(props.Group.ID, false, nil, nil)
 	</div>
 }
 
@@ -32,8 +30,10 @@ templ manageGroupButton() {
 	</div>
 }
 
-func newCreateListDialog(group *db.GroupModel) templ.Component {
-	dialog := components.CreateListDialog{GroupID: group.ID}
+func CreateListDialog(groupID string, open bool, inputs, errors map[string]string) templ.Component {
+	dialog := components.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
+	dialog.StartOpen = open
+	dialog.SetID("create-new-list-dialog")
 	return dialog.Render(createListButton(dialog.ShowScript()))
 }
 

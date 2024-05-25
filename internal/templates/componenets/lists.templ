@@ -4,9 +4,10 @@ import "fmt"
 import "github.com/cufee/shopping-list/prisma/db"
 
 type CreateListDialog struct {
-	StartOpen bool
-	Header    string
-	GroupID   string
+	Header  string
+	GroupID string
+	Errors  map[string]string
+	Inputs  map[string]string
 
 	Dialog
 }
@@ -27,24 +28,34 @@ templ createListHeader() {
 	</div>
 }
 
-templ createListBody(groupId string) {
+templ createListBody(groupId string, selector string, inputs map[string]string, errors map[string]string) {
 	<form autocomplete="off" class="flex flex-col gap-6 form-control">
 		<fieldset class="flex flex-col gap-2">
 			<div class="form-control">
 				<div class="label">
 					<span class="label-text-alt text-lg">Name</span>
 				</div>
-				<input class="input input-bordered grow" type="text" name="name" placeholder="My list #420" aria-label="group name"/>
+				<input class="input input-bordered grow" type="text" value={ inputs["name"] } name="name" placeholder="My list #420" aria-label="group name"/>
+				if err, ok := errors["name"]; ok {
+					<div class="label">
+						<span class="label-text-alt text-error">{ err }</span>
+					</div>
+				}
 			</div>
 			<div class="form-control">
 				<div class="label flex flex-row justify-between">
 					<span class="label-text-alt text-lg">Description</span>
 					<span class="badge badge-info">Optional</span>
 				</div>
-				<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="This is our family weekly shopping list" aria-label="group description"></textarea>
+				<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="This is our family weekly shopping list" aria-label="group description">{ inputs["description"] }</textarea>
+				if err, ok := errors["description"]; ok {
+					<div class="label">
+						<span class="label-text-alt text-error">{ err }</span>
+					</div>
+				}
 			</div>
 		</fieldset>
-		<button class="btn btn-primary" hx-post={ fmt.Sprintf("/api/groups/%s/list", groupId) } hx-trigger="click">
+		<button class="btn btn-primary" hx-post={ fmt.Sprintf("/api/groups/%s/list", groupId) } hx-trigger="click" hx-target={ selector } hx-select={ selector } hx-swap="outerHTML">
 			Create
 		</button>
 	</form>
@@ -52,7 +63,7 @@ templ createListBody(groupId string) {
 
 func (dialog CreateListDialog) Render(button templ.Component) templ.Component {
 	dialog.header = createListHeader()
-	dialog.body = createListBody(dialog.GroupID)
+	dialog.body = createListBody(dialog.GroupID, "#"+dialog.ID(), dialog.Inputs, dialog.Errors)
 	dialog.actionButton = button
 	return dialog.Dialog.Render()
 }

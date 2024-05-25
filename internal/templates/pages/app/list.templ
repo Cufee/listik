@@ -8,9 +8,7 @@ type List struct {
 }
 
 templ (props List) Render() {
-	<div class="d-flex flex-row justify-content-between">
-		@components.PageHeader(props.List.Name, components.WithDescription(props.List.Desc), manageListButton())
-	</div>
+	@components.PageHeader(props.List.Name, components.WithDescription(props.List.Desc), manageListButton())
 	<div class="divider"></div>
 }
 

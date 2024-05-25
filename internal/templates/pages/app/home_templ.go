@@ -35,7 +35,7 @@ func (props Home) Render() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, group := range props.Groups {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow basis-1/3 bg-base-200 hover:bg-base-300 rounded-lg\" href=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow text-balance bg-base-200 hover:bg-base-300 rounded-lg\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -44,7 +44,7 @@ func (props Home) Render() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"card\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-boost=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -57,7 +57,7 @@ func (props Home) Render() templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = newCreateGroupDialog().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = CreateGroupDialog(false, nil, nil).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -72,8 +72,10 @@ func (props Home) Render() templ.Component {
 	})
 }
 
-func newCreateGroupDialog() templ.Component {
-	dialog := components.CreateGroupDialog{}
+func CreateGroupDialog(open bool, inputs, errors map[string]string) templ.Component {
+	dialog := components.CreateGroupDialog{Errors: errors, Inputs: inputs}
+	dialog.SetID("create-new-group-dialog")
+	dialog.StartOpen = open
 	return dialog.Render(createGroupButton(dialog.ShowScript()))
 }
 

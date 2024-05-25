@@ -42,7 +42,7 @@ func List(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=list not found&context="+err.Error())
 	}
 
-	list, err := c.DB().List.FindFirst(db.List.ID.Equals(c.Param("listId")), db.List.GroupID.Equals(member.GroupID)).Exec(c.Request().Context())
+	list, err := c.DB().List.FindFirst(db.List.ID.Equals(c.Param("listId")), db.List.GroupID.Equals(member.GroupID)).With(db.List.Group.Fetch()).Exec(c.Request().Context())
 	if db.IsErrNotFound(err) {
 		return c.Redirect(http.StatusTemporaryRedirect, "/app/group/"+member.GroupID)
 	}

@@ -3,8 +3,9 @@ package components
 import "github.com/cufee/shopping-list/prisma/db"
 
 type CreateGroupDialog struct {
-	StartOpen bool
-	Header    string
+	Header string
+	Errors map[string]string
+	Inputs map[string]string
 
 	Dialog
 }
@@ -25,24 +26,34 @@ templ createGroupHeader() {
 	</div>
 }
 
-templ createGroupBody() {
+templ createGroupBody(selector string, inputs, errors map[string]string) {
 	<form autocomplete="off" class="flex flex-col gap-6 form-control">
 		<fieldset class="flex flex-col gap-2">
 			<div class="form-control">
 				<div class="label">
 					<span class="label-text-alt text-lg">Name</span>
 				</div>
-				<input class="input input-bordered grow" type="text" name="name" placeholder="My awesome group" aria-label="group name"/>
+				<input class="input input-bordered grow" type="text" value={ inputs["name"] } name="name" placeholder="My awesome group" aria-label="group name"/>
+				if err, ok := errors["name"]; ok {
+					<div class="label">
+						<span class="label-text-alt text-error">{ err }</span>
+					</div>
+				}
 			</div>
 			<div class="form-control">
 				<div class="label flex flex-row justify-between">
 					<span class="label-text-alt text-lg">Description</span>
 					<span class="badge badge-info">Optional</span>
 				</div>
-				<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="this is our family weekly shopping group" aria-label="group description"></textarea>
+				<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="this is our family weekly shopping group" aria-label="group description">{ inputs["description"] }</textarea>
+				if err, ok :=  errors["description"]; ok {
+					<div class="label">
+						<span class="label-text-alt text-error">{ err }</span>
+					</div>
+				}
 			</div>
 		</fieldset>
-		<button class="btn btn-primary" hx-post="/api/groups/" hx-trigger="click">
+		<button class="btn btn-primary" hx-post="/api/groups/" hx-trigger="click" hx-target={ selector } hx-select={ selector } hx-swap="outerHTML">
 			Create
 		</button>
 	</form>
@@ -50,7 +61,7 @@ templ createGroupBody() {
 
 func (dialog CreateGroupDialog) Render(button templ.Component) templ.Component {
 	dialog.header = createGroupHeader()
-	dialog.body = createGroupBody()
+	dialog.body = createGroupBody("#"+dialog.ID(), dialog.Inputs, dialog.Errors)
 	dialog.actionButton = button
 	return dialog.Dialog.Render()
 }

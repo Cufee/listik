@@ -32,20 +32,16 @@ func (props Group) Render() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-row justify-content-between\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		templ_7745c5c3_Err = components.PageHeader(props.Group.Name, components.WithDescription(props.Group.Desc), manageGroupButton()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"divider\"></div></div><div class=\"flex flex-row flex-wrap gap-2\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"divider\"></div><div class=\"flex flex-row flex-wrap gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, list := range props.Lists {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow basis-1/3 bg-base-200 hover:bg-base-300 rounded-lg\" href=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow text-balance bg-base-200 hover:bg-base-300 rounded-lg\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -54,7 +50,7 @@ func (props Group) Render() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-boost=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -67,7 +63,7 @@ func (props Group) Render() templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = newCreateListDialog(props.Group).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = CreateListDialog(props.Group.ID, false, nil, nil).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,8 +110,10 @@ func manageGroupButton() templ.Component {
 	})
 }
 
-func newCreateListDialog(group *db.GroupModel) templ.Component {
-	dialog := components.CreateListDialog{GroupID: group.ID}
+func CreateListDialog(groupID string, open bool, inputs, errors map[string]string) templ.Component {
+	dialog := components.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
+	dialog.StartOpen = open
+	dialog.SetID("create-new-list-dialog")
 	return dialog.Render(createListButton(dialog.ShowScript()))
 }
 
