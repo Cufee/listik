@@ -1,4 +1,4 @@
-FROM golang:1.22.3-buster as builder
+FROM golang:1.22.2-alpine as builder
 
 WORKDIR /workspace
 
@@ -16,16 +16,26 @@ RUN go generate ./...
 # build a fully standalone binary with zero dependencies
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o app .
 
-# use the scratch image for the smallest possible image size
-FROM scratch
 
-# copy SSL certs and timezone info
+# <!> railway.app does not really have a way to run a migration container on the volume, so we have to improvise here
+# in order to run migrations, we need to have go and prisma installed
+FROM golang:1.22.2-alpine
+
+# set timezone
 ENV TZ=Europe/Berlin
-ENV ZONEINFO=/zoneinfo.zip
-COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # copy final binary
 COPY --from=builder /workspace/app /app
 
-ENTRYPOINT ["/app"]
+# copy migrations and schema
+COPY --from=builder /workspace/prisma/migrations /prisma/migrations
+COPY --from=builder /workspace/prisma/schema.prisma /prisma/schema.prisma
+COPY --from=builder /workspace/docker-entrypoint.sh /docker-entrypoint.sh
+COPY --from=builder /workspace/go.mod /go.mod
+COPY --from=builder /workspace/go.sum /go.sum
+
+# install prisma and prefetch binaries
+RUN go install github.com/steebchen/prisma-client-go
+RUN go run github.com/steebchen/prisma-client-go prefetch
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
