@@ -4,12 +4,21 @@ import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
 
 type List struct {
-	List *db.ListModel
+	List  *db.ListModel
+	Items []db.ListItemModel
 }
 
 templ (props List) Render() {
 	@components.PageHeader(props.List.Name, components.WithDescription(props.List.Desc), manageListButton())
 	<div class="divider"></div>
+	<div class="flex flex-col gap-4">
+		<div id="list-items" class="flex flex-col gap-1">
+			for _, item := range props.Items {
+				@components.ListItem{Item: &item, GroupID: props.List.GroupID}.Render()
+			}
+		</div>
+		@components.NewListItem(props.List.GroupID, props.List.ID, "#list-items")
+	</div>
 }
 
 templ manageListButton() {

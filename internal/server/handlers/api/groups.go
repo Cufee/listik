@@ -20,10 +20,10 @@ func CreateGroup(c *handlers.Context) error {
 	}
 
 	if len(data.Name) < 5 || len(data.Name) > 21 {
-		return c.RenderPage(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "Group name should be between 5 and 21 characters"}))
+		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "Group name should be between 5 and 21 characters"}))
 	}
 	if len(data.Description) > 80 {
-		return c.RenderPage(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "Group description is limited to 80 characters"}))
+		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "Group description is limited to 80 characters"}))
 	}
 
 	// Create a group

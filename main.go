@@ -23,5 +23,5 @@ func main() {
 	}
 
 	s := server.New(client, echo.MustSubFS(assets, "assets"))
-	s.Start(":" + os.Getenv("PORT"))
+	panic(s.Start(":" + os.Getenv("PORT")))
 }

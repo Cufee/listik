@@ -140,6 +140,8 @@ model ItemTag {
   group   Group  @relation(fields: [groupId], references: [id])
   groupId String
 
+  taggedItems ListItem[]
+
   @@index([groupId])
   @@index([createdById])
   @@map("item_tags")
@@ -182,6 +184,8 @@ model ListItem {
   name  String
   desc  String?
   price String?
+
+  tags ItemTag[]
 
   checked Boolean @default(false)
 

@@ -1,0 +1,65 @@
+package components
+
+import "github.com/cufee/shopping-list/prisma/db"
+import "fmt"
+
+type ListItem struct {
+	Item    *db.ListItemModel
+	GroupID string
+}
+
+func conditionalClass(condition bool, class string) string {
+	if condition {
+		return class
+	}
+	return ""
+}
+
+templ (props ListItem) Render() {
+	<div class="join flex flex-row" id={ "list-item-" + props.Item.ID }>
+		<button
+			class="grow join-item flex flex-row gap-2 items-center bg-base-300 hover:bg-base-200 rounded-xl p-2"
+			hx-put={ fmt.Sprintf("/api/groups/%s/lists/%s/items/%s/checked/?checked=%t", props.GroupID, props.Item.ListID, props.Item.ID, !props.Item.Checked) }
+			hx-selector={ "#list-item-" + props.Item.ID }
+			hx-target={ "#list-item-" + props.Item.ID }
+			hx-swap="outerHTML"
+		>
+			<input name="checked" type="checkbox" checked?={ props.Item.Checked } class={ "checkbox" + conditionalClass(props.Item.Checked, " checkbox-success") }/>
+			<div class={ "flex flex-row justify-between" + conditionalClass(props.Item.Checked, " line-through") }>
+				<span class="flex-grow">{ props.Item.Name }</span>
+			</div>
+		</button>
+		<button class="join-item btn">[ ]</button>
+	</div>
+}
+
+templ NewListItem(groupID, listID, itemsContainerSelector string) {
+	<form class="flex flex-col items-center" autocomplete="off">
+		<div class="bg-base-300 rounded-xl collapse overflow-visible p-0">
+			<input class="hidden" type="radio" id="add-new-item-expand-button"/>
+			<div class="join collapse-title min-h-fit p-0">
+				<input type="text" name="name" placeholder="bananas" class="join-item input input-bordered bg-base-300 w-full" id="new-item-input"/>
+				<button
+					class="join-item btn btn-primary z-10"
+					hx-post={ fmt.Sprintf("/api/groups/%s/lists/%s/items", groupID, listID) }
+					hx-target={ itemsContainerSelector }
+					hx-swap="beforeend"
+					hx-trigger="click"
+				>+</button>
+			</div>
+			<div class="collapse-content" id="add-new-item-expanded">
+				<div class="form-control pt-2">
+					<div class="label flex flex-row justify-between">
+						<span class="label-text-alt text-lg">Description</span>
+						<span class="badge badge-info">Optional</span>
+					</div>
+					<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="this is our family weekly shopping group" aria-label="group description"></textarea>
+				</div>
+			</div>
+		</div>
+		<button
+			class="btn btn-link"
+			onclick="this.remove();document.getElementById('add-new-item-expand-button').checked=true;document.querySelector('#add-new-item-expanded [name]').focus();"
+		>Expand</button>
+	</form>
+}
