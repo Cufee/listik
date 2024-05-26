@@ -1,0 +1,50 @@
+package app
+
+import "os"
+
+templ OnboardingGroups() {
+	@invitePromptDialog()
+	<center>
+		<div style="max-width: 24rem;">
+			<hgroup>
+				<h3>lets create your first group!</h3>
+				<p>groups help you organize your lists and manage users</p>
+			</hgroup>
+			<hr/>
+			<form autocomplete="off">
+				<fieldset>
+					<label>
+						group name
+						<input type="text" name="name" placeholder="my awesome group" aria-label="group name"/>
+					</label>
+					<label>
+						description
+						<input type="text" name="description" placeholder="this is our family weekly shopping group" aria-label="group description"/>
+					</label>
+				</fieldset>
+				<button hx-post="/api/groups/" hx-trigger="click">
+					create
+				</button>
+			</form>
+		</div>
+	</center>
+}
+
+templ invitePromptDialog() {
+	<dialog open id="onboarding-invite-prompt">
+		<article>
+			<header>
+				<form method="dialog">
+					<button aria-label="Close" rel="prev"></button>
+				</form>
+				<p>
+					<strong>welcome to { os.Getenv("APP_NAME") }!</strong>
+				</p>
+			</header>
+			<p>
+				before we begin setting up your account,
+				do you have an invite from another user?
+			</p>
+		</article>
+	</dialog>
+}

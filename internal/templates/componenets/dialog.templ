@@ -1,0 +1,48 @@
+package components
+
+import "time"
+import "fmt"
+
+type Dialog struct {
+	StartOpen bool
+
+	id           string
+	body         templ.Component
+	header       templ.Component
+	actionButton templ.Component
+}
+
+func (d *Dialog) SetID(id string) {
+	d.id = id
+}
+
+func (d *Dialog) ID() string {
+	if d.id == "" {
+		return fmt.Sprintf("dialog-%d", time.Now().Unix())
+	}
+	return d.id
+}
+
+func (d *Dialog) ShowScript() templ.ComponentScript {
+	return showDialogScript(d.ID())
+}
+
+script showDialogScript(id string) {
+    const dialog = document.getElementById(id)
+    if (!dialog) return
+    dialog.open = true;
+    document.querySelector("input")?.focus()
+}
+
+templ (dialog Dialog) Render() {
+	<dialog class="modal" open?={ dialog.StartOpen } id={ dialog.ID() }>
+		<div class="modal-box flex flex-col gap-1 bg-base-200">
+			@dialog.header
+			@dialog.body
+		</div>
+		<form method="dialog" class="modal-backdrop bg-black bg-opacity-50">
+			<button>close</button>
+		</form>
+	</dialog>
+	@dialog.actionButton
+}

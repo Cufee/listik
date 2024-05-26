@@ -12,7 +12,10 @@ generator db {
 //
 
 model User {
-  id             String  @id @default(cuid())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   name           String
   profilePicture String?
 
@@ -64,7 +67,11 @@ model Session {
 model Group {
   id String @id @default(cuid())
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   name String
+  desc String?
 
   lists   List[]
   tags    ItemTag[]
@@ -74,7 +81,11 @@ model Group {
 }
 
 model GroupMember {
-  id      String @id @default(cuid())
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   group   Group  @relation(fields: [groupId], references: [id])
   groupId String
 
@@ -115,6 +126,9 @@ model GroupInvite {
 model ItemTag {
   id String @id @default(cuid())
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   name  String
   desc  String?
   icon  String?
@@ -125,6 +139,8 @@ model ItemTag {
 
   group   Group  @relation(fields: [groupId], references: [id])
   groupId String
+
+  taggedItems ListItem[]
 
   @@index([groupId])
   @@index([createdById])
@@ -137,8 +153,9 @@ model List {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String
-  desc      String?
+
+  name String
+  desc String?
 
   group   Group  @relation(fields: [groupId], references: [id])
   groupId String
@@ -167,6 +184,8 @@ model ListItem {
   name  String
   desc  String?
   price String?
+
+  tags ItemTag[]
 
   checked Boolean @default(false)
 

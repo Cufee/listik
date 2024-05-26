@@ -1,0 +1,44 @@
+package app
+
+import "github.com/cufee/shopping-list/prisma/db"
+import "fmt"
+import "github.com/cufee/shopping-list/internal/templates/componenets"
+
+type Group struct {
+	Group *db.GroupModel
+	Lists []db.ListModel
+}
+
+templ (props Group) Render() {
+	@components.PageHeader(props.Group.Name, components.WithDescription(props.Group.Desc), manageGroupButton())
+	<div class="divider"></div>
+	<div class="flex flex-row flex-wrap gap-2">
+		for _, list := range props.Lists {
+			<a class="flex-grow text-balance bg-base-200 hover:bg-base-300 rounded-lg" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", list.GroupID, list.ID)) } hx-boost="true">
+				@components.ListCard(list)
+			</a>
+		}
+		@CreateListDialog(props.Group.ID, false, nil, nil)
+	</div>
+}
+
+templ manageGroupButton() {
+	<div class="tooltip tooltip-left" data-tip="Manage Group">
+		<button class="btn btn-primary">
+			@components.IconCog("1.25rem")
+		</button>
+	</div>
+}
+
+func CreateListDialog(groupID string, open bool, inputs, errors map[string]string) templ.Component {
+	dialog := components.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
+	dialog.StartOpen = open
+	dialog.SetID("create-new-list-dialog")
+	return dialog.Render(createListButton(dialog.ShowScript()))
+}
+
+templ createListButton(actionScript templ.ComponentScript) {
+	<button class="flex-grow basis-1/3 bg-base-200 hover:bg-base-300 rounded-lg" onclick={ actionScript }>
+		@components.Card{Body: components.Text("Create a new list", "text-xl", "font-bold", "btn-link", "m-auto", "text-nowrap")}.Render()
+	</button>
+}

@@ -1,0 +1,38 @@
+package components
+
+import "os"
+import "strings"
+
+templ Navbar(path string, authenticated bool) {
+	<div class="navbar no-animation" hx-boost="true">
+		<div class="flex-grow flex gap-2 items-center">
+			<a href={ templ.URL(ifElse(authenticated, "/app", "/")) } class="btn btn-primary text-xl">
+				□ { os.Getenv("APP_NAME") }
+			</a>
+		</div>
+		<div class="flex-none">
+			if !authenticated {
+				<a href="/login" class={ "btn btn-sm btn-ghost " + navLinkClass(path, "/login") }>Login</a>
+			} else {
+				<a href="/app/settings" class={ "btn btn-sm btn-ghost " + navLinkClass(path, "/app/settings") }>Account</a>
+			}
+		</div>
+	</div>
+}
+
+func navLinkClass(path, requiredPath string) string {
+	if !strings.HasSuffix(requiredPath, "/") {
+		requiredPath += "/"
+	}
+	if path == requiredPath {
+		return "btn-active"
+	}
+	return ""
+}
+
+func ifElse(condition bool, onTrue, onFalse string) string {
+	if condition {
+		return onTrue
+	}
+	return onFalse
+}

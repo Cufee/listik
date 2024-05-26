@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	"context"
+	"errors"
+	"io"
 	"net/http"
-	"strings"
 
-	"github.com/cufee/shopping-list/internal/components"
-	"github.com/cufee/shopping-list/internal/pages"
+	"github.com/cufee/shopping-list/internal/templates/pages"
 	"github.com/cufee/shopping-list/prisma/db"
 	"github.com/labstack/echo/v4"
 )
@@ -18,24 +19,31 @@ type Context struct {
 	db            *db.PrismaClient
 }
 
+type Renderable interface {
+	Render(ctx context.Context, w io.Writer) error
+}
+
 /*
 Renders a page into response writer
   - Adds a navbar and footer based on the current page context
 */
-func (c *Context) RenderPage(p pages.Page, err error) error {
-	if err != nil {
-		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=We ran into an error&context="+err.Error())
-	}
+func (c *Context) RenderPage(page Renderable) error {
+	return pages.Wrapper(c.Path(), c.Authenticated(), page).Render(c.Request().Context(), c.Response().Writer)
+}
 
-	// TODO: This needs to be done better, building a navbar based on context should be more flexible and cleaner
-	if strings.HasPrefix(c.Path(), "/app") {
-		p.SetOption(pages.WithNavbar(components.AppNavbar(c.Path())))
-	} else {
-		p.SetOption(pages.WithNavbar(components.Navbar(c.Path())))
-	}
-	p.SetOption(pages.WithFooter(components.Footer()))
+/*
+Renders a single componenets into response writer
+*/
+func (c *Context) RenderPartial(node Renderable) error {
+	return node.Render(c.Request().Context(), c.Response().Writer)
+}
 
-	return p.Node(c.Path()).Render(c.Response().Writer)
+func (c *Context) Redirect(code int, path string) error {
+	if c.Request().Header.Get("HX-Request") == "true" {
+		c.Response().Header().Set("HX-Redirect", path)
+		return c.String(http.StatusOK, "")
+	}
+	return c.Context.Redirect(code, path)
 }
 
 func (c *Context) SetUser(user *db.UserModel) {
@@ -50,6 +58,13 @@ func (c *Context) User() *db.UserModel {
 		return c.user
 	}
 	return nil
+}
+
+func (c *Context) Member(groupID string) (*db.GroupMemberModel, error) {
+	if !c.Authenticated() {
+		return nil, errors.New("not authenticated")
+	}
+	return c.DB().GroupMember.FindFirst(db.GroupMember.UserID.Equals(c.User().ID), db.GroupMember.GroupID.Equals(groupID)).Exec(c.Request().Context())
 }
 
 func (c *Context) Authenticated() bool {

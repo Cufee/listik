@@ -1,0 +1,23 @@
+package components
+
+templ PageHeader(title, subtitle string, actions ...templ.Component) {
+	<div class="flex flex-row gap-2 justify-between">
+		<div class="flex flex-col gap-1">
+			<span class="text-xl font-bold">{ title }</span>
+			<span class="text-md text-neutral-content">{ subtitle }</span>
+		</div>
+		<div class="flex flex-row gap-1">
+			for _, node := range actions {
+				@node
+			}
+		</div>
+	</div>
+}
+
+func WithDescription(get func() (string, bool)) string {
+	description, ok := get()
+	if !ok || description == "" {
+		return "..."
+	}
+	return description
+}
