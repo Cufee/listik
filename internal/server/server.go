@@ -68,6 +68,7 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	apiGroup.POST("/groups/:groupId/lists/", withContext(api.CreateList))
 	apiGroup.POST("/groups/:groupId/lists/:listId/items/", withContext(api.CreateItem))
 	apiGroup.PUT("/groups/:groupId/lists/:listId/items/:itemId/checked/", withContext(api.ItemSetChecked))
+	apiGroup.POST("/invites/redeem/", withContext(api.RedeemGroupInvite))
 
 	e.GET("/*", pageNotFound)
 	return e

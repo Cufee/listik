@@ -25,10 +25,10 @@ func CreateItem(c *handlers.Context) error {
 	}
 
 	if len(data.Name) < 1 || len(data.Name) > 14 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "Item name should be between 1 and 14 characters"}))
+		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "item name should be between 1 and 14 characters"}))
 	}
 	if len(data.Description) > 80 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "Item description is limited to 80 characters"}))
+		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "item description is limited to 80 characters"}))
 	}
 
 	// Check if a user belong to this group

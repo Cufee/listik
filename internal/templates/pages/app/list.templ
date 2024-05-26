@@ -2,29 +2,41 @@ package app
 
 import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 
 type List struct {
 	List  *db.ListModel
+	Group *db.GroupModel
 	Items []db.ListItemModel
 }
 
 templ (props List) Render() {
-	@components.PageHeader(props.List.Name, components.WithDescription(props.List.Desc), manageListButton())
+	@components.PageHeader(listNameWithNav(props.List, props.Group), components.WithDescription(props.List.Desc), manageListButton())
 	<div class="divider"></div>
 	<div class="flex flex-col gap-4">
 		<div id="list-items" class="flex flex-col gap-1">
 			for _, item := range props.Items {
-				@components.ListItem{Item: &item, GroupID: props.List.GroupID}.Render()
+				@components.ListItem{Item: &item, GroupID: props.Group.ID}.Render()
 			}
 		</div>
 		@components.NewListItem(props.List.GroupID, props.List.ID, "#list-items")
 	</div>
 }
 
+templ listNameWithNav(list *db.ListModel, group *db.GroupModel) {
+	<div class="flex flex-col wrap gap-1">
+		<div class="flex flex-row gap-1">
+			<a class="text-primary link link-hover overflow-hidden text-ellipsis text-nowrap" href={ templ.URL("/app/group/" + group.ID) }>{ group.Name }</a>
+			<span class="text-neutral-content">/</span>
+		</div>
+		<span class="grow min-w-fit text-lg">{ list.Name }</span>
+	</div>
+}
+
 templ manageListButton() {
-	<div class="tooltip tooltip-left" data-tip="Manage List">
-		<button class="btn btn-primary">
+	<div class="tooltip tooltip-left" data-tip="manage list">
+		@common.Button().Neutral() {
 			@components.IconCog("1.25rem")
-		</button>
+		}
 	</div>
 }

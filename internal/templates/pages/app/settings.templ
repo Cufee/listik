@@ -1,7 +1,11 @@
 package app
 
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+
 templ Settings() {
 	<a href="/logout">
-		<button class="btn btn-error">Log Out</button>
+		@common.Button("btn-warning").Render() {
+			log out
+		}
 	</a>
 }

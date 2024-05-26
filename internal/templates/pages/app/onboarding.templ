@@ -1,50 +1,74 @@
 package app
 
-import "os"
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 
-templ OnboardingGroups() {
-	@invitePromptDialog()
-	<center>
-		<div style="max-width: 24rem;">
-			<hgroup>
-				<h3>lets create your first group!</h3>
-				<p>groups help you organize your lists and manage users</p>
-			</hgroup>
-			<hr/>
-			<form autocomplete="off">
-				<fieldset>
-					<label>
-						group name
-						<input type="text" name="name" placeholder="my awesome group" aria-label="group name"/>
-					</label>
-					<label>
-						description
-						<input type="text" name="description" placeholder="this is our family weekly shopping group" aria-label="group description"/>
-					</label>
-				</fieldset>
-				<button hx-post="/api/groups/" hx-trigger="click">
-					create
-				</button>
+templ OnboardingGroups(inputs, errors map[string]string) {
+	<div class="flex flex-col gap-6 text-center items-center w-full max-w-xl m-auto">
+		<span class="text-2xl font-bold">
+			Welcome to Listik!
+		</span>
+		<div class="flex flex-col gap-2 items-center w-full">
+			<span class="text-md font-bold">
+				Use an invite code to join an existing group
+			</span>
+			<form autocomplete="off" class="form-control flex flex-col w-full" id="invite-code-form">
+				<div class="form-control flex flex-row join">
+					<input class="join-item input input-bordered grow rounded-xl" type="text" value={ inputs["invite-code"] } name="invite-code" placeholder="c00000000000000x" aria-label="invite code"/>
+					@common.Button("join-item z-10").Attrs(templ.Attributes{
+						"hx-post":    "/api/invites/redeem",
+						"hx-trigger": "click",
+						"hx-target":  "#invite-code-form", "hx-select": "#invite-code-form", "hx-swap": "outerHTML",
+					}).Primary() {
+						redeem
+					}
+				</div>
+				if err, ok := errors["invite-code"]; ok {
+					<div class="label">
+						<span class="label-text-alt text-error">{ err }</span>
+					</div>
+				}
 			</form>
 		</div>
-	</center>
-}
-
-templ invitePromptDialog() {
-	<dialog open id="onboarding-invite-prompt">
-		<article>
-			<header>
-				<form method="dialog">
-					<button aria-label="Close" rel="prev"></button>
-				</form>
-				<p>
-					<strong>welcome to { os.Getenv("APP_NAME") }!</strong>
-				</p>
-			</header>
-			<p>
-				before we begin setting up your account,
-				do you have an invite from another user?
-			</p>
-		</article>
-	</dialog>
+		<div class="divider">OR</div>
+		<div class="flex flex-col gap-2 items-center w-full">
+			<div class="text-md">
+				<p class="font-bold">We can create a new group for you!</p>
+				<p>Groups help you organize your lists and manage who can access them.</p>
+			</div>
+			<form autocomplete="off" class="form-control flex flex-col gap-2 w-full">
+				<fieldset class="flex flex-col gap-2" id="create-group-form">
+					<div class="form-control">
+						<div class="label">
+							<span class="label-text-alt text-lg">name</span>
+						</div>
+						<input class="input input-bordered grow" type="text" value={ inputs["name"] } name="name" placeholder="my awesome group to organize lists" aria-label="group name"/>
+						if err, ok := errors["name"]; ok {
+							<div class="label">
+								<span class="label-text-alt text-error">{ err }</span>
+							</div>
+						}
+					</div>
+					<div class="form-control">
+						<div class="label flex flex-row justify-between">
+							<span class="label-text-alt text-lg">description</span>
+							<span class="badge badge-accent">optional</span>
+						</div>
+						<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="family shoppoing lists go here" aria-label="group description">{ inputs["description"] }</textarea>
+						if err, ok :=  errors["description"]; ok {
+							<div class="label">
+								<span class="label-text-alt text-error">{ err }</span>
+							</div>
+						}
+					</div>
+				</fieldset>
+				@common.Button().Attrs(templ.Attributes{
+					"hx-post":    "/api/groups/",
+					"hx-trigger": "click",
+					"hx-target":  "#create-group-form", "hx-select": "form fieldset", "hx-swap": "innerHTML",
+				}).Primary() {
+					create your first group
+				}
+			</form>
+		</div>
+	</div>
 }

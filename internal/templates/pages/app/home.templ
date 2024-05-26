@@ -2,6 +2,7 @@ package app
 
 import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 
 type Home struct {
 	Groups []db.GroupModel
@@ -10,12 +11,14 @@ type Home struct {
 templ (props Home) Render() {
 	<div class="flex flex-row flex-wrap gap-2">
 		for _, group := range props.Groups {
-			<a class="flex-grow text-balance bg-base-200 hover:bg-base-300 rounded-lg" href={ templ.URL("/app/group/" + group.ID) } hx-boost="true">
-				@components.GroupCard(group)
+			<a class="flex-grow" href={ templ.URL("/app/group/" + group.ID) } hx-boost="true">
+				@common.Button("text-start").Wrap() {
+					@components.GroupCard(group)
+				}
 			</a>
 		}
-		@CreateGroupDialog(false, nil, nil)
 	</div>
+	@CreateGroupDialog(false, nil, nil)
 }
 
 func CreateGroupDialog(open bool, inputs, errors map[string]string) templ.Component {
@@ -26,7 +29,9 @@ func CreateGroupDialog(open bool, inputs, errors map[string]string) templ.Compon
 }
 
 templ createGroupButton(actionScript templ.ComponentScript) {
-	<button class="flex-grow basis-1/3 bg-base-200 hover:bg-base-300" onclick={ actionScript }>
-		@components.Card{Body: components.Text("Create a new group", "text-xl", "font-bold", "btn-link", "m-auto")}.Render()
-	</button>
+	<div class="flex justify-center">
+		<button class="btn btn-link btn-lg" onclick={ actionScript }>
+			create a new group
+		</button>
+	</div>
 }

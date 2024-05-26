@@ -17,9 +17,9 @@ type Dialog struct {
 	StartOpen bool
 
 	id           string
-	body         templ.Component
-	header       templ.Component
-	actionButton templ.Component
+	Body         templ.Component
+	Header       templ.Component
+	ActionButton templ.Component
 }
 
 func (d *Dialog) SetID(id string) {
@@ -86,25 +86,31 @@ func (dialog Dialog) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"modal-box flex flex-col gap-1 bg-base-200\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"modal-box flex flex-col gap-1 bg-base-200 rounded-xl\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = dialog.header.Render(ctx, templ_7745c5c3_Buffer)
+		if dialog.Header != nil {
+			templ_7745c5c3_Err = dialog.Header.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if dialog.Body != nil {
+			templ_7745c5c3_Err = dialog.Body.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><form method=\"dialog\" class=\"modal-backdrop bg-black bg-opacity-50\"><button>close</button></form></dialog> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = dialog.body.Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><form method=\"dialog\" class=\"modal-backdrop bg-black bg-opacity-50\"><button>close</button></form></dialog>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = dialog.actionButton.Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		if dialog.ActionButton != nil {
+			templ_7745c5c3_Err = dialog.ActionButton.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		if !templ_7745c5c3_IsBuffer {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)

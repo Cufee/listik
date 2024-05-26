@@ -16,7 +16,7 @@ func Home(c *handlers.Context) error {
 
 	// If this user has no groups, they should go through the onboarding flow
 	if len(memberships) == 0 {
-		return c.RenderPage(app.OnboardingGroups())
+		return c.RenderPage(app.OnboardingGroups(nil, nil))
 	}
 
 	var groupIDs []string

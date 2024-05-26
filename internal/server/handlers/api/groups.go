@@ -20,10 +20,10 @@ func CreateGroup(c *handlers.Context) error {
 	}
 
 	if len(data.Name) < 5 || len(data.Name) > 21 {
-		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "Group name should be between 5 and 21 characters"}))
+		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "group name should be between 5 and 21 characters"}))
 	}
 	if len(data.Description) > 80 {
-		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "Group description is limited to 80 characters"}))
+		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "group description is limited to 80 characters"}))
 	}
 
 	// Create a group
@@ -39,4 +39,8 @@ func CreateGroup(c *handlers.Context) error {
 	}
 
 	return c.Redirect(http.StatusTemporaryRedirect, "/app/group/"+group.ID)
+}
+
+func RedeemGroupInvite(c *handlers.Context) error {
+	return c.RenderPartial(app.OnboardingGroups(map[string]string{"invite-code": c.FormValue("invite-code")}, map[string]string{"invite-code": "invalid invite code"}))
 }
