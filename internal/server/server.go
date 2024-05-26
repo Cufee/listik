@@ -29,14 +29,17 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 
 	logger := zerolog.New(os.Stdout)
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		LogURI:    true,
-		LogStatus: true,
+		LogURI:     true,
+		LogError:   true,
+		LogStatus:  true,
+		LogLatency: true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			logger.Info().
-				Str("URI", v.URI).
 				Int("status", v.Status).
+				Int64("duration_ms", v.Latency.Milliseconds()).
+				Str("URI", v.URI).
+				Err(v.Error).
 				Msg("request")
-
 			return nil
 		},
 	}))
