@@ -3,9 +3,11 @@ package server
 import (
 	"io/fs"
 	"net/http"
+	"os"
 
 	"github.com/a-h/templ"
 	"github.com/cufee/shopping-list/prisma/db"
+	"github.com/rs/zerolog"
 
 	"github.com/cufee/shopping-list/internal/server/handlers"
 	"github.com/cufee/shopping-list/internal/server/handlers/api"
@@ -24,6 +26,20 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 
 	// echo does not route correctly when a `/` route is attached to a group, this is to fix that issue
 	e.Pre(middleware.AddTrailingSlash())
+
+	logger := zerolog.New(os.Stdout)
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogURI:    true,
+		LogStatus: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			logger.Info().
+				Str("URI", v.URI).
+				Int("status", v.Status).
+				Msg("request")
+
+			return nil
+		},
+	}))
 
 	// Setup custom context on all routes
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
