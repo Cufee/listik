@@ -91,6 +91,7 @@ CREATE TABLE "list_items" (
     "name" TEXT NOT NULL,
     "desc" TEXT,
     "price" TEXT,
+    "quantity" INTEGER,
     "checked" BOOLEAN NOT NULL DEFAULT false,
     "listId" TEXT NOT NULL,
     CONSTRAINT "list_items_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
