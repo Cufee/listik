@@ -77,7 +77,7 @@ func (b button) Render(class ...string) templ.Component {
 }
 
 func (b button) Primary() templ.Component {
-	b.addClass("btn-accent")
+	b.addClass("btn-primary")
 	return b.render()
 }
 

@@ -41,20 +41,20 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form autocomplete=\"off\" class=\"flex flex-col gap-6 form-control\"><fieldset class=\"flex flex-col gap-2\"><div class=\"form-control\"><div class=\"label\"><span class=\"label-text-alt text-lg\">name</span></div><input class=\"input input-bordered grow\" type=\"text\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form autocomplete=\"off\" class=\"flex flex-col gap-6 form-control\"><fieldset class=\"flex flex-col gap-2\"><div class=\"form-control\"><div class=\"label\"><span class=\"label-text-alt text-lg\">Name</span></div><input name=\"name\" type=\"text\" minlength=\"1\" maxlength=\"80\" aria-label=\"group name\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["name"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 28, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 34, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"name\" placeholder=\"my awesome group to organize lists\" aria-label=\"group name\"> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"input input-bordered grow\" placeholder=\"my awesome group to organize lists\"> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -66,7 +66,7 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 31, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 40, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -77,14 +77,14 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"label-text-alt text-lg\">description</span> <span class=\"badge badge-accent\">optional</span></div><textarea class=\"textarea textarea-bordered\" type=\"text\" name=\"description\" placeholder=\"family shoppoing lists go here\" aria-label=\"group description\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"label-text-alt text-lg\">Description</span> <span class=\"badge badge-info\">Optional</span></div><textarea type=\"text\" maxlength=\"80\" name=\"description\" aria-label=\"group description\" class=\"textarea textarea-bordered\" placeholder=\"family shoppoing lists go here\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["description"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 40, Col: 179}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 56, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -102,7 +102,7 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 43, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 59, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -123,7 +123,7 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("create a new group")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Create a new group")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -139,7 +139,7 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form><div class=\"flex flex-col items-center gap-1\"><div class=\"divider my-1\"></div><span class=\"\">groups can include many lists. once a group is created, you will be able to manage who can see the lists inside.</span></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -170,7 +170,7 @@ func GroupCard(group db.GroupModel) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = Card{
-			Title: group.Name,
+			Title: common.Text(group.Name),
 			Body:  groupCardBody(group),
 		}.Render().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -196,17 +196,12 @@ func groupCardBody(group db.GroupModel) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-3 justify-between grow\"><span class=\"text-lg\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-3 justify-between grow\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if desc, ok := group.Desc(); ok && desc != "" {
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(desc)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 80, Col: 10}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			templ_7745c5c3_Err = common.Text(desc, "text-lg").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -216,20 +211,11 @@ func groupCardBody(group db.GroupModel) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"text-sm\">")
+		templ_7745c5c3_Err = common.Text(group.CreatedAt.String(), "text-sm").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(group.CreatedAt.String())
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/groups.templ`, Line: 86, Col: 29}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

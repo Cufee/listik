@@ -23,9 +23,18 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 		<fieldset class="flex flex-col gap-2">
 			<div class="form-control">
 				<div class="label">
-					<span class="label-text-alt text-lg">name</span>
+					<span class="label-text-alt text-lg">Name</span>
 				</div>
-				<input class="input input-bordered grow" type="text" value={ inputs["name"] } name="name" placeholder="my awesome group to organize lists" aria-label="group name"/>
+				<input
+					name="name"
+					type="text"
+					minlength="1"
+					maxlength="80"
+					aria-label="group name"
+					value={ inputs["name"] }
+					class="input input-bordered grow"
+					placeholder="my awesome group to organize lists"
+				/>
 				if err, ok := errors["name"]; ok {
 					<div class="label">
 						<span class="label-text-alt text-error">{ err }</span>
@@ -34,10 +43,17 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 			</div>
 			<div class="form-control">
 				<div class="label flex flex-row justify-between">
-					<span class="label-text-alt text-lg">description</span>
-					<span class="badge badge-accent">optional</span>
+					<span class="label-text-alt text-lg">Description</span>
+					<span class="badge badge-info">Optional</span>
 				</div>
-				<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="family shoppoing lists go here" aria-label="group description">{ inputs["description"] }</textarea>
+				<textarea
+					type="text"
+					maxlength="80"
+					name="description"
+					aria-label="group description"
+					class="textarea textarea-bordered"
+					placeholder="family shoppoing lists go here"
+				>{ inputs["description"] }</textarea>
 				if err, ok :=  errors["description"]; ok {
 					<div class="label">
 						<span class="label-text-alt text-error">{ err }</span>
@@ -49,15 +65,9 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 			"hx-post":    "/api/groups/",
 			"hx-trigger": "click", "hx-target": selector, "hx-select": selector, "hx-swap": "outerHTML",
 		}).Primary() {
-			create a new group
+			Create a new group
 		}
 	</form>
-	<div class="flex flex-col items-center gap-1">
-		<div class="divider my-1"></div>
-		<span class="">
-			groups can include many lists. once a group is created, you will be able to manage who can see the lists inside.
-		</span>
-	</div>
 }
 
 func (dialog CreateGroupDialog) Render(button templ.Component) templ.Component {
@@ -68,22 +78,18 @@ func (dialog CreateGroupDialog) Render(button templ.Component) templ.Component {
 
 templ GroupCard(group db.GroupModel) {
 	@Card{
-		Title: group.Name,
+		Title: common.Text(group.Name),
 		Body:  groupCardBody(group),
 	}.Render()
 }
 
 templ groupCardBody(group db.GroupModel) {
 	<div class="flex flex-col gap-3 justify-between grow">
-		<span class="text-lg">
-			if desc, ok := group.Desc(); ok && desc != "" {
-				{ desc }
-			} else {
-				...
-			}
-		</span>
-		<span class="text-sm">
-			{ group.CreatedAt.String() }
-		</span>
+		if desc, ok := group.Desc(); ok && desc != "" {
+			@common.Text(desc, "text-lg")
+		} else {
+			...
+		}
+		@common.Text(group.CreatedAt.String(), "text-sm")
 	</div>
 }

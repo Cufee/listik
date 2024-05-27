@@ -25,9 +25,18 @@ templ createListBody(groupId string, selector string, inputs map[string]string, 
 		<fieldset class="flex flex-col gap-2">
 			<div class="form-control">
 				<div class="label">
-					<span class="label-text-alt text-lg">name</span>
+					<span class="label-text-alt text-lg">Name</span>
 				</div>
-				<input class="input input-bordered grow" type="text" value={ inputs["name"] } name="name" placeholder="pokemon cards to buy" aria-label="group name"/>
+				<input
+					name="name"
+					type="text"
+					minlength="1"
+					maxlength="80"
+					aria-label="group name"
+					value={ inputs["name"] }
+					class="input input-bordered grow"
+					placeholder="pokemon cards to buy"
+				/>
 				if err, ok := errors["name"]; ok {
 					<div class="label">
 						<span class="label-text-alt text-error">{ err }</span>
@@ -36,10 +45,17 @@ templ createListBody(groupId string, selector string, inputs map[string]string, 
 			</div>
 			<div class="form-control">
 				<div class="label flex flex-row justify-between">
-					<span class="label-text-alt text-lg">description</span>
-					<span class="badge badge-accent">optional</span>
+					<span class="label-text-alt text-lg">Description</span>
+					<span class="badge badge-info">Optional</span>
 				</div>
-				<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="a super secret list, please don't look" aria-label="group description">{ inputs["description"] }</textarea>
+				<textarea
+					maxlength="80"
+					type="text"
+					name="description"
+					aria-label="group description"
+					class="textarea textarea-bordered"
+					placeholder="a super secret list, please don't look"
+				>{ inputs["description"] }</textarea>
 				if err, ok := errors["description"]; ok {
 					<div class="label">
 						<span class="label-text-alt text-error">{ err }</span>
@@ -51,7 +67,7 @@ templ createListBody(groupId string, selector string, inputs map[string]string, 
 			"hx-post":    fmt.Sprintf("/api/groups/%s/lists", groupId),
 			"hx-trigger": "click", "hx-target": selector, "hx-select": selector, "hx-swap": "outerHTML",
 		}).Primary() {
-			create a new list
+			Create a new list
 		}
 	</form>
 }
@@ -64,22 +80,18 @@ func (dialog CreateListDialog) Render(button templ.Component) templ.Component {
 
 templ ListCard(list db.ListModel) {
 	@Card{
-		Title: list.Name,
+		Title: common.Text(list.Name),
 		Body:  listCardBody(list),
 	}.Render()
 }
 
 templ listCardBody(list db.ListModel) {
 	<div class="flex flex-col gap-3 grow">
-		<span class="text-lg">
-			if desc, ok := list.Desc(); ok && desc != "" {
-				{ desc }
-			} else {
-				...
-			}
-		</span>
-		<span class="text-sm">
-			{ list.CreatedAt.String() }
-		</span>
+		if desc, ok := list.Desc(); ok && desc != "" {
+			@common.Text(desc, "text-lg")
+		} else {
+			...
+		}
+		@common.Text(list.CreatedAt.String(), "text-sm")
 	</div>
 }

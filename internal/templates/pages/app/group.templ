@@ -11,7 +11,7 @@ type Group struct {
 }
 
 templ (props Group) Render() {
-	@components.PageHeader(common.Text(props.Group.Name), components.WithDescription(props.Group.Desc), manageGroupButton())
+	@components.PageHeader(components.BreadcrumbsTitle(props.Group.Name, props.Group, nil), components.WithDescription(props.Group.Desc), manageGroupButton())
 	<div class="divider"></div>
 	<div class="flex flex-row flex-wrap gap-2">
 		for _, list := range props.Lists {
@@ -26,10 +26,12 @@ templ (props Group) Render() {
 }
 
 templ manageGroupButton() {
-	<div class="tooltip tooltip-left" data-tip="manage group">
-		@common.Button().Neutral() {
-			@components.IconCog("1.25rem")
-		}
+	<div>
+		<div class="tooltip tooltip-left" data-tip="Manage Group">
+			@common.Button("btn-square").Neutral() {
+				@components.IconCog()
+			}
+		</div>
 	</div>
 }
 

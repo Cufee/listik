@@ -1,5 +1,10 @@
 package common
 
-templ Text(content string) {
-	{ content }
+import "github.com/cufee/shopping-list/internal/logic"
+import "strings"
+
+templ Text(content string, classes ...string) {
+	<span class={ strings.Join(append(classes, logic.StringIfElse(strings.Contains(content, " "), "break-words", "break-all")), " ") }>
+		{ content }
+	</span>
 }

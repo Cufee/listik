@@ -43,20 +43,20 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form autocomplete=\"off\" class=\"flex flex-col gap-6 form-control\"><fieldset class=\"flex flex-col gap-2\"><div class=\"form-control\"><div class=\"label\"><span class=\"label-text-alt text-lg\">name</span></div><input class=\"input input-bordered grow\" type=\"text\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form autocomplete=\"off\" class=\"flex flex-col gap-6 form-control\"><fieldset class=\"flex flex-col gap-2\"><div class=\"form-control\"><div class=\"label\"><span class=\"label-text-alt text-lg\">Name</span></div><input name=\"name\" type=\"text\" minlength=\"1\" maxlength=\"80\" aria-label=\"group name\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["name"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 30, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 36, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"name\" placeholder=\"pokemon cards to buy\" aria-label=\"group name\"> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"input input-bordered grow\" placeholder=\"pokemon cards to buy\"> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -68,7 +68,7 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 33, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 42, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -79,14 +79,14 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"label-text-alt text-lg\">description</span> <span class=\"badge badge-accent\">optional</span></div><textarea class=\"textarea textarea-bordered\" type=\"text\" name=\"description\" placeholder=\"a super secret list, please don&#39;t look\" aria-label=\"group description\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"label-text-alt text-lg\">Description</span> <span class=\"badge badge-info\">Optional</span></div><textarea maxlength=\"80\" type=\"text\" name=\"description\" aria-label=\"group description\" class=\"textarea textarea-bordered\" placeholder=\"a super secret list, please don&#39;t look\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["description"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 42, Col: 187}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 58, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -104,7 +104,7 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 45, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 61, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -125,7 +125,7 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("create a new list")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Create a new list")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -172,7 +172,7 @@ func ListCard(list db.ListModel) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = Card{
-			Title: list.Name,
+			Title: common.Text(list.Name),
 			Body:  listCardBody(list),
 		}.Render().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -198,17 +198,12 @@ func listCardBody(list db.ListModel) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-3 grow\"><span class=\"text-lg\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-3 grow\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if desc, ok := list.Desc(); ok && desc != "" {
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(desc)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 76, Col: 10}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			templ_7745c5c3_Err = common.Text(desc, "text-lg").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -218,20 +213,11 @@ func listCardBody(list db.ListModel) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"text-sm\">")
+		templ_7745c5c3_Err = common.Text(list.CreatedAt.String(), "text-sm").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(list.CreatedAt.String())
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/lists.templ`, Line: 82, Col: 28}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

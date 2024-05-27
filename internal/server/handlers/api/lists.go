@@ -24,11 +24,11 @@ func CreateList(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new list&context="+err.Error())
 	}
 
-	if len(data.Name) < 1 || len(data.Name) > 21 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "list name should be between 1 and 21 characters"}))
+	if len(data.Name) < 1 || len(data.Name) > 80 {
+		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"name": "list name should be between 1 and 80 characters"}))
 	}
 	if len(data.Description) > 80 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "list description is limited to 80 characters"}))
+		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"description": "list description is limited to 80 characters"}))
 	}
 
 	// Check if a user belong to this group

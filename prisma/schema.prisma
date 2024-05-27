@@ -181,9 +181,10 @@ model ListItem {
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
 
-  name  String
-  desc  String?
-  price String?
+  name     String
+  desc     String?
+  price    String?
+  quantity Int?
 
   tags ItemTag[]
 

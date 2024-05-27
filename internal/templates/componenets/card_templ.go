@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 type Card struct {
-	Title   string
+	Title   templ.Component
 	Body    templ.Component
 	Actions templ.Component
 }
@@ -33,17 +33,12 @@ func (c Card) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.Title != "" {
+		if c.Title != nil {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"card-title text-xl font-bold\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.Title)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/card.templ`, Line: 13, Col: 56}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			templ_7745c5c3_Err = c.Title.Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

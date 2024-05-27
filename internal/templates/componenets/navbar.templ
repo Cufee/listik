@@ -6,16 +6,16 @@ import "strings"
 templ Navbar(path string, authenticated bool) {
 	<div class="no-animation flex flex-row justify-between gap-2 py-2" hx-boost="true">
 		<div class="flex-grow flex gap-2 items-center text-xl cursor-default">
-			<span>□</span>
+			<span class="text-primary font-bold">□</span>
 			<a href={ templ.URL(ifElse(authenticated, "/app", "/")) } class="link link-hover underline-offset-4 font-bold">
 				{ os.Getenv("APP_NAME") }
 			</a>
 		</div>
 		<div class="flex-none">
 			if !authenticated {
-				@navMenuLink("login", "/login", path)
+				@navMenuLink("Login", "/login", path)
 			} else {
-				@navMenuLink("settings", "/app/settings", path)
+				@navMenuLink("Settings", "/app/settings", path)
 			}
 		</div>
 	</div>

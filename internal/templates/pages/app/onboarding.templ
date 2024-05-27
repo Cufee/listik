@@ -13,13 +13,20 @@ templ OnboardingGroups(inputs, errors map[string]string) {
 			</span>
 			<form autocomplete="off" class="form-control flex flex-col w-full" id="invite-code-form">
 				<div class="form-control flex flex-row join">
-					<input class="join-item input input-bordered grow rounded-xl" type="text" value={ inputs["invite-code"] } name="invite-code" placeholder="c00000000000000x" aria-label="invite code"/>
+					<input
+						type="text"
+						name="invite-code"
+						aria-label="invite code"
+						placeholder="c00000000000000x"
+						value={ inputs["invite-code"] }
+						class="join-item input input-bordered grow rounded-xl"
+					/>
 					@common.Button("join-item z-10").Attrs(templ.Attributes{
 						"hx-post":    "/api/invites/redeem",
 						"hx-trigger": "click",
 						"hx-target":  "#invite-code-form", "hx-select": "#invite-code-form", "hx-swap": "outerHTML",
 					}).Primary() {
-						redeem
+						Redeem
 					}
 				</div>
 				if err, ok := errors["invite-code"]; ok {
@@ -33,15 +40,22 @@ templ OnboardingGroups(inputs, errors map[string]string) {
 		<div class="flex flex-col gap-2 items-center w-full">
 			<div class="text-md">
 				<p class="font-bold">We can create a new group for you!</p>
-				<p>Groups help you organize your lists and manage who can access them.</p>
+				<p>Groups help you organize your lists and manage who can access them</p>
 			</div>
 			<form autocomplete="off" class="form-control flex flex-col gap-2 w-full">
 				<fieldset class="flex flex-col gap-2" id="create-group-form">
 					<div class="form-control">
 						<div class="label">
-							<span class="label-text-alt text-lg">name</span>
+							<span class="label-text-alt text-lg">Name</span>
 						</div>
-						<input class="input input-bordered grow" type="text" value={ inputs["name"] } name="name" placeholder="my awesome group to organize lists" aria-label="group name"/>
+						<input
+							name="name"
+							type="text"
+							aria-label="group name"
+							value={ inputs["name"] }
+							class="input input-bordered grow"
+							placeholder="my awesome group to organize lists"
+						/>
 						if err, ok := errors["name"]; ok {
 							<div class="label">
 								<span class="label-text-alt text-error">{ err }</span>
@@ -50,10 +64,16 @@ templ OnboardingGroups(inputs, errors map[string]string) {
 					</div>
 					<div class="form-control">
 						<div class="label flex flex-row justify-between">
-							<span class="label-text-alt text-lg">description</span>
-							<span class="badge badge-accent">optional</span>
+							<span class="label-text-alt text-lg">Description</span>
+							<span class="badge badge-info">Optional</span>
 						</div>
-						<textarea class="textarea textarea-bordered" type="text" name="description" placeholder="family shoppoing lists go here" aria-label="group description">{ inputs["description"] }</textarea>
+						<textarea
+							type="text"
+							name="description"
+							aria-label="group description"
+							class="textarea textarea-bordered"
+							placeholder="family shoppoing lists go here"
+						>{ inputs["description"] }</textarea>
 						if err, ok :=  errors["description"]; ok {
 							<div class="label">
 								<span class="label-text-alt text-error">{ err }</span>
@@ -66,7 +86,7 @@ templ OnboardingGroups(inputs, errors map[string]string) {
 					"hx-trigger": "click",
 					"hx-target":  "#create-group-form", "hx-select": "form fieldset", "hx-swap": "innerHTML",
 				}).Primary() {
-					create your first group
+					Create your first group
 				}
 			</form>
 		</div>

@@ -19,11 +19,11 @@ func CreateGroup(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a group&context="+err.Error())
 	}
 
-	if len(data.Name) < 5 || len(data.Name) > 21 {
-		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "group name should be between 5 and 21 characters"}))
+	if len(data.Name) < 1 || len(data.Name) > 80 {
+		return c.RenderPartial(app.CreateGroupDialog(true, makeInputsMap(data), map[string]string{"name": "group name should be between 1 and 80 characters"}))
 	}
 	if len(data.Description) > 80 {
-		return c.RenderPartial(app.CreateGroupDialog(true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "group description is limited to 80 characters"}))
+		return c.RenderPartial(app.CreateGroupDialog(true, makeInputsMap(data), map[string]string{"description": "group description is limited to 80 characters"}))
 	}
 
 	// Create a group

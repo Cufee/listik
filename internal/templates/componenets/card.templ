@@ -1,7 +1,7 @@
 package components
 
 type Card struct {
-	Title   string
+	Title   templ.Component
 	Body    templ.Component
 	Actions templ.Component
 }
@@ -9,8 +9,10 @@ type Card struct {
 templ (c Card) Render() {
 	<div class="card h-full w-full">
 		<div class="card-body">
-			if c.Title != "" {
-				<span class="card-title text-xl font-bold">{ c.Title }</span>
+			if c.Title != nil {
+				<span class="card-title text-xl font-bold">
+					@c.Title
+				</span>
 			}
 			if c.Body != nil {
 				@c.Body

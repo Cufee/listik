@@ -26,7 +26,7 @@ func Navbar(path string, authenticated bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"no-animation flex flex-row justify-between gap-2 py-2\" hx-boost=\"true\"><div class=\"flex-grow flex gap-2 items-center text-xl cursor-default\"><span>□</span> <a href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"no-animation flex flex-row justify-between gap-2 py-2\" hx-boost=\"true\"><div class=\"flex-grow flex gap-2 items-center text-xl cursor-default\"><span class=\"text-primary font-bold\">□</span> <a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,12 +53,12 @@ func Navbar(path string, authenticated bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if !authenticated {
-			templ_7745c5c3_Err = navMenuLink("login", "/login", path).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = navMenuLink("Login", "/login", path).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = navMenuLink("settings", "/app/settings", path).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = navMenuLink("Settings", "/app/settings", path).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

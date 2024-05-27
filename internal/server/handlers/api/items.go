@@ -3,19 +3,35 @@ package api
 import (
 	"net/http"
 
+	"github.com/cufee/shopping-list/internal/logic"
 	"github.com/cufee/shopping-list/internal/server/handlers"
 	components "github.com/cufee/shopping-list/internal/templates/componenets"
-	"github.com/cufee/shopping-list/internal/templates/pages/app"
 	"github.com/cufee/shopping-list/prisma/db"
 )
 
 type ItemCreateForm struct {
-	Name        string   `form:"name"`
-	Tags        []string `form:"tags"`
-	Description string   `form:"description"`
+	Tags []string `form:"tags"`
+
+	Name        string `form:"name"`
+	Price       string `form:"price"`
+	Quantity    int    `form:"quantity"`
+	Description string `form:"description"`
 
 	ListID  string `param:"listId"`
 	GroupID string `param:"groupId"`
+}
+
+func formFieldError(c *handlers.Context, data ItemCreateForm, field string, message string) handlers.Renderable {
+	containerSelector := c.QueryParam("container")
+
+	// the input form can have some different state by now, it can be expanded and etc.
+	// instead of replacing the whole thing, we only target the fields which have an error
+	c.Response().Header().Set("HX-Reswap", "outerHTML")
+	c.Response().Header().Set("HX-Retarget", "#create-list-item-form-"+field)
+	c.Response().Header().Set("HX-Reselect", "#create-list-item-form-"+field)
+
+	return components.NewListItem(data.GroupID, data.ListID, containerSelector, makeInputsMap(data), map[string]string{field: message})
+
 }
 
 func CreateItem(c *handlers.Context) error {
@@ -24,11 +40,18 @@ func CreateItem(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new list&context="+err.Error())
 	}
 
-	if len(data.Name) < 1 || len(data.Name) > 14 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"name": "item name should be between 1 and 14 characters"}))
+	if len(data.Name) < 1 || len(data.Name) > 80 {
+		return c.RenderPartial(formFieldError(c, data, "name", logic.StringIfElse(len(data.Name) < 1, "name cannot be blank", "name is too long")))
 	}
+
 	if len(data.Description) > 80 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, map[string]string{"name": data.Name, "description": data.Description}, map[string]string{"description": "item description is limited to 80 characters"}))
+		return c.RenderPartial(formFieldError(c, data, "description", "description is limited to 80 characters"))
+	}
+	if len(data.Price) > 80 {
+		return c.RenderPartial(formFieldError(c, data, "price", "price is limited to 80 characters"))
+	}
+	if data.Quantity < 0 {
+		return c.RenderPartial(formFieldError(c, data, "quantity", "quantity cannot be negative"))
 	}
 
 	// Check if a user belong to this group
@@ -43,8 +66,24 @@ func CreateItem(c *handlers.Context) error {
 	// TODO: Check permissions
 	_ = member
 
+	var optional []db.ListItemSetParam
+	if data.Description != "" {
+		optional = append(optional, db.ListItem.Desc.Set(data.Description))
+	}
+	if data.Price != "" {
+		optional = append(optional, db.ListItem.Price.Set(data.Price))
+	}
+	if data.Quantity > 0 {
+		optional = append(optional, db.ListItem.Quantity.Set(data.Quantity))
+	}
+
 	// Create a list
-	item, err := c.DB().ListItem.CreateOne(db.ListItem.CreatedBy.Link(db.User.ID.Equals(c.User().ID)), db.ListItem.Name.Set(data.Name), db.ListItem.List.Link(db.List.ID.Equals(data.ListID)), db.ListItem.Desc.Set(data.Description)).Exec(c.Request().Context())
+	item, err := c.DB().ListItem.CreateOne(
+		db.ListItem.CreatedBy.Link(db.User.ID.Equals(c.User().ID)),
+		db.ListItem.Name.Set(data.Name),
+		db.ListItem.List.Link(db.List.ID.Equals(data.ListID)),
+		optional...,
+	).Exec(c.Request().Context())
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new item&context="+err.Error())
 	}

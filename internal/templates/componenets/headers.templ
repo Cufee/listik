@@ -1,5 +1,9 @@
 package components
 
+import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/logic"
+import "strings"
+
 templ PageHeader(title, subtitle templ.Component, actions ...templ.Component) {
 	<div class="flex flex-row gap-2 justify-between">
 		<div class="flex flex-col gap-1">
@@ -9,7 +13,7 @@ templ PageHeader(title, subtitle templ.Component, actions ...templ.Component) {
 				</span>
 			}
 			if subtitle != nil {
-				<span class="text-md">
+				<span class="text-lg">
 					@subtitle
 				</span>
 			}
@@ -31,4 +35,26 @@ func WithDescription(get func() (string, bool)) templ.Component {
 		_, err := io.WriteString(w, description)
 		return err
 	})
+}
+
+templ BreadcrumbsTitle(title string, group *db.GroupModel, list *db.ListModel) {
+	<div class="flex flex-row flex-wrap gap-1 items-center">
+		if group != nil {
+			<div class="gap-1 hidden sm:flex">
+				<a class="text-primary link link-hover overflow-hidden text-ellipsis text-nowrap" href="/app">Groups</a>
+				<span class="text-base-200">/</span>
+			</div>
+		}
+		if list != nil {
+			<div class="gap-1 hidden sm:flex">
+				<a class="text-primary link link-hover overflow-hidden text-ellipsis text-nowrap" href={ templ.URL("/app/group/" + group.ID) }>{ group.Name }</a>
+				<span class="text-base-200">/</span>
+			</div>
+		}
+		<span
+			class={ "grow overflow-hidden text-ellipsis min-w-fit " + logic.StringIfElse(strings.Contains(title, " "), "break-words", "break-all") }
+		>
+			{ title }
+		</span>
+	</div>
 }
