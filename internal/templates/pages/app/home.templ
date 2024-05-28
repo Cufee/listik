@@ -9,6 +9,12 @@ type Home struct {
 }
 
 templ (props Home) Render() {
+	@components.PageHeader(components.BreadcrumbsTitle(
+		[]components.BreadCrumb{
+			{Label: "Groups"},
+		},
+	), nil)
+	<div class="divider"></div>
 	<div class="flex flex-row flex-wrap gap-2">
 		for _, group := range props.Groups {
 			<a class="flex-grow" href={ templ.URL("/app/group/" + group.ID) } hx-boost="true">

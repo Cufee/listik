@@ -7,11 +7,25 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/cufee/shopping-list/prisma/db"
 	"github.com/rs/zerolog/log"
 )
+
+const SessionCookieName = "lk-session"
+
+func NewSessionCookie(value string, expiration time.Time) http.Cookie {
+	return http.Cookie{
+		Name:     "lk-session",
+		Value:    value,
+		Expires:  expiration,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	}
+}
 
 func SessionExpiration7Days() time.Time {
 	return time.Now().Add(time.Hour * 24 * 7)
@@ -50,6 +64,9 @@ func GetAndVerifyUserSession(ctx context.Context, client *db.PrismaClient, sessi
 	if session.Expiration.Before(time.Now()) {
 		return nil, errors.New("session has expired")
 	}
+	if session.User() == nil {
+		return nil, errors.New("session in invalid")
+	}
 
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -69,6 +86,14 @@ func UpdateSessionExpiration(ctx context.Context, client *db.PrismaClient, sessi
 		return nil, err
 	}
 	return session, nil
+}
+
+func DeleteSession(ctx context.Context, client *db.PrismaClient, sessionID string) error {
+	_, err := client.Session.FindUnique(db.Session.ID.Equals(sessionID)).Delete().Exec(ctx)
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 func hashString(input string) string {

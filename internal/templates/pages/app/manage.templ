@@ -1,0 +1,30 @@
+package app
+
+import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/templates/componenets"
+import "fmt"
+
+templ ManageGroup(group *db.GroupModel, lists []db.ListModel) {
+	@components.PageHeader(components.BreadcrumbsTitle(
+		[]components.BreadCrumb{
+			{Label: "Groups", Href: "/app"},
+			{Label: group.Name, Href: fmt.Sprintf("/app/group/%s", group.ID)},
+			{Label: "Manage"},
+		},
+	), components.WithDescription(group.Desc))
+	<div class="divider"></div>
+	Manage Group
+}
+
+templ ManageList(group *db.GroupModel, list *db.ListModel, items []db.ListItemModel) {
+	@components.PageHeader(components.BreadcrumbsTitle(
+		[]components.BreadCrumb{
+			{Label: "Groups", Href: "/app"},
+			{Label: group.Name, Href: fmt.Sprintf("/app/group/%s", group.ID)},
+			{Label: list.Name, Href: fmt.Sprintf("/app/group/%s/list/%s", group.ID, list.ID)},
+			{Label: "Manage"},
+		},
+	), components.WithDescription(list.Desc))
+	<div class="divider"></div>
+	Manage List
+}

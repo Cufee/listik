@@ -13,7 +13,41 @@ import (
 )
 
 func Login(c *Context) error {
-	return c.RenderPage(pages.Login())
+	sessionCookie, err := c.Cookie(logic.SessionCookieName)
+	if err != nil || sessionCookie.Value == "" {
+		blank := logic.NewSessionCookie("", time.Unix(0, 0))
+		c.SetCookie(&blank)
+		return c.RenderPage(pages.Login())
+	}
+
+	_, err = logic.GetAndVerifyUserSession(c.Request().Context(), c.DB(), sessionCookie.Value, logic.StringToIdentifier(c.RealIP()))
+	if err != nil {
+		return c.RenderPage(pages.Login())
+	}
+
+	return c.Redirect(http.StatusTemporaryRedirect, "/app/")
+}
+
+func Logout(c *Context) error {
+	blank := logic.NewSessionCookie("", time.Unix(0, 0))
+	c.SetCookie(&blank)
+
+	sessionCookie, err := c.Cookie(logic.SessionCookieName)
+	if err != nil || sessionCookie.Value == "" {
+		return c.Redirect(http.StatusTemporaryRedirect, "/")
+	}
+
+	session, err := logic.GetAndVerifyUserSession(c.Request().Context(), c.DB(), sessionCookie.Value, logic.StringToIdentifier(c.RealIP()))
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/")
+	}
+
+	err = logic.DeleteSession(c.Request().Context(), c.DB(), session.ID)
+	if err != nil {
+		log.Err(err).Str("sessionId", session.ID).Msg("failed to delete a session")
+	}
+
+	return c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
 func GoogleAuthRedirect(c *Context) error {
@@ -49,7 +83,7 @@ func GoogleAuthRedirect(c *Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Failed to log in with Google&context=bad user info received")
 	}
 
-	if !googleUser.EmailVerified {
+	if googleUser.EmailVerified != "true" {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=You need to verify your Google Account before using it to log in")
 	}
 	if googleUser.Name == "" || googleUser.Email == "" {
@@ -73,15 +107,8 @@ func GoogleAuthRedirect(c *Context) error {
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Failed to log in with Google&context="+err.Error())
 	}
-	sessionCookie := http.Cookie{
-		Name:     "lk-session",
-		Value:    session.CookieValue,
-		Expires:  session.Expiration,
-		Path:     "/app",
-		Secure:   true,
-		HttpOnly: true,
-	}
 
+	sessionCookie := logic.NewSessionCookie(session.CookieValue, session.Expiration)
 	c.SetCookie(&sessionCookie)
 	c.SetUser(user)
 
@@ -111,5 +138,5 @@ func GoogleAuthRedirect(c *Context) error {
 		}
 	}()
 
-	return c.Redirect(http.StatusTemporaryRedirect, "/app")
+	return c.Redirect(http.StatusTemporaryRedirect, "/app/")
 }

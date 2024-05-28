@@ -3,6 +3,7 @@ package app
 import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "fmt"
 
 type List struct {
 	List  *db.ListModel
@@ -11,7 +12,13 @@ type List struct {
 }
 
 templ (props List) Render() {
-	@components.PageHeader(components.BreadcrumbsTitle(props.List.Name, props.Group, props.List), components.WithDescription(props.List.Desc), manageListButton())
+	@components.PageHeader(components.BreadcrumbsTitle(
+		[]components.BreadCrumb{
+			{Label: "Groups", Href: "/app"},
+			{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.List.GroupID)},
+			{Label: props.List.Name},
+		},
+	), components.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID))
 	<div class="divider"></div>
 	<div class="flex flex-col gap-4">
 		<div id="list-items" class="flex flex-col gap-1">
@@ -23,12 +30,14 @@ templ (props List) Render() {
 	</div>
 }
 
-templ manageListButton() {
+templ manageListButton(groupId, listId string) {
 	<div>
 		<div class="tooltip tooltip-left" data-tip="Manage List">
-			@common.Button("btn-square").Neutral() {
-				@components.IconCog()
-			}
+			<a href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s/manage", groupId, listId)) } hx-boost="true">
+				@common.Button("btn-square").Neutral() {
+					@components.IconCog()
+				}
+			</a>
 		</div>
 	</div>
 }

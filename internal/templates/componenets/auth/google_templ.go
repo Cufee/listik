@@ -10,12 +10,9 @@ import "context"
 import "io"
 import "bytes"
 
-import "os"
+import "github.com/cufee/shopping-list/internal/logic"
 
-var clientId = os.Getenv("GOOGLE_AUTH_CLIENT_ID")
-var redirectUrl = os.Getenv("GOOGLE_AUTH_REDIRECT_URL")
-
-func GoogleOneTap() templ.Component {
+func GoogleLoginButton() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -33,9 +30,9 @@ func GoogleOneTap() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(clientId)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(logic.GoogleAuthClientID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/auth/google.templ`, Line: 12, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/auth/google.templ`, Line: 9, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -46,15 +43,15 @@ func GoogleOneTap() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(redirectUrl)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(logic.GoogleAuthRedirectURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/auth/google.templ`, Line: 15, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/auth/google.templ`, Line: 12, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" data-nonce=\"\" data-auto_select=\"true\" data-itp_support=\"true\"></div><div class=\"g_id_signin\" data-type=\"standard\" data-shape=\"pill\" data-theme=\"outline\" data-text=\"continue_with\" data-size=\"large\" data-logo_alignment=\"left\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" data-nonce=\"\" data-auto_select=\"true\" data-itp_support=\"true\"></div><div class=\"g_id_signin\" data-type=\"standard\" data-shape=\"pill\" data-theme=\"outline\" data-text=\"continue_with\" data-size=\"large\" data-logo_alignment=\"center\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

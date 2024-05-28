@@ -3,7 +3,10 @@ package pages
 import "github.com/cufee/shopping-list/internal/templates/componenets/auth"
 
 templ Login() {
-	<a href="/app" hx-boost="true">
+	<div class="flex flex-col items-center gap-4 p-4">
+		<p class="font-bold text-xl">
+			You can use any of the bottons below to log in!
+		</p>
 		@auth.GoogleLoginButton()
-	</a>
+	</div>
 }

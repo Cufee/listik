@@ -13,6 +13,7 @@ import (
 	"github.com/cufee/shopping-list/internal/server/handlers/api"
 	"github.com/cufee/shopping-list/internal/server/handlers/app"
 	"github.com/cufee/shopping-list/internal/templates/pages"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -53,15 +54,18 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 		}
 	})
 
-	e.GET("/", staticPage(pages.Index()))
-	e.GET("/error/", withContext(handlers.Error))
-	e.GET("/login/", staticPage(pages.Login()))
+	e.Any("/", staticPage(pages.Index()))
+	e.Any("/error/", withContext(handlers.Error))
+	e.Any("/login/", withContext(handlers.Login))
+	e.Any("/logout/", withContext(handlers.Logout))
 	e.POST("/login/google/redirect/", withContext(handlers.GoogleAuthRedirect))
 
 	appGroup := e.Group("/app", sessionCheckMiddleware(db))
-	appGroup.GET("/", withContext(app.Home))
+	appGroup.Any("/", withContext(app.Home))
 	appGroup.GET("/group/:groupId/", withContext(app.Group))
+	appGroup.GET("/group/:groupId/manage/", withContext(app.ManageGroup))
 	appGroup.GET("/group/:groupId/list/:listId/", withContext(app.List))
+	appGroup.GET("/group/:groupId/list/:listId/manage/", withContext(app.ManageList))
 	appGroup.GET("/settings/", withContext(app.Settings))
 
 	apiGroup := e.Group("/api", sessionCheckMiddleware(db))
@@ -71,7 +75,7 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	apiGroup.PUT("/groups/:groupId/lists/:listId/items/:itemId/checked/", withContext(api.ItemSetChecked))
 	apiGroup.POST("/invites/redeem/", withContext(api.RedeemGroupInvite))
 
-	e.GET("/*", pageNotFound)
+	e.Any("/*", pageNotFound)
 	return e
 }
 

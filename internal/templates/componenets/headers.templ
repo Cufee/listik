@@ -1,6 +1,5 @@
 package components
 
-import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/logic"
 import "strings"
 
@@ -37,24 +36,26 @@ func WithDescription(get func() (string, bool)) templ.Component {
 	})
 }
 
-templ BreadcrumbsTitle(title string, group *db.GroupModel, list *db.ListModel) {
+type BreadCrumb struct {
+	Label string
+	Href  string
+}
+
+templ BreadcrumbsTitle(crumbs []BreadCrumb) {
 	<div class="flex flex-row flex-wrap gap-1 items-center">
-		if group != nil {
+		for _, crumb := range crumbs {
 			<div class="gap-1 hidden sm:flex">
-				<a class="text-primary link link-hover overflow-hidden text-ellipsis text-nowrap" href="/app">Groups</a>
+				if crumb.Href != "" {
+					<a class="text-primary link link-hover overflow-hidden text-ellipsis text-nowrap" href={ templ.URL(crumb.Href) }>{ crumb.Label }</a>
+				} else {
+					<span
+						class={ "grow overflow-hidden text-ellipsis min-w-fit " + logic.StringIfElse(strings.Contains(crumb.Label, " "), "break-words", "break-all") }
+					>
+						{ crumb.Label }
+					</span>
+				}
 				<span class="text-base-200">/</span>
 			</div>
 		}
-		if list != nil {
-			<div class="gap-1 hidden sm:flex">
-				<a class="text-primary link link-hover overflow-hidden text-ellipsis text-nowrap" href={ templ.URL("/app/group/" + group.ID) }>{ group.Name }</a>
-				<span class="text-base-200">/</span>
-			</div>
-		}
-		<span
-			class={ "grow overflow-hidden text-ellipsis min-w-fit " + logic.StringIfElse(strings.Contains(title, " "), "break-words", "break-all") }
-		>
-			{ title }
-		</span>
 	</div>
 }

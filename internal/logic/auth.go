@@ -19,7 +19,7 @@ type GoogleUserInfo struct {
 
 	Name          string `json:"name"`
 	Email         string `json:"email"`
-	EmailVerified bool   `json:"email_verified"`
+	EmailVerified string `json:"email_verified"`
 
 	Picture string `json:"picture"`
 	Locale  string `json:"locale"`

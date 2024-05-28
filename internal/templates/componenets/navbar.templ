@@ -12,9 +12,10 @@ templ Navbar(path string, authenticated bool) {
 			</a>
 		</div>
 		<div class="flex-none">
-			if !authenticated {
+			if !authenticated && path != "/login/" {
 				@navMenuLink("Login", "/login", path)
-			} else {
+			}
+			if authenticated {
 				@navMenuLink("Settings", "/app/settings", path)
 			}
 		</div>

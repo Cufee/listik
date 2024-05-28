@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -16,7 +17,7 @@ func sessionCheckMiddleware(client *db.PrismaClient) echo.MiddlewareFunc {
 		return func(_c echo.Context) error {
 			c := _c.(*handlers.Context)
 
-			sessionCookie, err := c.Cookie("lk-session")
+			sessionCookie, err := c.Cookie(logic.SessionCookieName)
 			if err != nil || sessionCookie.Value == "" {
 				return c.Redirect(http.StatusTemporaryRedirect, "/login")
 			}
@@ -27,28 +28,23 @@ func sessionCheckMiddleware(client *db.PrismaClient) echo.MiddlewareFunc {
 					log.Err(err).Str("sessionValue", sessionCookie.Value).Msg("failed to retrieve a session")
 				}
 
-				blank := http.Cookie{Name: "lk-session", Expires: time.Unix(0, 0), HttpOnly: true}
+				blank := logic.NewSessionCookie("", time.Unix(0, 0))
 				c.SetCookie(&blank)
 
 				return c.Redirect(http.StatusTemporaryRedirect, "/login")
 			}
 
-			if session.User() == nil {
-				log.Err(err).Str("sessionValue", sessionCookie.Value).Str("sessionId", session.ID).Msg("session missing a user reference")
-
-				blank := http.Cookie{Name: "lk-session", Expires: time.Unix(0, 0), HttpOnly: true}
-				c.SetCookie(&blank)
-				return c.Redirect(http.StatusTemporaryRedirect, "/login")
-
-			}
-
-			go func() {
+			if time.Until(session.Expiration) < time.Hour*24 {
 				// Extend session by another 7 days
-				_, err := logic.UpdateSessionExpiration(c.Request().Context(), client, session.ID, logic.SessionExpiration7Days())
-				if err != nil {
-					log.Err(err).Str("sessionId", session.ID).Msg("failed to update session expiration")
-				}
-			}()
+				go func() {
+					ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+					defer cancel()
+					_, err := logic.UpdateSessionExpiration(ctx, client, session.ID, logic.SessionExpiration7Days())
+					if err != nil {
+						log.Err(err).Str("sessionId", session.ID).Msg("failed to update session expiration")
+					}
+				}()
+			}
 
 			c.SetUser(session.User())
 			return next(c)
