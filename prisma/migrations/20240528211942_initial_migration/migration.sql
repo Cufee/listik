@@ -3,6 +3,8 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
+    "email" TEXT NOT NULL,
+    "externalId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "profilePicture" TEXT,
     "locked" BOOLEAN NOT NULL DEFAULT false
@@ -13,6 +15,7 @@ CREATE TABLE "sessions" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "cookieValue" TEXT NOT NULL,
     "identifier" TEXT NOT NULL,
+    "expiration" DATETIME NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lastUsed" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "label" TEXT,
@@ -113,6 +116,12 @@ CREATE TABLE "_ItemTagToListItem" (
     CONSTRAINT "_ItemTagToListItem_A_fkey" FOREIGN KEY ("A") REFERENCES "item_tags" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "_ItemTagToListItem_B_fkey" FOREIGN KEY ("B") REFERENCES "list_items" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_externalId_key" ON "users"("externalId");
+
+-- CreateIndex
+CREATE INDEX "users_externalId_idx" ON "users"("externalId");
 
 -- CreateIndex
 CREATE INDEX "users_locked_idx" ON "users"("locked");
