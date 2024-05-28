@@ -16,6 +16,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  email      String
+  externalId String @unique
+
   name           String
   profilePicture String?
 
@@ -31,6 +34,7 @@ model User {
 
   locked Boolean @default(false) // An account can be locked due to user deletion or ban
 
+  @@index([externalId])
   @@index([locked])
   @@map("users")
 }
@@ -40,8 +44,9 @@ model Session {
   cookieValue String @unique // should be derived from identifier + some salt/timestamp
   identifier  String // should be something like a hashed IP address, the goal is to prevent cookie stealing
 
-  createdAt DateTime @default(now())
-  lastUsed  DateTime @default(now())
+  expiration DateTime
+  createdAt  DateTime @default(now())
+  lastUsed   DateTime @default(now())
 
   label String?
 

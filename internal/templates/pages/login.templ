@@ -1,7 +1,9 @@
 package pages
 
+import "github.com/cufee/shopping-list/internal/templates/componenets/auth"
+
 templ Login() {
 	<a href="/app" hx-boost="true">
-		<button class="btn btn-primary">Login</button>
+		@auth.GoogleLoginButton()
 	</a>
 }

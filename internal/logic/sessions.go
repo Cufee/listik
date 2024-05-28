@@ -1,0 +1,79 @@
+package logic
+
+import (
+	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/cufee/shopping-list/prisma/db"
+	"github.com/rs/zerolog/log"
+)
+
+func SessionExpiration7Days() time.Time {
+	return time.Now().Add(time.Hour * 24 * 7)
+}
+
+type Identifier string
+
+func (i Identifier) String() string {
+	return string(i)
+}
+
+func StringToIdentifier(input string) Identifier {
+	return Identifier(hashString(input))
+}
+func NewUserSession(ctx context.Context, client *db.PrismaClient, userID string, identifier Identifier, expiration time.Time) (*db.SessionModel, error) {
+	cookieBytes := make([]byte, 32)
+	_, err := rand.Read(cookieBytes)
+	if err != nil {
+		return nil, err
+	}
+	cookieValue := base64.URLEncoding.EncodeToString(cookieBytes)
+
+	session, err := client.Session.CreateOne(db.Session.CookieValue.Set(cookieValue), db.Session.Identifier.Set(identifier.String()), db.Session.Expiration.Set(expiration), db.Session.User.Link(db.User.ID.Equals(userID))).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return session, nil
+}
+
+func GetAndVerifyUserSession(ctx context.Context, client *db.PrismaClient, sessionValue string, currentIdentifier Identifier) (*db.SessionModel, error) {
+	session, err := client.Session.FindFirst(db.Session.CookieValue.Equals(sessionValue), db.Session.Identifier.Equals(currentIdentifier.String())).With(db.Session.User.Fetch()).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if session.Expiration.Before(time.Now()) {
+		return nil, errors.New("session has expired")
+	}
+
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		_, err := client.Session.FindUnique(db.Session.ID.Equals(session.ID)).Update(db.Session.LastUsed.Set(time.Now())).Exec(ctx)
+		if err != nil {
+			log.Err(err).Str("sessionId", session.ID).Msg("failed to update session")
+		}
+	}()
+
+	return session, nil
+}
+
+func UpdateSessionExpiration(ctx context.Context, client *db.PrismaClient, sessionID string, newExpiration time.Time) (*db.SessionModel, error) {
+	session, err := client.Session.FindUnique(db.Session.ID.Equals(sessionID)).Update(db.Session.Expiration.Set(newExpiration)).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return session, nil
+}
+
+func hashString(input string) string {
+	hash := sha256.New()
+	hash.Write([]byte(input))
+	sum := hash.Sum(nil)
+	return fmt.Sprintf("%x", sum)
+}

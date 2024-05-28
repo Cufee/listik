@@ -56,6 +56,7 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	e.GET("/", staticPage(pages.Index()))
 	e.GET("/error/", withContext(handlers.Error))
 	e.GET("/login/", staticPage(pages.Login()))
+	e.POST("/login/google/redirect/", withContext(handlers.GoogleAuthRedirect))
 
 	appGroup := e.Group("/app", sessionCheckMiddleware(db))
 	appGroup.GET("/", withContext(app.Home))
@@ -76,13 +77,6 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 
 func pageNotFound(c echo.Context) error {
 	return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Page "+c.Request().URL.Path+" does not exist")
-}
-
-// Create a temp redirect handler for path
-func redirect(path string) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		return c.Redirect(http.StatusTemporaryRedirect, path)
-	}
 }
 
 // Convert a custom context handler into an echo handler
