@@ -21,8 +21,8 @@ templ (props List) Render() {
 		},
 	), common.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID))
 	<div class="divider"></div>
-	<div class="flex flex-col gap-4 grow">
-		<div id="list-items" class="flex flex-col gap-1 grow">
+	<div class="flex flex-col gap-4">
+		<div id="list-items" class="flex flex-col gap-1">
 			for _, item := range props.Items {
 				@list.ListItem{Item: &item, GroupID: props.Group.ID}.Render()
 			}

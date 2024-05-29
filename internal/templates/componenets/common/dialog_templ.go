@@ -35,15 +35,15 @@ func (d *Dialog) ShowScript() templ.ComponentScript {
 
 func showDialogScript(id string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_showDialogScript_123d`,
-		Function: `function __templ_showDialogScript_123d(id){const dialog = document.getElementById(id)
+		Name: `__templ_showDialogScript_a2d1`,
+		Function: `function __templ_showDialogScript_a2d1(id){const dialog = document.getElementById(id)
     if (!dialog) return
     dialog.open = true;
-		dialog.scrollIntoViewIfNeeded(true)
+		dialog.scrollIntoView(true, {behavior:"smooth"})
     document.querySelector("input")?.focus()
 }`,
-		Call:       templ.SafeScript(`__templ_showDialogScript_123d`, id),
-		CallInline: templ.SafeScriptInline(`__templ_showDialogScript_123d`, id),
+		Call:       templ.SafeScript(`__templ_showDialogScript_a2d1`, id),
+		CallInline: templ.SafeScriptInline(`__templ_showDialogScript_a2d1`, id),
 	}
 }
 

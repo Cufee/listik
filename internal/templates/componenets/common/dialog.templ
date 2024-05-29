@@ -27,7 +27,7 @@ script showDialogScript(id string) {
     const dialog = document.getElementById(id)
     if (!dialog) return
     dialog.open = true;
-		dialog.scrollIntoViewIfNeeded(true)
+		dialog.scrollIntoView(true, {behavior:"smooth"})
     document.querySelector("input")?.focus()
 }
 

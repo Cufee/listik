@@ -11,7 +11,10 @@ type CreateGroupDialog struct {
 }
 
 func (d *CreateGroupDialog) GetID() string {
-	return "create-group-dialog"
+	if d.ID == "" {
+		return "create-group-dialog"
+	}
+	return d.ID
 }
 
 templ createGroupBody(selector string, inputs, errors map[string]string) {

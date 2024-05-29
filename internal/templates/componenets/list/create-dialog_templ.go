@@ -24,7 +24,10 @@ type CreateListDialog struct {
 }
 
 func (d *CreateListDialog) GetID() string {
-	return "create-list-dialog"
+	if d.ID == "" {
+		return "create-list-dialog"
+	}
+	return d.ID
 }
 
 func createListBody(groupId string, selector string, inputs map[string]string, errors map[string]string) templ.Component {
@@ -47,7 +50,7 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["name"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 33, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 36, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -65,7 +68,7 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 40, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 43, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -83,7 +86,7 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["description"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 57, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 60, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -101,7 +104,7 @@ func createListBody(groupId string, selector string, inputs map[string]string, e
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 60, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/create-dialog.templ`, Line: 63, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
