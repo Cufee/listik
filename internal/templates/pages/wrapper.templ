@@ -24,6 +24,7 @@ templ Wrapper(path string, authenticated bool, body templ.Component) {
 				@components.Navbar(path, authenticated)
 				@body
 			</main>
+			@components.Footer()
 		</body>
 	</html>
 }

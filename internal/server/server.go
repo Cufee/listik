@@ -60,6 +60,10 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	e.Any("/logout/", withContext(handlers.Logout))
 	e.POST("/login/google/redirect/", withContext(handlers.GoogleAuthRedirect))
 
+	e.Any("/cookie-policy/", staticPage(pages.CookiePolicy()))
+	e.Any("/privacy-policy/", staticPage(pages.PrivacyPolicy()))
+	e.Any("/terms-of-service/", staticPage(pages.TermsOfService()))
+
 	appGroup := e.Group("/app", sessionCheckMiddleware(db))
 	appGroup.Any("/", withContext(app.Home))
 	appGroup.GET("/group/:groupId/", withContext(app.Group))
