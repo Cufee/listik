@@ -14,6 +14,7 @@ import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "fmt"
+import "github.com/cufee/shopping-list/internal/templates/componenets/list"
 
 type List struct {
 	List  *db.ListModel
@@ -34,13 +35,13 @@ func (props List) Render() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = components.PageHeader(components.BreadcrumbsTitle(
-			[]components.BreadCrumb{
+		templ_7745c5c3_Err = common.PageHeader(common.BreadcrumbsTitle(
+			[]common.BreadCrumb{
 				{Label: "Groups", Href: "/app"},
 				{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.List.GroupID)},
 				{Label: props.List.Name},
 			},
-		), components.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID)).Render(ctx, templ_7745c5c3_Buffer)
+		), common.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -49,7 +50,7 @@ func (props List) Render() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range props.Items {
-			templ_7745c5c3_Err = components.ListItem{Item: &item, GroupID: props.Group.ID}.Render().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = list.ListItem{Item: &item, GroupID: props.Group.ID}.Render().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -58,7 +59,7 @@ func (props List) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.NewListItem(props.List.GroupID, props.List.ID, "#list-items", nil, nil).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = list.NewListItem(props.List.GroupID, props.List.ID, "#list-items", nil, nil).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -10,11 +10,19 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/cufee/shopping-list/prisma/db"
-import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "fmt"
+import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/internal/templates/componenets/group"
 
-func ManageGroup(group *db.GroupModel, lists []db.ListModel) templ.Component {
+type ManageGroup struct {
+	Group   *db.GroupModel
+	Lists   []db.ListModel
+	Members []db.UserModel
+	Invites []db.GroupInviteModel
+}
+
+func (props ManageGroup) Render() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -27,17 +35,57 @@ func ManageGroup(group *db.GroupModel, lists []db.ListModel) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = components.PageHeader(components.BreadcrumbsTitle(
-			[]components.BreadCrumb{
+		templ_7745c5c3_Err = common.PageHeader(common.BreadcrumbsTitle(
+			[]common.BreadCrumb{
 				{Label: "Groups", Href: "/app"},
-				{Label: group.Name, Href: fmt.Sprintf("/app/group/%s", group.ID)},
+				{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.Group.ID)},
 				{Label: "Manage"},
 			},
-		), components.WithDescription(group.Desc)).Render(ctx, templ_7745c5c3_Buffer)
+		), common.WithDescription(props.Group.Desc)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"divider\"></div>Manage Group")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"divider\"></div><div class=\"flex flex-col gap-4\"><div class=\"flex flex-col gap-2\"><span class=\"font-bold text-xl\">Current Members</span><div class=\"flex flex-row gap-2 flex-wrap\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, member := range props.Members {
+			templ_7745c5c3_Err = group.MemberCard(&member, props.Group.OwnerID != member.ID).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"flex flex-col gap-2\"><span class=\"font-bold text-xl\">Active Invites</span><div class=\"flex flex-row gap-2 flex-wrap\" id=\"group-invites-conteainer\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if len(props.Invites) < 1 {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"bg-base-200 rounded-xl py-2 px-4 grow text-center\" id=\"group-no-invites-card\">there are no active invites</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			for _, invite := range props.Invites {
+				templ_7745c5c3_Err = group.InviteCard(&invite).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex justify-center\"><button class=\"btn btn-link btn-lg\" hx-trigger=\"click\" hx-swap=\"beforeend\" hx-target=\"#group-invites-conteainer\" hx-post=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/api/groups/%s/invites", props.Group.ID))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/app/manage.templ`, Line: 56, Col: 68}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">create a new invite</button></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -48,7 +96,15 @@ func ManageGroup(group *db.GroupModel, lists []db.ListModel) templ.Component {
 	})
 }
 
-func ManageList(group *db.GroupModel, list *db.ListModel, items []db.ListItemModel) templ.Component {
+// hx-on:input="document.querySelector('#create-list-item-form-quantity div').classList.remove('input-error');document.querySelector('#create-list-item-form-quantity .error')?.remove();"
+
+type ManageList struct {
+	Group *db.GroupModel
+	List  *db.ListModel
+	Items []db.ListItemModel
+}
+
+func (props ManageList) Render() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -56,19 +112,19 @@ func ManageList(group *db.GroupModel, list *db.ListModel, items []db.ListItemMod
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var2 == nil {
-			templ_7745c5c3_Var2 = templ.NopComponent
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = components.PageHeader(components.BreadcrumbsTitle(
-			[]components.BreadCrumb{
+		templ_7745c5c3_Err = common.PageHeader(common.BreadcrumbsTitle(
+			[]common.BreadCrumb{
 				{Label: "Groups", Href: "/app"},
-				{Label: group.Name, Href: fmt.Sprintf("/app/group/%s", group.ID)},
-				{Label: list.Name, Href: fmt.Sprintf("/app/group/%s/list/%s", group.ID, list.ID)},
+				{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.Group.ID)},
+				{Label: props.List.Name, Href: fmt.Sprintf("/app/group/%s/list/%s", props.Group.ID, props.List.ID)},
 				{Label: "Manage"},
 			},
-		), components.WithDescription(list.Desc)).Render(ctx, templ_7745c5c3_Buffer)
+		), common.WithDescription(props.List.Desc)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -4,6 +4,7 @@ import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "fmt"
+import "github.com/cufee/shopping-list/internal/templates/componenets/list"
 
 type List struct {
 	List  *db.ListModel
@@ -12,21 +13,21 @@ type List struct {
 }
 
 templ (props List) Render() {
-	@components.PageHeader(components.BreadcrumbsTitle(
-		[]components.BreadCrumb{
+	@common.PageHeader(common.BreadcrumbsTitle(
+		[]common.BreadCrumb{
 			{Label: "Groups", Href: "/app"},
 			{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.List.GroupID)},
 			{Label: props.List.Name},
 		},
-	), components.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID))
+	), common.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID))
 	<div class="divider"></div>
 	<div class="flex flex-col gap-4">
 		<div id="list-items" class="flex flex-col gap-1">
 			for _, item := range props.Items {
-				@components.ListItem{Item: &item, GroupID: props.Group.ID}.Render()
+				@list.ListItem{Item: &item, GroupID: props.Group.ID}.Render()
 			}
 		</div>
-		@components.NewListItem(props.List.GroupID, props.List.ID, "#list-items", nil, nil)
+		@list.NewListItem(props.List.GroupID, props.List.ID, "#list-items", nil, nil)
 	</div>
 }
 

@@ -28,8 +28,10 @@ CREATE TABLE "groups" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
+    "ownerId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "desc" TEXT
+    "desc" TEXT,
+    CONSTRAINT "groups_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -48,12 +50,14 @@ CREATE TABLE "group_members" (
 CREATE TABLE "group_invites" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "expiresAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" DATETIME NOT NULL,
+    "groupId" TEXT NOT NULL,
     "createdById" TEXT NOT NULL,
     "useLimit" INTEGER NOT NULL DEFAULT 1,
     "useCount" INTEGER NOT NULL DEFAULT 0,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "code" TEXT NOT NULL,
+    CONSTRAINT "group_invites_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "groups" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "group_invites_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -145,13 +149,22 @@ CREATE INDEX "group_members_userId_idx" ON "group_members"("userId");
 CREATE INDEX "group_members_groupId_idx" ON "group_members"("groupId");
 
 -- CreateIndex
+CREATE INDEX "group_members_userId_groupId_idx" ON "group_members"("userId", "groupId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "group_invites_code_key" ON "group_invites"("code");
+
+-- CreateIndex
+CREATE INDEX "group_invites_groupId_idx" ON "group_invites"("groupId");
 
 -- CreateIndex
 CREATE INDEX "group_invites_createdById_idx" ON "group_invites"("createdById");
 
 -- CreateIndex
-CREATE INDEX "group_invites_code_enabled_idx" ON "group_invites"("code", "enabled");
+CREATE INDEX "group_invites_groupId_expiresAt_idx" ON "group_invites"("groupId", "expiresAt");
+
+-- CreateIndex
+CREATE INDEX "group_invites_code_enabled_expiresAt_idx" ON "group_invites"("code", "enabled", "expiresAt");
 
 -- CreateIndex
 CREATE INDEX "item_tags_groupId_idx" ON "item_tags"("groupId");

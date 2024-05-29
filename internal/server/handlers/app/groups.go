@@ -2,6 +2,7 @@ package app
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/cufee/shopping-list/internal/server/handlers"
 	"github.com/cufee/shopping-list/internal/templates/pages/app"
@@ -17,7 +18,7 @@ func Group(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	group, err := c.DB().Group.FindUnique(db.Group.ID.Equals(member.GroupID)).Exec(c.Request().Context())
+	group, err := c.DB().Group.FindUnique(db.Group.ID.Equals(member.GroupID)).With(db.Group.Lists.Fetch()).Exec(c.Request().Context())
 	if db.IsErrNotFound(err) {
 		return c.Redirect(http.StatusTemporaryRedirect, "/app")
 	}
@@ -25,12 +26,7 @@ func Group(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	lists, err := c.DB().List.FindMany(db.List.GroupID.Equals(group.ID)).Exec(c.Request().Context())
-	if err != nil && !db.IsErrNotFound(err) {
-		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
-	}
-
-	return c.RenderPage(app.Group{Group: group, Lists: lists}.Render())
+	return c.RenderPage(app.Group{Group: group, Lists: group.Lists()}.Render())
 }
 
 func ManageGroup(c *handlers.Context) error {
@@ -42,7 +38,11 @@ func ManageGroup(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	group, err := c.DB().Group.FindUnique(db.Group.ID.Equals(member.GroupID)).Exec(c.Request().Context())
+	group, err := c.DB().Group.FindUnique(db.Group.ID.Equals(member.GroupID)).With(
+		db.Group.Invites.Fetch(db.GroupInvite.ExpiresAt.After(time.Now())),
+		db.Group.Members.Fetch(),
+		db.Group.Lists.Fetch(),
+	).Exec(c.Request().Context())
 	if db.IsErrNotFound(err) {
 		return c.Redirect(http.StatusTemporaryRedirect, "/app")
 	}
@@ -50,10 +50,15 @@ func ManageGroup(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	lists, err := c.DB().List.FindMany(db.List.GroupID.Equals(group.ID)).Exec(c.Request().Context())
+	var memberUserIDs []string
+	for _, member := range group.Members() {
+		memberUserIDs = append(memberUserIDs, member.UserID)
+	}
+
+	memberUsers, err := c.DB().User.FindMany(db.User.ID.In(memberUserIDs)).Exec(c.Request().Context())
 	if err != nil && !db.IsErrNotFound(err) {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.RenderPage(app.ManageGroup(group, lists))
+	return c.RenderPage(app.ManageGroup{Group: group, Lists: group.Lists(), Members: memberUsers, Invites: group.Invites()}.Render())
 }

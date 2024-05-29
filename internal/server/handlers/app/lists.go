@@ -45,5 +45,5 @@ func ManageList(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.RenderPage(app.ManageList(list.Group(), list, list.Items()))
+	return c.RenderPage(app.ManageList{Group: list.Group(), List: list, Items: list.Items()}.Render())
 }

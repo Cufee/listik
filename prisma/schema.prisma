@@ -22,7 +22,8 @@ model User {
   name           String
   profilePicture String?
 
-  sessions Session[]
+  sessions    Session[]
+  ownedGroups Group[]
 
   redeemedInvites GroupInvite[] @relation("redeemedBy")
   createdInvites  GroupInvite[] @relation("createdBy")
@@ -75,12 +76,16 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
   name String
   desc String?
 
   lists   List[]
   tags    ItemTag[]
   members GroupMember[]
+  invites GroupInvite[]
 
   @@map("groups")
 }
@@ -101,6 +106,7 @@ model GroupMember {
 
   @@index([userId])
   @@index([groupId])
+  @@index([userId, groupId])
   @@map("group_members")
 }
 
@@ -108,7 +114,10 @@ model GroupInvite {
   id String @id @default(cuid())
 
   createdAt DateTime @default(now())
-  expiresAt DateTime @default(now())
+  expiresAt DateTime
+
+  group   Group  @relation(fields: [groupId], references: [id])
+  groupId String
 
   redeemedBy User[] @relation("redeemedBy")
 
@@ -121,8 +130,10 @@ model GroupInvite {
   enabled Boolean @default(true)
   code    String  @unique
 
+  @@index([groupId])
   @@index([createdById])
-  @@index([code, enabled])
+  @@index([groupId, expiresAt])
+  @@index([code, enabled, expiresAt])
   @@map("group_invites")
 }
 

@@ -4,6 +4,7 @@ import "github.com/cufee/shopping-list/prisma/db"
 import "fmt"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/internal/templates/componenets/list"
 
 type Group struct {
 	Group *db.GroupModel
@@ -11,18 +12,18 @@ type Group struct {
 }
 
 templ (props Group) Render() {
-	@components.PageHeader(components.BreadcrumbsTitle(
-		[]components.BreadCrumb{
+	@common.PageHeader(common.BreadcrumbsTitle(
+		[]common.BreadCrumb{
 			{Label: "Groups", Href: "/app"},
 			{Label: props.Group.Name},
 		},
-	), components.WithDescription(props.Group.Desc), manageGroupButton(props.Group.ID))
+	), common.WithDescription(props.Group.Desc), manageGroupButton(props.Group.ID))
 	<div class="divider"></div>
 	<div class="flex flex-row flex-wrap gap-2">
-		for _, list := range props.Lists {
-			<a class="flex-grow" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", list.GroupID, list.ID)) } hx-boost="true">
+		for _, l := range props.Lists {
+			<a class="flex-grow" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
 				@common.Button("text-start").Wrap() {
-					@components.ListCard(list)
+					@list.OverviewCard(l)
 				}
 			</a>
 		}
@@ -43,9 +44,9 @@ templ manageGroupButton(groupId string) {
 }
 
 func CreateListDialog(groupID string, open bool, inputs, errors map[string]string) templ.Component {
-	dialog := components.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
+	dialog := list.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
+	dialog.ID = "create-new-list-dialog"
 	dialog.StartOpen = open
-	dialog.SetID("create-new-list-dialog")
 	return dialog.Render(createListButton(dialog.ShowScript()))
 }
 

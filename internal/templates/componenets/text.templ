@@ -1,9 +1,0 @@
-package components
-
-import "strings"
-
-templ Text(content string, classes ...string) {
-	<span class={ strings.Join(classes, " ") }>
-		{ content }
-	</span>
-}

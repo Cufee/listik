@@ -58,7 +58,7 @@ func OnboardingGroups(inputs, errors map[string]string) templ.Component {
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = common.Button("join-item z-10").Attrs(templ.Attributes{
-			"hx-post":    "/api/invites/redeem",
+			"hx-post":    "/api/groups/invites/redeem",
 			"hx-trigger": "click",
 			"hx-target":  "#invite-code-form", "hx-select": "#invite-code-form", "hx-swap": "outerHTML",
 		}).Primary().Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)

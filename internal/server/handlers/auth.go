@@ -25,7 +25,7 @@ func Login(c *Context) error {
 		return c.RenderPage(pages.Login())
 	}
 
-	return c.Redirect(http.StatusTemporaryRedirect, "/app/")
+	return c.Redirect(http.StatusTemporaryRedirect, "/app")
 }
 
 func Logout(c *Context) error {
@@ -66,7 +66,6 @@ func GoogleAuthRedirect(c *Context) error {
 
 	credential := c.FormValue("credential")
 	if credential == "" {
-
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Failed to log in with Google&context=missing credential")
 	}
 
@@ -138,5 +137,5 @@ func GoogleAuthRedirect(c *Context) error {
 		}
 	}()
 
-	return c.Redirect(http.StatusTemporaryRedirect, "/app/")
+	return c.Redirect(http.StatusTemporaryRedirect, "/app")
 }

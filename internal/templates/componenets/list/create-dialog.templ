@@ -1,24 +1,26 @@
-package components
+package list
 
-import "github.com/cufee/shopping-list/prisma/db"
+import "fmt"
+
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 
-type CreateGroupDialog struct {
-	Header string
-	Errors map[string]string
-	Inputs map[string]string
+type CreateListDialog struct {
+	Header  string
+	GroupID string
+	Errors  map[string]string
+	Inputs  map[string]string
 
-	Dialog
+	common.Dialog
 }
 
-func (d *CreateGroupDialog) ID() string {
-	if d.id == "" {
-		return "create-group-dialog"
+func (d *CreateListDialog) GetID() string {
+	if d.ID == "" {
+		return "create-list-dialog"
 	}
-	return d.id
+	return d.ID
 }
 
-templ createGroupBody(selector string, inputs, errors map[string]string) {
+templ createListBody(groupId string, selector string, inputs map[string]string, errors map[string]string) {
 	<form autocomplete="off" class="flex flex-col gap-6 form-control">
 		<fieldset class="flex flex-col gap-2">
 			<div class="form-control">
@@ -33,7 +35,7 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 					aria-label="group name"
 					value={ inputs["name"] }
 					class="input input-bordered grow"
-					placeholder="my awesome group to organize lists"
+					placeholder="pokemon cards to buy"
 				/>
 				if err, ok := errors["name"]; ok {
 					<div class="label">
@@ -47,14 +49,14 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 					<span class="badge badge-info">Optional</span>
 				</div>
 				<textarea
-					type="text"
 					maxlength="80"
+					type="text"
 					name="description"
 					aria-label="group description"
 					class="textarea textarea-bordered"
-					placeholder="family shoppoing lists go here"
+					placeholder="a super secret list, please don't look"
 				>{ inputs["description"] }</textarea>
-				if err, ok :=  errors["description"]; ok {
+				if err, ok := errors["description"]; ok {
 					<div class="label">
 						<span class="label-text-alt text-error">{ err }</span>
 					</div>
@@ -62,34 +64,16 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 			</div>
 		</fieldset>
 		@common.Button().Attrs(templ.Attributes{
-			"hx-post":    "/api/groups/",
+			"hx-post":    fmt.Sprintf("/api/groups/%s/lists", groupId),
 			"hx-trigger": "click", "hx-target": selector, "hx-select": selector, "hx-swap": "outerHTML",
 		}).Primary() {
-			Create a new group
+			Create a new list
 		}
 	</form>
 }
 
-func (dialog CreateGroupDialog) Render(button templ.Component) templ.Component {
-	dialog.Body = createGroupBody("#"+dialog.ID(), dialog.Inputs, dialog.Errors)
+func (dialog CreateListDialog) Render(button templ.Component) templ.Component {
+	dialog.Body = createListBody(dialog.GroupID, "#"+dialog.GetID(), dialog.Inputs, dialog.Errors)
 	dialog.ActionButton = button
 	return dialog.Dialog.Render()
-}
-
-templ GroupCard(group db.GroupModel) {
-	@Card{
-		Title: common.Text(group.Name),
-		Body:  groupCardBody(group),
-	}.Render()
-}
-
-templ groupCardBody(group db.GroupModel) {
-	<div class="flex flex-col gap-3 justify-between grow">
-		if desc, ok := group.Desc(); ok && desc != "" {
-			@common.Text(desc, "text-lg")
-		} else {
-			...
-		}
-		@common.Text(group.CreatedAt.String(), "text-sm")
-	</div>
 }

@@ -2,11 +2,7 @@ package logic
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/base64"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -38,15 +34,13 @@ func (i Identifier) String() string {
 }
 
 func StringToIdentifier(input string) Identifier {
-	return Identifier(hashString(input))
+	return Identifier(HashString(input))
 }
 func NewUserSession(ctx context.Context, client *db.PrismaClient, userID string, identifier Identifier, expiration time.Time) (*db.SessionModel, error) {
-	cookieBytes := make([]byte, 32)
-	_, err := rand.Read(cookieBytes)
+	cookieValue, err := RandomString(32)
 	if err != nil {
 		return nil, err
 	}
-	cookieValue := base64.URLEncoding.EncodeToString(cookieBytes)
 
 	session, err := client.Session.CreateOne(db.Session.CookieValue.Set(cookieValue), db.Session.Identifier.Set(identifier.String()), db.Session.Expiration.Set(expiration), db.Session.User.Link(db.User.ID.Equals(userID))).Exec(ctx)
 	if err != nil {
@@ -94,11 +88,4 @@ func DeleteSession(ctx context.Context, client *db.PrismaClient, sessionID strin
 		return err
 	}
 	return err
-}
-
-func hashString(input string) string {
-	hash := sha256.New()
-	hash.Write([]byte(input))
-	sum := hash.Sum(nil)
-	return fmt.Sprintf("%x", sum)
 }

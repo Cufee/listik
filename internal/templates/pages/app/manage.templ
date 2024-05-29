@@ -1,30 +1,84 @@
 package app
 
-import "github.com/cufee/shopping-list/prisma/db"
-import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "fmt"
+import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/internal/templates/componenets/group"
 
-templ ManageGroup(group *db.GroupModel, lists []db.ListModel) {
-	@components.PageHeader(components.BreadcrumbsTitle(
-		[]components.BreadCrumb{
-			{Label: "Groups", Href: "/app"},
-			{Label: group.Name, Href: fmt.Sprintf("/app/group/%s", group.ID)},
-			{Label: "Manage"},
-		},
-	), components.WithDescription(group.Desc))
-	<div class="divider"></div>
-	Manage Group
+type ManageGroup struct {
+	Group   *db.GroupModel
+	Lists   []db.ListModel
+	Members []db.UserModel
+	Invites []db.GroupInviteModel
 }
 
-templ ManageList(group *db.GroupModel, list *db.ListModel, items []db.ListItemModel) {
-	@components.PageHeader(components.BreadcrumbsTitle(
-		[]components.BreadCrumb{
+templ (props ManageGroup) Render() {
+	@common.PageHeader(common.BreadcrumbsTitle(
+		[]common.BreadCrumb{
 			{Label: "Groups", Href: "/app"},
-			{Label: group.Name, Href: fmt.Sprintf("/app/group/%s", group.ID)},
-			{Label: list.Name, Href: fmt.Sprintf("/app/group/%s/list/%s", group.ID, list.ID)},
+			{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.Group.ID)},
 			{Label: "Manage"},
 		},
-	), components.WithDescription(list.Desc))
+	), common.WithDescription(props.Group.Desc))
+	<div class="divider"></div>
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-2">
+			<span class="font-bold text-xl">
+				Current Members
+			</span>
+			<div class="flex flex-row gap-2 flex-wrap">
+				for _, member := range props.Members {
+					@group.MemberCard(&member, props.Group.OwnerID != member.ID)
+				}
+			</div>
+		</div>
+		<div class="flex flex-col gap-2">
+			<span class="font-bold text-xl">
+				Active Invites
+			</span>
+			<div class="flex flex-row gap-2 flex-wrap" id="group-invites-conteainer">
+				if len(props.Invites) < 1 {
+					<span class="bg-base-200 rounded-xl py-2 px-4 grow text-center" id="group-no-invites-card">
+						there are no active invites
+					</span>
+				} else {
+					for _, invite := range props.Invites {
+						@group.InviteCard(&invite)
+					}
+				}
+			</div>
+			<div class="flex justify-center">
+				<button
+					class="btn btn-link btn-lg"
+					hx-trigger="click"
+					hx-swap="beforeend"
+					hx-target="#group-invites-conteainer"
+					hx-post={ fmt.Sprintf("/api/groups/%s/invites", props.Group.ID) }
+				>
+					create a new invite
+				</button>
+			</div>
+		</div>
+	</div>
+}
+
+// hx-on:input="document.querySelector('#create-list-item-form-quantity div').classList.remove('input-error');document.querySelector('#create-list-item-form-quantity .error')?.remove();"
+
+type ManageList struct {
+	Group *db.GroupModel
+	List  *db.ListModel
+	Items []db.ListItemModel
+}
+
+templ (props ManageList) Render() {
+	@common.PageHeader(common.BreadcrumbsTitle(
+		[]common.BreadCrumb{
+			{Label: "Groups", Href: "/app"},
+			{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.Group.ID)},
+			{Label: props.List.Name, Href: fmt.Sprintf("/app/group/%s/list/%s", props.Group.ID, props.List.ID)},
+			{Label: "Manage"},
+		},
+	), common.WithDescription(props.List.Desc))
 	<div class="divider"></div>
 	Manage List
 }

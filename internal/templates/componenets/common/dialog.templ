@@ -1,4 +1,4 @@
-package components
+package common
 
 import "time"
 import "fmt"
@@ -6,25 +6,21 @@ import "fmt"
 type Dialog struct {
 	StartOpen bool
 
-	id           string
+	ID           string
 	Body         templ.Component
 	Header       templ.Component
 	ActionButton templ.Component
 }
 
-func (d *Dialog) SetID(id string) {
-	d.id = id
-}
-
-func (d *Dialog) ID() string {
-	if d.id == "" {
+func (d *Dialog) GetID() string {
+	if d.ID == "" {
 		return fmt.Sprintf("dialog-%d", time.Now().Unix())
 	}
-	return d.id
+	return d.ID
 }
 
 func (d *Dialog) ShowScript() templ.ComponentScript {
-	return showDialogScript(d.ID())
+	return showDialogScript(d.GetID())
 }
 
 script showDialogScript(id string) {
@@ -35,7 +31,7 @@ script showDialogScript(id string) {
 }
 
 templ (dialog Dialog) Render() {
-	<dialog class="modal" open?={ dialog.StartOpen } id={ dialog.ID() }>
+	<dialog class="modal" open?={ dialog.StartOpen } id={ dialog.GetID() }>
 		<div class="modal-box flex flex-col gap-1 bg-base-200 rounded-xl">
 			if dialog.Header != nil {
 				@dialog.Header

@@ -5,7 +5,7 @@ import (
 
 	"github.com/cufee/shopping-list/internal/logic"
 	"github.com/cufee/shopping-list/internal/server/handlers"
-	components "github.com/cufee/shopping-list/internal/templates/componenets"
+	"github.com/cufee/shopping-list/internal/templates/componenets/list"
 	"github.com/cufee/shopping-list/prisma/db"
 )
 
@@ -30,7 +30,7 @@ func formFieldError(c *handlers.Context, data ItemCreateForm, field string, mess
 	c.Response().Header().Set("HX-Retarget", "#create-list-item-form-"+field)
 	c.Response().Header().Set("HX-Reselect", "#create-list-item-form-"+field)
 
-	return components.NewListItem(data.GroupID, data.ListID, containerSelector, makeInputsMap(data), map[string]string{field: message})
+	return list.NewListItem(data.GroupID, data.ListID, containerSelector, makeInputsMap(data), map[string]string{field: message})
 
 }
 
@@ -88,7 +88,7 @@ func CreateItem(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new item&context="+err.Error())
 	}
 
-	return c.RenderPartial(components.ListItem{Item: item, GroupID: data.GroupID}.Render())
+	return c.RenderPartial(list.ListItem{Item: item, GroupID: data.GroupID}.Render())
 }
 
 type ItemSetCheckedData struct {
@@ -123,5 +123,5 @@ func ItemSetChecked(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update an item&context="+err.Error())
 	}
 
-	return c.RenderPartial(components.ListItem{Item: updatedItem, GroupID: data.GroupID}.Render())
+	return c.RenderPartial(list.ListItem{Item: updatedItem, GroupID: data.GroupID}.Render())
 }

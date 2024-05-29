@@ -14,6 +14,7 @@ import "github.com/cufee/shopping-list/prisma/db"
 import "fmt"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/internal/templates/componenets/list"
 
 type Group struct {
 	Group *db.GroupModel
@@ -33,12 +34,12 @@ func (props Group) Render() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = components.PageHeader(components.BreadcrumbsTitle(
-			[]components.BreadCrumb{
+		templ_7745c5c3_Err = common.PageHeader(common.BreadcrumbsTitle(
+			[]common.BreadCrumb{
 				{Label: "Groups", Href: "/app"},
 				{Label: props.Group.Name},
 			},
-		), components.WithDescription(props.Group.Desc), manageGroupButton(props.Group.ID)).Render(ctx, templ_7745c5c3_Buffer)
+		), common.WithDescription(props.Group.Desc), manageGroupButton(props.Group.ID)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -46,12 +47,12 @@ func (props Group) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, list := range props.Lists {
+		for _, l := range props.Lists {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 templ.SafeURL = templ.URL(fmt.Sprintf("/app/group/%s/list/%s", list.GroupID, list.ID))
+			var templ_7745c5c3_Var2 templ.SafeURL = templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID))
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -66,7 +67,7 @@ func (props Group) Render() templ.Component {
 					templ_7745c5c3_Buffer = templ.GetBuffer()
 					defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 				}
-				templ_7745c5c3_Err = components.ListCard(list).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = list.OverviewCard(l).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -156,9 +157,9 @@ func manageGroupButton(groupId string) templ.Component {
 }
 
 func CreateListDialog(groupID string, open bool, inputs, errors map[string]string) templ.Component {
-	dialog := components.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
+	dialog := list.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
+	dialog.ID = "create-new-list-dialog"
 	dialog.StartOpen = open
-	dialog.SetID("create-new-list-dialog")
 	return dialog.Render(createListButton(dialog.ShowScript()))
 }
 

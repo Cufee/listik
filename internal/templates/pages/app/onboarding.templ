@@ -22,7 +22,7 @@ templ OnboardingGroups(inputs, errors map[string]string) {
 						class="join-item input input-bordered grow rounded-xl"
 					/>
 					@common.Button("join-item z-10").Attrs(templ.Attributes{
-						"hx-post":    "/api/invites/redeem",
+						"hx-post":    "/api/groups/invites/redeem",
 						"hx-trigger": "click",
 						"hx-target":  "#invite-code-form", "hx-select": "#invite-code-form", "hx-swap": "outerHTML",
 					}).Primary() {

@@ -1,0 +1,22 @@
+package list
+
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/prisma/db"
+
+templ OverviewCard(list db.ListModel) {
+	@common.Card{
+		Title: common.Text(list.Name),
+		Body:  listCardBody(list),
+	}.Render()
+}
+
+templ listCardBody(list db.ListModel) {
+	<div class="flex flex-col gap-3 grow">
+		if desc, ok := list.Desc(); ok && desc != "" {
+			@common.Text(desc, "text-lg")
+		} else {
+			...
+		}
+		@common.Text(list.CreatedAt.String(), "text-sm")
+	</div>
+}

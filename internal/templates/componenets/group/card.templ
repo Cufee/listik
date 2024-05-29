@@ -1,0 +1,22 @@
+package group
+
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/prisma/db"
+
+templ OverviewCard(group db.GroupModel) {
+	@common.Card{
+		Title: common.Text(group.Name),
+		Body:  groupCardBody(group),
+	}.Render()
+}
+
+templ groupCardBody(group db.GroupModel) {
+	<div class="flex flex-col gap-3 justify-between grow">
+		if desc, ok := group.Desc(); ok && desc != "" {
+			@common.Text(desc, "text-lg")
+		} else {
+			...
+		}
+		@common.Text(group.CreatedAt.String(), "text-sm")
+	</div>
+}

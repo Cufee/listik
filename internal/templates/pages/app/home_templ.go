@@ -11,8 +11,8 @@ import "io"
 import "bytes"
 
 import "github.com/cufee/shopping-list/prisma/db"
-import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/internal/templates/componenets/group"
 
 type Home struct {
 	Groups []db.GroupModel
@@ -31,8 +31,8 @@ func (props Home) Render() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = components.PageHeader(components.BreadcrumbsTitle(
-			[]components.BreadCrumb{
+		templ_7745c5c3_Err = common.PageHeader(common.BreadcrumbsTitle(
+			[]common.BreadCrumb{
 				{Label: "Groups"},
 			},
 		), nil).Render(ctx, templ_7745c5c3_Buffer)
@@ -43,12 +43,12 @@ func (props Home) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, group := range props.Groups {
+		for _, g := range props.Groups {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 templ.SafeURL = templ.URL("/app/group/" + group.ID)
+			var templ_7745c5c3_Var2 templ.SafeURL = templ.URL("/app/group/" + g.ID)
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -63,7 +63,7 @@ func (props Home) Render() templ.Component {
 					templ_7745c5c3_Buffer = templ.GetBuffer()
 					defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 				}
-				templ_7745c5c3_Err = components.GroupCard(group).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = group.OverviewCard(g).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -97,8 +97,8 @@ func (props Home) Render() templ.Component {
 }
 
 func CreateGroupDialog(open bool, inputs, errors map[string]string) templ.Component {
-	dialog := components.CreateGroupDialog{Errors: errors, Inputs: inputs}
-	dialog.SetID("create-new-group-dialog")
+	dialog := group.CreateGroupDialog{Errors: errors, Inputs: inputs}
+	dialog.ID = "create-new-group-dialog"
 	dialog.StartOpen = open
 	return dialog.Render(createGroupButton(dialog.ShowScript()))
 }
