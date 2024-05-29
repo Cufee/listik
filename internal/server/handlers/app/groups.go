@@ -26,7 +26,7 @@ func Group(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.RenderPage(app.Group{Group: group, Lists: group.Lists()}.Render())
+	return c.Page(http.StatusOK, app.Group{Group: group, Lists: group.Lists()}.Render())
 }
 
 func ManageGroup(c *handlers.Context) error {
@@ -60,5 +60,5 @@ func ManageGroup(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.RenderPage(app.ManageGroup{Group: group, Lists: group.Lists(), Members: memberUsers, Invites: group.Invites()}.Render())
+	return c.Page(http.StatusOK, app.ManageGroup{Group: group, Lists: group.Lists(), Members: memberUsers, Invites: group.Invites()}.Render())
 }

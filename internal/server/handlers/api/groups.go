@@ -25,10 +25,10 @@ func CreateGroup(c *handlers.Context) error {
 	}
 
 	if len(data.Name) < 1 || len(data.Name) > 80 {
-		return c.RenderPartial(app.CreateGroupDialog(true, makeInputsMap(data), map[string]string{"name": "group name should be between 1 and 80 characters"}))
+		return c.Partial(http.StatusUnprocessableEntity, app.CreateGroupDialog(true, makeInputsMap(data), map[string]string{"name": "group name should be between 1 and 80 characters"}))
 	}
 	if len(data.Description) > 80 {
-		return c.RenderPartial(app.CreateGroupDialog(true, makeInputsMap(data), map[string]string{"description": "group description is limited to 80 characters"}))
+		return c.Partial(http.StatusUnprocessableEntity, app.CreateGroupDialog(true, makeInputsMap(data), map[string]string{"description": "group description is limited to 80 characters"}))
 	}
 
 	// Create a group
@@ -79,7 +79,7 @@ func CreateGroupInvite(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create an invite&context="+err.Error())
 	}
 
-	return c.RenderPartial(group.InviteCard(invite))
+	return c.Partial(http.StatusOK, group.InviteCard(invite))
 }
 
 type GroupInviteRedeemForm struct {
@@ -98,10 +98,10 @@ func RedeemGroupInvite(c *handlers.Context) error {
 		if db.IsErrNotFound(err) {
 			log.Err(err).Str("inviteCode", inviteCode).Msg("failed to find an invite")
 		}
-		return c.RenderPartial(app.OnboardingGroups(map[string]string{"invite-code": data.InviteCode}, map[string]string{"invite-code": "invalid invite code"}))
+		return c.Partial(http.StatusUnprocessableEntity, app.OnboardingGroups(map[string]string{"invite-code": data.InviteCode}, map[string]string{"invite-code": "invalid invite code"}))
 	}
 	if invite.UseCount >= invite.UseLimit {
-		return c.RenderPartial(app.OnboardingGroups(map[string]string{"invite-code": data.InviteCode}, map[string]string{"invite-code": "invalid invite code"}))
+		return c.Partial(http.StatusUnprocessableEntity, app.OnboardingGroups(map[string]string{"invite-code": data.InviteCode}, map[string]string{"invite-code": "invalid invite code"}))
 	}
 
 	existingMember, err := c.Member(invite.GroupID)
@@ -109,7 +109,7 @@ func RedeemGroupInvite(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to redeem an invite&context="+err.Error())
 	}
 	if existingMember != nil {
-		return c.RenderPartial(app.OnboardingGroups(map[string]string{"invite-code": data.InviteCode}, map[string]string{"invite-code": "you are already a part of this group"}))
+		return c.Partial(http.StatusUnprocessableEntity, app.OnboardingGroups(map[string]string{"invite-code": data.InviteCode}, map[string]string{"invite-code": "you are already a part of this group"}))
 	}
 
 	member, err := c.DB().GroupMember.CreateOne(db.GroupMember.Group.Link(db.Group.ID.Equals(invite.GroupID)), db.GroupMember.User.Link(db.User.ID.Equals(c.User().ID)), db.GroupMember.Permissions.Set("v0/")).Exec(c.Request().Context())

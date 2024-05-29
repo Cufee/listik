@@ -53,7 +53,7 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"input input-bordered grow\" placeholder=\"my awesome group to organize lists\"> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"input input-bordered grow\" placeholder=\"my awesome group to organize lists\" onfocus=\"this.scrollIntoViewIfNeeded(true);\"> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/group/create-dialog.templ`, Line: 39, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/group/create-dialog.templ`, Line: 40, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -76,14 +76,14 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"label-text-alt text-lg\">Description</span> <span class=\"badge badge-info\">Optional</span></div><textarea type=\"text\" maxlength=\"80\" name=\"description\" aria-label=\"group description\" class=\"textarea textarea-bordered\" placeholder=\"family shoppoing lists go here\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"label-text-alt text-lg\">Description</span> <span class=\"badge badge-info\">Optional</span></div><textarea type=\"text\" maxlength=\"80\" name=\"description\" aria-label=\"group description\" class=\"textarea textarea-bordered\" placeholder=\"family shoppoing lists go here\" onfocus=\"this.scrollIntoViewIfNeeded(true);\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["description"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/group/create-dialog.templ`, Line: 55, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/group/create-dialog.templ`, Line: 57, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -101,7 +101,7 @@ func createGroupBody(selector string, inputs, errors map[string]string) templ.Co
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/group/create-dialog.templ`, Line: 58, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/group/create-dialog.templ`, Line: 60, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {

@@ -24,10 +24,10 @@ func CreateList(c *handlers.Context) error {
 	}
 
 	if len(data.Name) < 1 || len(data.Name) > 80 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"name": "list name should be between 1 and 80 characters"}))
+		return c.Page(http.StatusUnprocessableEntity, app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"name": "list name should be between 1 and 80 characters"}))
 	}
 	if len(data.Description) > 80 {
-		return c.RenderPartial(app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"description": "list description is limited to 80 characters"}))
+		return c.Page(http.StatusUnprocessableEntity, app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"description": "list description is limited to 80 characters"}))
 	}
 
 	// Check if a user belong to this group

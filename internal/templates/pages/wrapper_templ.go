@@ -30,14 +30,14 @@ func Wrapper(path string, authenticated bool, body templ.Component) templ.Compon
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\" data-theme=\"emerald\"><head><meta charset=\"utf-8\"><meta name=\"color-scheme\" content=\"light\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css\" rel=\"stylesheet\" type=\"text/css\"><script src=\"https://unpkg.com/htmx.org@1.9.12\"></script><script src=\"https://cdn.tailwindcss.com\"></script><title>□ ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\" data-theme=\"emerald\"><head><meta charset=\"utf-8\"><meta name=\"color-scheme\" content=\"light\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css\" rel=\"stylesheet\" type=\"text/css\"><script src=\"https://unpkg.com/htmx.org@1.9.12\"></script><script src=\"https://unpkg.com/htmx.org@1.9.12/dist/ext/debug.js\"></script><script src=\"https://cdn.tailwindcss.com\"></script><title>□ ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(appName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/wrapper.templ`, Line: 20, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/wrapper.templ`, Line: 21, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -63,7 +63,7 @@ func Wrapper(path string, authenticated bool, body templ.Component) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n\t\t\t\t// Enable swap on 422, this status code is used for validation errors and returns error messages bound to elements\n\t\t\t\tdocument.body.addEventListener('htmx:beforeOnLoad', function (evt) {\n\t\t\t\t\t\tif (evt.detail.xhr.status === 422) {\n\t\t\t\t\t\t\t\tevt.detail.shouldSwap = true;\n\t\t\t\t\t\t\t\tevt.detail.isError = false;\n\t\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

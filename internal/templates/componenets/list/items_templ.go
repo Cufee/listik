@@ -225,7 +225,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"flex flex-col items-center\" autocomplete=\"off\" id=\"create-list-item-form\"><div class=\"bg-base-200 rounded-xl collapse overflow-visible p-0\"><input class=\"hidden\" type=\"radio\" id=\"add-new-item-expand-button\"><div id=\"create-list-item-form-name\" class=\"join collapse-title min-h-fit p-0\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"sticky bottom-2 bg-neutral rounded-2xl shadow-xl flex flex-col items-center w-full\" autocomplete=\"off\" id=\"create-list-item-form\"><div class=\"collapse p-2 pb-0\"><input class=\"hidden\" type=\"radio\" id=\"add-new-item-expand-checkbox\"><div id=\"create-list-item-form-name\" class=\"join collapse-title min-h-fit p-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -234,7 +234,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input minlength=\"1\" maxlength=\"80\" type=\"text\" name=\"name\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input name=\"name\" type=\"text\" minlength=\"1\" maxlength=\"80\" id=\"create-list-item-primary-input\" onfocus=\"this.scrollIntoViewIfNeeded(true);\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -246,7 +246,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["name"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 61, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 63, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -264,13 +264,13 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(logic.StringIfElse(errors["name"] != "", errors["name"], "bananas"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 63, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 65, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-on:input=\"event.target.classList.remove(&#39;input-error&#39;);event.target.placeholder=&#39;banana&#39;;\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -283,7 +283,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-on:input=\"event.target.classList.remove(&#39;input-error&#39;);event.target.placeholder=&#39;banana&#39;;\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -303,14 +303,16 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = common.Button("join-item z-10 btn-square").Attrs(templ.Attributes{
-			"hx-post": fmt.Sprintf("/api/groups/%s/lists/%s/items?container=%s", groupID, listID, itemsContainerSelector),
-			"hx-swap": "beforeend", "hx-trigger": "click",
-			"hx-target": itemsContainerSelector,
+			"hx-trigger":           "click",
+			"hx-swap":              "beforeend",
+			"hx-target":            "#" + itemsContainerSelector,
+			"hx-post":              fmt.Sprintf("/api/groups/%s/lists/%s/items?container=%s", groupID, listID, itemsContainerSelector),
+			"hx-on::after-request": "if(event.detail.xhr.status==201)document.getElementById('create-list-item-form').querySelectorAll('[name]').forEach(e=>{e.value='';e.innterText='';});",
 		}).Primary().Render(templ.WithChildren(ctx, templ_7745c5c3_Var16), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"collapse-content rounded-xl\" id=\"add-new-item-expanded\"><div class=\"flex flex-col rounded-xl border border-1 border-base-300 overflow-hidden mt-4 p-2\"><span class=\"badge badge-info rounded-none rounded-bl-xl -m-2 mb-2 ml-auto\">Optional</span><div class=\"flex flex-row flex-wrap gap-2\"><div class=\"form-control grow\" id=\"create-list-item-form-price\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"collapse-content p-0 pb-2 rounded-xl flex flex-col mt-2 overflow-hidden\" id=\"add-new-item-expanded\"><div class=\"flex flex-row flex-wrap gap-2\"><div class=\"form-control grow\" id=\"create-list-item-form-price\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -339,13 +341,13 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["price"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 91, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 93, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-on:input=\"document.querySelector(&#39;#create-list-item-form-price div&#39;).classList.remove(&#39;input-error&#39;);document.querySelector(&#39;#create-list-item-form-price .error&#39;)?.remove();\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" onfocus=\"this.scrollIntoViewIfNeeded(true);\" hx-on:input=\"document.querySelector(&#39;#create-list-item-form-price div&#39;).classList.remove(&#39;input-error&#39;);document.querySelector(&#39;#create-list-item-form-price .error&#39;)?.remove();\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -357,7 +359,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 97, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 100, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -390,20 +392,20 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Quantity <input min=\"0\" type=\"number\" name=\"quantity\" placeholder=\"3\" aria-label=\"item quantity\" class=\"grow text-right\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Quantity <input min=\"0\" type=\"number\" name=\"quantity\" placeholder=\"3\" class=\"grow text-right\" aria-label=\"item quantity\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["quantity"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 111, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 114, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-on:input=\"document.querySelector(&#39;#create-list-item-form-quantity div&#39;).classList.remove(&#39;input-error&#39;);document.querySelector(&#39;#create-list-item-form-quantity .error&#39;)?.remove();\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" onfocus=\"this.scrollIntoViewIfNeeded(true);\" hx-on:input=\"document.querySelector(&#39;#create-list-item-form-quantity div&#39;).classList.remove(&#39;input-error&#39;);document.querySelector(&#39;#create-list-item-form-quantity .error&#39;)?.remove();\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -415,7 +417,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 117, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 121, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -426,7 +428,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div id=\"create-list-item-form-description\"><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"label-text-alt text-lg\">Description</span></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div id=\"create-list-item-form-description\"><div class=\"form-control\"><div class=\"label flex flex-row justify-between\"><span class=\"text-lg text-neutral-content\">Description</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -435,7 +437,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea maxlength=\"80\" type=\"text\" name=\"description\" aria-label=\"item description\" placeholder=\"only if it&#39;s on the 3rd shelf when counting from checkout #19\" class=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea maxlength=\"80\" type=\"text\" name=\"description\" aria-label=\"item description\" onfocus=\"this.scrollIntoViewIfNeeded(true);\" placeholder=\"only if it&#39;s on the 3rd shelf when counting from checkout #19\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -455,7 +457,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["description"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 136, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 141, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -473,7 +475,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 140, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 145, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -484,7 +486,24 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><button class=\"btn btn-link\" onclick=\"this.remove();document.getElementById(&#39;add-new-item-expand-button&#39;).checked=true;document.querySelector(&#39;#add-new-item-expanded [name]&#39;)?.focus();\">expand</button></form>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, toggleMoreFields())
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"button\" onclick=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var29 templ.ComponentScript = toggleMoreFields()
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var29.Call)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" id=\"add-new-item-expand-button\" class=\"link link-primary mb-2 -mt-2\">more fields</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -493,4 +512,31 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		}
 		return templ_7745c5c3_Err
 	})
+}
+
+func toggleMoreFields() templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_toggleMoreFields_50a0`,
+		Function: `function __templ_toggleMoreFields_50a0(){const hiddenCheckbox = document.getElementById('add-new-item-expand-checkbox')
+	const expandedArea = document.getElementById('add-new-item-expanded')
+	const button = document.getElementById('add-new-item-expand-button')
+	if (hiddenCheckbox.checked) {
+		hiddenCheckbox.checked = false
+		document.getElementById("create-list-item-primary-input")?.focus()
+
+		button.innerText = "more fields"
+		expandedArea.querySelectorAll("[name]").forEach(e => {
+			e.innerText = ""
+			e.value = ""
+		})
+
+	} else {
+		hiddenCheckbox.checked = true
+		expandedArea.querySelector("[name]")?.focus()
+		button.innerText = "less fields"
+	}
+}`,
+		Call:       templ.SafeScript(`__templ_toggleMoreFields_50a0`),
+		CallInline: templ.SafeScriptInline(`__templ_toggleMoreFields_50a0`),
+	}
 }

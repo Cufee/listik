@@ -85,7 +85,7 @@ func (props ManageGroup) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">create a new invite</button></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-on::after-request=\"if(event.detail.xhr.status.toString().startsWith(&#39;2&#39;))document.getElementById(&#39;group-no-invites-card&#39;)?.remove()\">create a new invite</button></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

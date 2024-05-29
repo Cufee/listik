@@ -33,6 +33,7 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 					value={ inputs["name"] }
 					class="input input-bordered grow"
 					placeholder="my awesome group to organize lists"
+					onfocus="this.scrollIntoViewIfNeeded(true);"
 				/>
 				if err, ok := errors["name"]; ok {
 					<div class="label">
@@ -52,6 +53,7 @@ templ createGroupBody(selector string, inputs, errors map[string]string) {
 					aria-label="group description"
 					class="textarea textarea-bordered"
 					placeholder="family shoppoing lists go here"
+					onfocus="this.scrollIntoViewIfNeeded(true);"
 				>{ inputs["description"] }</textarea>
 				if err, ok :=  errors["description"]; ok {
 					<div class="label">

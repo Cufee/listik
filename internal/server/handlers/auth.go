@@ -17,12 +17,12 @@ func Login(c *Context) error {
 	if err != nil || sessionCookie.Value == "" {
 		blank := logic.NewSessionCookie("", time.Unix(0, 0))
 		c.SetCookie(&blank)
-		return c.RenderPage(pages.Login())
+		return c.Page(http.StatusOK, pages.Login())
 	}
 
 	_, err = logic.GetAndVerifyUserSession(c.Request().Context(), c.DB(), sessionCookie.Value, logic.StringToIdentifier(c.RealIP()))
 	if err != nil {
-		return c.RenderPage(pages.Login())
+		return c.Page(http.StatusOK, pages.Login())
 	}
 
 	return c.Redirect(http.StatusTemporaryRedirect, "/app")

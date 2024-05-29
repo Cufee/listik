@@ -36,6 +36,7 @@ templ createListBody(groupId string, selector string, inputs map[string]string, 
 					value={ inputs["name"] }
 					class="input input-bordered grow"
 					placeholder="pokemon cards to buy"
+					onfocus="this.scrollIntoViewIfNeeded(true);"
 				/>
 				if err, ok := errors["name"]; ok {
 					<div class="label">
@@ -55,6 +56,7 @@ templ createListBody(groupId string, selector string, inputs map[string]string, 
 					aria-label="group description"
 					class="textarea textarea-bordered"
 					placeholder="a super secret list, please don't look"
+					onfocus="this.scrollIntoViewIfNeeded(true);"
 				>{ inputs["description"] }</textarea>
 				if err, ok := errors["description"]; ok {
 					<div class="label">

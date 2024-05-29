@@ -54,6 +54,7 @@ templ (props ManageGroup) Render() {
 					hx-swap="beforeend"
 					hx-target="#group-invites-conteainer"
 					hx-post={ fmt.Sprintf("/api/groups/%s/invites", props.Group.ID) }
+					hx-on::after-request="if(event.detail.xhr.status.toString().startsWith('2'))document.getElementById('group-no-invites-card')?.remove()"
 				>
 					create a new invite
 				</button>

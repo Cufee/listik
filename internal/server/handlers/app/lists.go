@@ -25,7 +25,7 @@ func List(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.RenderPage(app.List{Group: list.Group(), List: list, Items: list.Items()}.Render())
+	return c.Page(http.StatusOK, app.List{Group: list.Group(), List: list, Items: list.Items()}.Render())
 }
 
 func ManageList(c *handlers.Context) error {
@@ -45,5 +45,5 @@ func ManageList(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.RenderPage(app.ManageList{Group: list.Group(), List: list, Items: list.Items()}.Render())
+	return c.Page(http.StatusOK, app.ManageList{Group: list.Group(), List: list, Items: list.Items()}.Render())
 }

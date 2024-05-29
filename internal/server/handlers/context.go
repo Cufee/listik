@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"context"
 	"errors"
-	"io"
 	"net/http"
 
+	"github.com/a-h/templ"
 	"github.com/cufee/shopping-list/internal/templates/pages"
 	"github.com/cufee/shopping-list/prisma/db"
 	"github.com/labstack/echo/v4"
@@ -19,23 +18,19 @@ type Context struct {
 	db            *db.PrismaClient
 }
 
-type Renderable interface {
-	Render(ctx context.Context, w io.Writer) error
-}
-
 /*
 Renders a page into response writer
   - Adds a navbar and footer based on the current page context
 */
-func (c *Context) RenderPage(page Renderable) error {
-	return pages.Wrapper(c.Path(), c.Authenticated(), page).Render(c.Request().Context(), c.Response().Writer)
+func (c *Context) Page(code int, node templ.Component) error {
+	return c.Context.Render(code, "", pages.Wrapper(c.Path(), c.Authenticated(), node))
 }
 
 /*
-Renders a single componenets into response writer
+Renders a single component into response writer
 */
-func (c *Context) RenderPartial(node Renderable) error {
-	return node.Render(c.Request().Context(), c.Response().Writer)
+func (c *Context) Partial(code int, node templ.Component) error {
+	return c.Context.Render(code, "", node)
 }
 
 func (c *Context) Redirect(code int, path string) error {

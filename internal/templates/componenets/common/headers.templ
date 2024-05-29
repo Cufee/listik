@@ -1,8 +1,5 @@
 package common
 
-import "github.com/cufee/shopping-list/internal/logic"
-import "strings"
-
 templ PageHeader(title, subtitle templ.Component, actions ...templ.Component) {
 	<div class="flex flex-row gap-2 justify-between">
 		<div class="flex flex-col gap-1">
@@ -42,19 +39,17 @@ type BreadCrumb struct {
 }
 
 templ BreadcrumbsTitle(crumbs []BreadCrumb) {
-	<div class="flex flex-row flex-wrap gap-1 items-center">
+	<div class="flex flex-row flex-wrap items-center">
 		for _, crumb := range crumbs {
-			<div class="gap-1 hidden sm:flex">
+			<div class="flex items-center">
 				if crumb.Href != "" {
-					<a class="text-primary link link-hover overflow-hidden text-ellipsis text-nowrap" href={ templ.URL(crumb.Href) }>{ crumb.Label }</a>
+					<a class="link link-hover link-primary overflow-hidden" href={ templ.URL(crumb.Href) }>
+						@Text(crumb.Label, "text-sm md:text-xl line-clamp-1")
+					</a>
 				} else {
-					<span
-						class={ "grow overflow-hidden text-ellipsis min-w-fit " + logic.StringIfElse(strings.Contains(crumb.Label, " "), "break-words", "break-all") }
-					>
-						{ crumb.Label }
-					</span>
+					@Text(crumb.Label, "text-sm md:text-xl line-clamp-1")
 				}
-				<span class="text-base-200">/</span>
+				<span class="text-sm md:text-xl text-base-200">/</span>
 			</div>
 		}
 	</div>

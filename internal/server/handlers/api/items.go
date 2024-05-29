@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/a-h/templ"
 	"github.com/cufee/shopping-list/internal/logic"
 	"github.com/cufee/shopping-list/internal/server/handlers"
 	"github.com/cufee/shopping-list/internal/templates/componenets/list"
@@ -21,7 +22,7 @@ type ItemCreateForm struct {
 	GroupID string `param:"groupId"`
 }
 
-func formFieldError(c *handlers.Context, data ItemCreateForm, field string, message string) handlers.Renderable {
+func formFieldError(c *handlers.Context, data ItemCreateForm, field string, message string) templ.Component {
 	containerSelector := c.QueryParam("container")
 
 	// the input form can have some different state by now, it can be expanded and etc.
@@ -41,17 +42,17 @@ func CreateItem(c *handlers.Context) error {
 	}
 
 	if len(data.Name) < 1 || len(data.Name) > 80 {
-		return c.RenderPartial(formFieldError(c, data, "name", logic.StringIfElse(len(data.Name) < 1, "name cannot be blank", "name is too long")))
+		return c.Partial(http.StatusUnprocessableEntity, formFieldError(c, data, "name", logic.StringIfElse(len(data.Name) < 1, "name cannot be blank", "name is too long")))
 	}
 
 	if len(data.Description) > 80 {
-		return c.RenderPartial(formFieldError(c, data, "description", "description is limited to 80 characters"))
+		return c.Partial(http.StatusUnprocessableEntity, formFieldError(c, data, "description", "description is limited to 80 characters"))
 	}
 	if len(data.Price) > 80 {
-		return c.RenderPartial(formFieldError(c, data, "price", "price is limited to 80 characters"))
+		return c.Partial(http.StatusUnprocessableEntity, formFieldError(c, data, "price", "price is limited to 80 characters"))
 	}
 	if data.Quantity < 0 {
-		return c.RenderPartial(formFieldError(c, data, "quantity", "quantity cannot be negative"))
+		return c.Partial(http.StatusUnprocessableEntity, formFieldError(c, data, "quantity", "quantity cannot be negative"))
 	}
 
 	// Check if a user belong to this group
@@ -88,7 +89,7 @@ func CreateItem(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new item&context="+err.Error())
 	}
 
-	return c.RenderPartial(list.ListItem{Item: item, GroupID: data.GroupID}.Render())
+	return c.Partial(http.StatusCreated, list.ListItem{Item: item, GroupID: data.GroupID}.Render())
 }
 
 type ItemSetCheckedData struct {
@@ -123,5 +124,5 @@ func ItemSetChecked(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update an item&context="+err.Error())
 	}
 
-	return c.RenderPartial(list.ListItem{Item: updatedItem, GroupID: data.GroupID}.Render())
+	return c.Partial(http.StatusOK, list.ListItem{Item: updatedItem, GroupID: data.GroupID}.Render())
 }

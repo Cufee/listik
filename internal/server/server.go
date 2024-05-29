@@ -21,6 +21,8 @@ import (
 // Create a new echo.Echo instance with all routes registered
 func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	e := echo.New()
+	e.Renderer = &template{}
+
 	if assets != nil {
 		e.StaticFS("/static", assets)
 	}
@@ -99,6 +101,6 @@ func withContext(h func(*handlers.Context) error) func(c echo.Context) error {
 func staticPage(page templ.Component) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(*handlers.Context)
-		return cc.RenderPage(page)
+		return cc.Page(http.StatusOK, page)
 	}
 }

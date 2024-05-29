@@ -16,7 +16,7 @@ func Home(c *handlers.Context) error {
 
 	// If this user has no groups, they should go through the onboarding flow
 	if len(memberships) == 0 || c.QueryParam("onboarding") == "true" {
-		return c.RenderPage(app.OnboardingGroups(nil, nil))
+		return c.Page(http.StatusOK, app.OnboardingGroups(nil, nil))
 	}
 
 	var groupIDs []string
@@ -29,10 +29,10 @@ func Home(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to retrieve your groups&context="+err.Error())
 	}
 
-	return c.RenderPage(app.Home{Groups: groups}.Render())
+	return c.Page(http.StatusOK, app.Home{Groups: groups}.Render())
 }
 
 func Settings(c *handlers.Context) error {
 	// id := c.Param("id")
-	return c.RenderPage(app.Settings())
+	return c.Page(http.StatusOK, app.Settings())
 }

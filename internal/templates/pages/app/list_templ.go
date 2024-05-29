@@ -45,7 +45,7 @@ func (props List) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"divider\"></div><div class=\"flex flex-col gap-4\"><div id=\"list-items\" class=\"flex flex-col gap-1\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"divider\"></div><div class=\"flex flex-col gap-4 grow\"><div id=\"list-items\" class=\"flex flex-col gap-1 grow\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -59,7 +59,7 @@ func (props List) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = list.NewListItem(props.List.GroupID, props.List.ID, "#list-items", nil, nil).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = list.NewListItem(props.List.GroupID, props.List.ID, "list-items", nil, nil).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

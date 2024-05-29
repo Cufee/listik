@@ -16,6 +16,7 @@ templ Wrapper(path string, authenticated bool, body templ.Component) {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css"/>
 			<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/debug.js"></script>
 			<script src="https://cdn.tailwindcss.com"></script>
 			<title>□ { appName }</title>
 		</head>
@@ -25,6 +26,15 @@ templ Wrapper(path string, authenticated bool, body templ.Component) {
 				@body
 			</main>
 			@components.Footer()
+			<script>
+				// Enable swap on 422, this status code is used for validation errors and returns error messages bound to elements
+				document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
+						if (evt.detail.xhr.status === 422) {
+								evt.detail.shouldSwap = true;
+								evt.detail.isError = false;
+						}
+				});
+			</script>
 		</body>
 	</html>
 }
