@@ -516,15 +516,18 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 
 func toggleMoreFields() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_toggleMoreFields_50a0`,
-		Function: `function __templ_toggleMoreFields_50a0(){const hiddenCheckbox = document.getElementById('add-new-item-expand-checkbox')
+		Name: `__templ_toggleMoreFields_ae84`,
+		Function: `function __templ_toggleMoreFields_ae84(){const hiddenCheckbox = document.getElementById('add-new-item-expand-checkbox')
 	const expandedArea = document.getElementById('add-new-item-expanded')
 	const button = document.getElementById('add-new-item-expand-button')
+	const form = document.getElementById('create-list-item-form')
 	if (hiddenCheckbox.checked) {
 		hiddenCheckbox.checked = false
-		document.getElementById("create-list-item-primary-input")?.focus()
-
 		button.innerText = "more fields"
+
+		document.getElementById("create-list-item-primary-input")?.focus()
+		form.scrollIntoViewIfNeeded(true)
+
 		expandedArea.querySelectorAll("[name]").forEach(e => {
 			e.innerText = ""
 			e.value = ""
@@ -532,11 +535,13 @@ func toggleMoreFields() templ.ComponentScript {
 
 	} else {
 		hiddenCheckbox.checked = true
-		expandedArea.querySelector("[name]")?.focus()
 		button.innerText = "less fields"
+		
+		expandedArea.querySelector("[name]")?.focus()
+		form.scrollIntoViewIfNeeded(true)
 	}
 }`,
-		Call:       templ.SafeScript(`__templ_toggleMoreFields_50a0`),
-		CallInline: templ.SafeScriptInline(`__templ_toggleMoreFields_50a0`),
+		Call:       templ.SafeScript(`__templ_toggleMoreFields_ae84`),
+		CallInline: templ.SafeScriptInline(`__templ_toggleMoreFields_ae84`),
 	}
 }

@@ -14,10 +14,7 @@ type CreateListDialog struct {
 }
 
 func (d *CreateListDialog) GetID() string {
-	if d.ID == "" {
-		return "create-list-dialog"
-	}
-	return d.ID
+	return "create-list-dialog"
 }
 
 templ createListBody(groupId string, selector string, inputs map[string]string, errors map[string]string) {

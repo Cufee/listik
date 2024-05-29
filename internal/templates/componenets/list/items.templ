@@ -164,11 +164,14 @@ script toggleMoreFields() {
 	const hiddenCheckbox = document.getElementById('add-new-item-expand-checkbox')
 	const expandedArea = document.getElementById('add-new-item-expanded')
 	const button = document.getElementById('add-new-item-expand-button')
+	const form = document.getElementById('create-list-item-form')
 	if (hiddenCheckbox.checked) {
 		hiddenCheckbox.checked = false
-		document.getElementById("create-list-item-primary-input")?.focus()
-
 		button.innerText = "more fields"
+
+		document.getElementById("create-list-item-primary-input")?.focus()
+		form.scrollIntoViewIfNeeded(true)
+
 		expandedArea.querySelectorAll("[name]").forEach(e => {
 			e.innerText = ""
 			e.value = ""
@@ -176,7 +179,9 @@ script toggleMoreFields() {
 
 	} else {
 		hiddenCheckbox.checked = true
-		expandedArea.querySelector("[name]")?.focus()
 		button.innerText = "less fields"
+		
+		expandedArea.querySelector("[name]")?.focus()
+		form.scrollIntoViewIfNeeded(true)
 	}
 }

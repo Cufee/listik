@@ -35,14 +35,15 @@ func (d *Dialog) ShowScript() templ.ComponentScript {
 
 func showDialogScript(id string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_showDialogScript_729e`,
-		Function: `function __templ_showDialogScript_729e(id){const dialog = document.getElementById(id)
+		Name: `__templ_showDialogScript_123d`,
+		Function: `function __templ_showDialogScript_123d(id){const dialog = document.getElementById(id)
     if (!dialog) return
     dialog.open = true;
+		dialog.scrollIntoViewIfNeeded(true)
     document.querySelector("input")?.focus()
 }`,
-		Call:       templ.SafeScript(`__templ_showDialogScript_729e`, id),
-		CallInline: templ.SafeScriptInline(`__templ_showDialogScript_729e`, id),
+		Call:       templ.SafeScript(`__templ_showDialogScript_123d`, id),
+		CallInline: templ.SafeScriptInline(`__templ_showDialogScript_123d`, id),
 	}
 }
 
@@ -76,7 +77,7 @@ func (dialog Dialog) Render() templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(dialog.GetID())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/common/dialog.templ`, Line: 34, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/common/dialog.templ`, Line: 35, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
