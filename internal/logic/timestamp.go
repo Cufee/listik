@@ -12,7 +12,7 @@ func FormatTimestamp(timestamp time.Time) string {
 
 	diff := time.Since(timestamp)
 	if diff < time.Minute {
-		return "Just now"
+		return "just now"
 	} else if diff < time.Hour {
 		minutes := int(diff.Minutes())
 		return fmt.Sprintf("%d minute%s ago", minutes, StringIfElse(minutes != 1, "s", ""))

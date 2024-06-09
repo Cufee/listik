@@ -24,7 +24,7 @@ func Home(c *handlers.Context) error {
 		groupIDs = append(groupIDs, m.GroupID)
 	}
 
-	groups, err := c.DB().Group.FindMany(db.Group.ID.In(groupIDs)).Exec(c.Request().Context())
+	groups, err := c.DB().Group.FindMany(db.Group.ID.In(groupIDs)).OrderBy(db.Group.CreatedAt.Order(db.DESC)).Exec(c.Request().Context())
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to retrieve your groups&context="+err.Error())
 	}

@@ -4,12 +4,14 @@ import "fmt"
 import "github.com/cufee/shopping-list/prisma/db"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "github.com/cufee/shopping-list/internal/templates/componenets/group"
+import "github.com/cufee/shopping-list/internal/templates/componenets/tags"
 
 type ManageGroup struct {
-	Group   *db.GroupModel
-	Lists   []db.ListModel
-	Members []db.UserModel
-	Invites []db.GroupInviteModel
+	Group    *db.GroupModel
+	Lists    []db.ListModel
+	ItemTags []db.ItemTagModel
+	Members  []db.UserModel
+	Invites  []db.GroupInviteModel
 }
 
 templ (props ManageGroup) Render() {
@@ -22,6 +24,7 @@ templ (props ManageGroup) Render() {
 	), common.WithDescription(props.Group.Desc))
 	<div class="divider"></div>
 	<div class="flex flex-col gap-4">
+		@ManageGroupTags(props.Group.ID, props.ItemTags)
 		<div class="flex flex-col gap-2">
 			<span class="font-bold text-xl">
 				Current Members
@@ -63,7 +66,19 @@ templ (props ManageGroup) Render() {
 	</div>
 }
 
-// hx-on:input="document.querySelector('#create-list-item-form-quantity div').classList.remove('input-error');document.querySelector('#create-list-item-form-quantity .error')?.remove();"
+templ ManageGroupTags(groupID string, groupTags []db.ItemTagModel) {
+	<div class="flex flex-col gap-2" id="manage-group-tags">
+		<span class="font-bold text-xl">
+			Item Tags
+		</span>
+		<div class="flex flex-row gap-2 flex-wrap">
+			for _, tag := range groupTags {
+				@tags.ItemTag(groupID, tag)
+			}
+			@tags.CreateItemTagDialog("#manage-group-tags", groupID, false, nil, nil)
+		</div>
+	</div>
+}
 
 type ManageList struct {
 	Group *db.GroupModel

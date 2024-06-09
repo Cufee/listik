@@ -2,10 +2,12 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/a-h/templ"
 	"github.com/cufee/shopping-list/internal/logic"
 	"github.com/cufee/shopping-list/internal/server/handlers"
+	"github.com/cufee/shopping-list/internal/templates/componenets/common"
 	"github.com/cufee/shopping-list/internal/templates/componenets/list"
 	"github.com/cufee/shopping-list/prisma/db"
 )
@@ -18,8 +20,7 @@ type ItemCreateForm struct {
 	Quantity    int    `form:"quantity"`
 	Description string `form:"description"`
 
-	ListID  string `param:"listId"`
-	GroupID string `param:"groupId"`
+	CommonPathParams
 }
 
 func formFieldError(c *handlers.Context, data ItemCreateForm, field string, message string) templ.Component {
@@ -89,13 +90,48 @@ func CreateItem(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new item&context="+err.Error())
 	}
 
+	_, err = c.DB().List.FindUnique(db.List.ID.Equals(data.ListID)).Update(db.List.UpdatedAt.Set(time.Now())).Exec(c.Request().Context())
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new item&context="+err.Error())
+	}
+
 	return c.Partial(http.StatusCreated, list.ListItem{Item: item, GroupID: data.GroupID}.Render())
 }
 
+func DeleteItem(c *handlers.Context) error {
+	var data CommonPathParams
+	if err := c.Bind(&data); err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to delete an item&context="+err.Error())
+	}
+
+	// Check if a user belong to this group
+	_, err := c.Member(data.GroupID)
+	if db.IsErrNotFound(err) {
+		return c.Redirect(http.StatusTemporaryRedirect, "/app")
+	}
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to delete an item&context="+err.Error())
+	}
+
+	// TODO: Check permissions
+	_, err = c.DB().ListItem.FindUnique(db.ListItem.ID.Equals(data.ItemID)).Delete().Exec(c.Request().Context())
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to delete an item&context="+err.Error())
+	}
+
+	_, err = c.DB().List.FindUnique(db.List.ID.Equals(data.ListID)).Update(db.List.UpdatedAt.Set(time.Now())).Exec(c.Request().Context())
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to delete an item&context="+err.Error())
+	}
+
+	return c.Partial(http.StatusOK, common.Blank(""))
+
+}
+
 type ItemSetCheckedData struct {
-	ItemID  string `param:"itemId"`
-	ListID  string `param:"listId"`
-	GroupID string `param:"groupId"`
+	ItemID string `param:"itemId"`
+
+	CommonPathParams
 }
 
 func ItemSetChecked(c *handlers.Context) error {
@@ -122,6 +158,11 @@ func ItemSetChecked(c *handlers.Context) error {
 	updatedItem, err := c.DB().ListItem.FindUnique(db.ListItem.ID.Equals(data.ItemID)).Update(db.ListItem.Checked.Set(newValue)).Exec(c.Request().Context())
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update an item&context="+err.Error())
+	}
+
+	_, err = c.DB().List.FindUnique(db.List.ID.Equals(data.ListID)).Update(db.List.UpdatedAt.Set(time.Now())).Exec(c.Request().Context())
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update and item&context="+err.Error())
 	}
 
 	return c.Partial(http.StatusOK, list.ListItem{Item: updatedItem, GroupID: data.GroupID}.Render())

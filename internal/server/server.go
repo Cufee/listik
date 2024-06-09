@@ -66,21 +66,32 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	e.Any("/privacy-policy/", staticPage(pages.PrivacyPolicy()))
 	e.Any("/terms-of-service/", staticPage(pages.TermsOfService()))
 
-	appGroup := e.Group("/app", sessionCheckMiddleware(db))
-	appGroup.Any("/", withContext(app.Home))
-	appGroup.GET("/group/:groupId/", withContext(app.Group))
-	appGroup.GET("/group/:groupId/manage/", withContext(app.ManageGroup))
-	appGroup.GET("/group/:groupId/list/:listId/", withContext(app.List))
-	appGroup.GET("/settings/", withContext(app.Settings))
+	eApp := e.Group("/app", sessionCheckMiddleware(db))
 
-	apiGroup := e.Group("/api", sessionCheckMiddleware(db))
-	apiGroup.POST("/groups/", withContext(api.CreateGroup))
-	apiGroup.POST("/groups/:groupId/lists/", withContext(api.CreateList))
-	apiGroup.POST("/groups/:groupId/lists/:listId/items/", withContext(api.CreateItem))
-	apiGroup.PATCH("/groups/:groupId/lists/:listId/complete/", withContext(api.ListSetComplete))
-	apiGroup.PUT("/groups/:groupId/lists/:listId/items/:itemId/checked/", withContext(api.ItemSetChecked))
-	apiGroup.POST("/groups/:groupId/invites/", withContext(api.CreateGroupInvite))
-	apiGroup.POST("/groups/invites/redeem/", withContext(api.RedeemGroupInvite))
+	eApp.Any("/", withContext(app.Home))
+	eApp.GET("/group/:groupId/", withContext(app.Group))
+	eApp.GET("/group/:groupId/manage/", withContext(app.ManageGroup))
+	eApp.GET("/group/:groupId/list/:listId/", withContext(app.List))
+	eApp.GET("/settings/", withContext(app.Settings))
+
+	eApi := e.Group("/api", sessionCheckMiddleware(db))
+
+	apiGroups := eApi.Group("/groups")
+	apiGroups.POST("/", withContext(api.CreateGroup))
+	apiGroups.POST("/invites/redeem/", withContext(api.RedeemGroupInvite))
+	apiGroups.POST("/:groupId/invites/", withContext(api.CreateGroupInvite))
+
+	apiTags := apiGroups.Group("/:groupId/tags")
+	apiTags.POST("/", withContext(api.CreateItemTag))
+	apiTags.PATCH("/:tagId/", withContext(api.CreateItemTag))
+	apiTags.DELETE("/:tagId/", withContext(api.CreateItemTag))
+
+	apiLists := apiGroups.Group("/:groupId/lists")
+	apiLists.POST("/", withContext(api.CreateList))
+	apiLists.POST("/:listId/items/", withContext(api.CreateItem))
+	apiLists.PATCH("/:listId/complete/", withContext(api.ListSetComplete))
+	apiLists.DELETE("/:listId/items/:itemId/", withContext(api.DeleteItem))
+	apiLists.PUT("/:listId/items/:itemId/checked/", withContext(api.ItemSetChecked))
 
 	e.Any("/*", pageNotFound)
 	return e

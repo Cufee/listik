@@ -25,7 +25,7 @@ func Group(c *handlers.Context) error {
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
-	lists, err := c.DB().List.FindMany(db.List.GroupID.Equals(group.ID)).OrderBy(db.List.CreatedAt.Order(db.DESC)).Exec(c.Request().Context())
+	lists, err := c.DB().List.FindMany(db.List.GroupID.Equals(group.ID)).OrderBy(db.List.UpdatedAt.Order(db.DESC)).Exec(c.Request().Context())
 	if db.IsErrNotFound(err) {
 		return c.Redirect(http.StatusTemporaryRedirect, "/app")
 	}
@@ -49,6 +49,7 @@ func ManageGroup(c *handlers.Context) error {
 		db.Group.Invites.Fetch(db.GroupInvite.ExpiresAt.After(time.Now())),
 		db.Group.Members.Fetch(),
 		db.Group.Lists.Fetch(),
+		db.Group.Tags.Fetch(),
 	).Exec(c.Request().Context())
 	if db.IsErrNotFound(err) {
 		return c.Redirect(http.StatusTemporaryRedirect, "/app")
@@ -67,5 +68,5 @@ func ManageGroup(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.Page(http.StatusOK, app.ManageGroup{Group: group, Lists: group.Lists(), Members: memberUsers, Invites: group.Invites()}.Render())
+	return c.Page(http.StatusOK, app.ManageGroup{Group: group, Lists: group.Lists(), ItemTags: group.Tags(), Members: memberUsers, Invites: group.Invites()}.Render())
 }

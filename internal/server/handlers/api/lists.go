@@ -9,7 +9,8 @@ import (
 	"github.com/cufee/shopping-list/prisma/db"
 )
 
-type ListPathParams struct {
+type CommonPathParams struct {
+	ItemID  string `param:"itemId"`
 	ListID  string `param:"listId"`
 	GroupID string `param:"groupId"`
 }
@@ -18,7 +19,7 @@ type ListCreateForm struct {
 	Name        string `form:"name"`
 	Description string `form:"description"`
 
-	ListPathParams
+	CommonPathParams
 }
 
 func CreateList(c *handlers.Context) error {
@@ -53,7 +54,7 @@ func CreateList(c *handlers.Context) error {
 }
 
 func ListSetComplete(c *handlers.Context) error {
-	var data ListPathParams
+	var data CommonPathParams
 	if err := c.Bind(&data); err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update a list&context="+err.Error())
 	}

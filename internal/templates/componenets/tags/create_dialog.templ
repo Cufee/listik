@@ -1,0 +1,96 @@
+package tags
+
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "fmt"
+
+type createItemTagDialog struct {
+	Header  string
+	GroupID string
+	Errors  map[string]string
+	Inputs  map[string]string
+
+	containerSelector string
+
+	common.Dialog
+}
+
+func (d *createItemTagDialog) GetID() string {
+	if d.ID == "" {
+		return "create-item-tag-dialog"
+	}
+	return d.ID
+}
+
+templ (dialog createItemTagDialog) createItemTagBody() {
+	<form autocomplete="off" class="flex flex-col gap-6 form-control">
+		<fieldset class="flex flex-col gap-2">
+			<div class="form-control">
+				<div class="label">
+					<span class="label-text-alt text-lg">Name</span>
+				</div>
+				<input
+					name="name"
+					type="text"
+					minlength="1"
+					maxlength="80"
+					aria-label="tag name"
+					value={ dialog.Inputs["name"] }
+					class="input input-bordered grow"
+					placeholder="walmart"
+					onfocus="this.scrollIntoViewIfNeeded(true);"
+				/>
+				if err, ok := dialog.Errors["name"]; ok {
+					<div class="label">
+						<span class="label-text-alt text-error">{ err }</span>
+					</div>
+				}
+			</div>
+			<div class="form-control">
+				<div class="label flex flex-row justify-between">
+					<span class="label-text-alt text-lg">Description</span>
+					<span class="badge badge-info">Optional</span>
+				</div>
+				<textarea
+					type="text"
+					maxlength="80"
+					name="description"
+					aria-label="tag description"
+					class="textarea textarea-bordered"
+					placeholder="family shoppoing lists go here"
+					onfocus="this.scrollIntoViewIfNeeded(true);"
+				>{ dialog.Inputs["description"] }</textarea>
+				if err, ok :=  dialog.Errors["description"]; ok {
+					<div class="label">
+						<span class="label-text-alt text-error">{ err }</span>
+					</div>
+				}
+			</div>
+		</fieldset>
+		@common.Button().Attrs(templ.Attributes{
+			"hx-post":    fmt.Sprintf("/api/groups/%s/tags", dialog.GroupID),
+			"hx-select":  dialog.containerSelector,
+			"hx-target":  dialog.containerSelector,
+			"hx-swap":    "outerHTML",
+			"hx-trigger": "click",
+		}).Primary() {
+			Create a new tag
+		}
+	</form>
+}
+
+func (dialog createItemTagDialog) Render(button templ.Component) templ.Component {
+	dialog.Body = dialog.createItemTagBody()
+	dialog.ActionButton = button
+	return dialog.Dialog.Render()
+}
+
+func CreateItemTagDialog(containerSelector string, groupID string, open bool, inputs, errors map[string]string) templ.Component {
+	dialog := createItemTagDialog{Errors: errors, Inputs: inputs, GroupID: groupID, containerSelector: containerSelector}
+	dialog.ID = "create-new-item-dialog"
+	dialog.StartOpen = open
+	return dialog.Render(createItemTagButton(dialog.ShowScript()))
+}
+
+templ createItemTagButton(actionScript templ.ComponentScript) {
+	<button type="button" class="btn btn-sm" onclick={ actionScript }>+</button>
+}

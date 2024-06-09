@@ -1,0 +1,9 @@
+package tags
+
+import "github.com/cufee/shopping-list/prisma/db"
+
+templ ItemTag(groupID string, tag db.ItemTagModel, actions ...templ.Component) {
+	<span id={ "item-tag-" + tag.ID } class="">
+		{ tag.Name }
+	</span>
+}
