@@ -18,7 +18,7 @@ func Group(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	group, err := c.DB().Group.FindUnique(db.Group.ID.Equals(member.GroupID)).With(db.Group.Lists.Fetch()).Exec(c.Request().Context())
+	group, err := c.DB().Group.FindUnique(db.Group.ID.Equals(member.GroupID)).With(db.Group.Lists.Fetch(db.List.CreatedAt.Order(db.DESC))).Exec(c.Request().Context())
 	if db.IsErrNotFound(err) {
 		return c.Redirect(http.StatusTemporaryRedirect, "/app")
 	}
