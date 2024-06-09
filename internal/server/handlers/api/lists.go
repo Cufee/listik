@@ -9,12 +9,16 @@ import (
 	"github.com/cufee/shopping-list/prisma/db"
 )
 
+type ListPathParams struct {
+	ListID  string `param:"listId"`
+	GroupID string `param:"groupId"`
+}
+
 type ListCreateForm struct {
 	Name        string `form:"name"`
 	Description string `form:"description"`
 
-	ListID  string `param:"listId"`
-	GroupID string `param:"groupId"`
+	ListPathParams
 }
 
 func CreateList(c *handlers.Context) error {
@@ -46,4 +50,29 @@ func CreateList(c *handlers.Context) error {
 	}
 
 	return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/app/group/%s/list/%s", list.GroupID, list.ID))
+}
+
+func ListSetComplete(c *handlers.Context) error {
+	var data ListPathParams
+	if err := c.Bind(&data); err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update a list&context="+err.Error())
+	}
+
+	// Check if a user belong to this group
+	_, err := c.Member(data.GroupID)
+	if db.IsErrNotFound(err) {
+		return c.Redirect(http.StatusTemporaryRedirect, "/app")
+	}
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update a list&context="+err.Error())
+	}
+
+	// Update the list
+	newValue := c.QueryParam("checked") == "true"
+	list, err := c.DB().List.FindUnique(db.List.ID.Equals(data.ListID)).With(db.List.Group.Fetch(), db.List.Items.Fetch()).Update(db.List.Complete.Set(newValue)).Exec(c.Request().Context())
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new list&context="+err.Error())
+	}
+
+	return c.Page(http.StatusOK, app.List{List: list, Group: list.Group(), Items: list.Items()}.Render())
 }

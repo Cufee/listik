@@ -2,18 +2,31 @@ package list
 
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/templates/componenets"
+import "github.com/cufee/shopping-list/internal/logic"
 
 templ OverviewCard(list db.ListModel) {
 	@common.Card{
-		Title: common.Text(list.Name),
+		Title: listCardTitle(list),
 		Body:  listCardBody(list),
 	}.Render()
+}
+
+templ listCardTitle(list db.ListModel) {
+	<div class="flex flex-row flex-nowrap items-center justify-between grow">
+		@common.Text(list.Name, logic.StringIfElse(list.Complete, "line-through", ""))
+		if list.Complete {
+			<div class="tooltip tooltip-left text-secondary" data-tip="Completed">
+				@components.IconCheckCircled()
+			</div>
+		}
+	</div>
 }
 
 templ listCardBody(list db.ListModel) {
 	<div class="flex flex-col gap-3 grow">
 		if desc, ok := list.Desc(); ok && desc != "" {
-			@common.Text(desc, "text-lg")
+			@common.Text(desc, logic.StringIfElse(list.Complete, "text-lg line-through", "text-lg"))
 		} else {
 			...
 		}

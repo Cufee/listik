@@ -5,6 +5,7 @@ import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "fmt"
 import "github.com/cufee/shopping-list/internal/templates/componenets/list"
+import "github.com/cufee/shopping-list/internal/logic"
 
 type List struct {
 	List  *db.ListModel
@@ -19,26 +20,36 @@ templ (props List) Render() {
 			{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.List.GroupID)},
 			{Label: props.List.Name},
 		},
-	), common.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID))
+	), common.WithDescription(props.List.Desc), completeListButton(props.Group.ID, props.List.ID, props.List.Complete))
 	<div class="divider"></div>
 	<div class="flex flex-col gap-4">
 		<div id="list-items" class="flex flex-col gap-1">
 			for _, item := range props.Items {
-				@list.ListItem{Item: &item, GroupID: props.Group.ID}.Render()
+				@list.ListItem{Item: &item, GroupID: props.Group.ID, Disabled: props.List.Complete}.Render()
 			}
 		</div>
-		@list.NewListItem(props.List.GroupID, props.List.ID, "list-items", nil, nil)
+		if !props.List.Complete {
+			@list.NewListItem(props.List.GroupID, props.List.ID, "list-items", nil, nil)
+		}
 	</div>
 }
 
-templ manageListButton(groupId, listId string) {
+templ completeListButton(groupId, listId string, complete bool) {
 	<div>
-		<div class="tooltip tooltip-left" data-tip="Manage List">
-			<a href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s/manage", groupId, listId)) } hx-boost="true">
-				@common.Button("btn-square").Neutral() {
-					@components.IconCog()
+		<div class="tooltip tooltip-left" data-tip={ logic.StringIfElse(complete, "Mark not complete", "Mark complete") }>
+			@common.Button("btn-square").Attrs(templ.Attributes{
+				"hx-swap":    "outerHTML",
+				"hx-target":  "main",
+				"hx-select":  "main",
+				"hx-trigger": "click",
+				"hx-patch":   fmt.Sprintf("/api/groups/%s/lists/%s/complete?checked=%t", groupId, listId, !complete),
+			}).Neutral() {
+				if complete {
+					@components.IconUndo()
+				} else {
+					@components.IconDoubleCheck()
 				}
-			</a>
+			}
 		</div>
 	</div>
 }

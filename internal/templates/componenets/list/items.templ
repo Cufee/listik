@@ -6,8 +6,9 @@ import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "github.com/cufee/shopping-list/internal/logic"
 
 type ListItem struct {
-	Item    *db.ListItemModel
-	GroupID string
+	Item     *db.ListItemModel
+	GroupID  string
+	Disabled bool
 }
 
 func conditionalClass(condition bool, class string) string {
@@ -20,12 +21,13 @@ func conditionalClass(condition bool, class string) string {
 templ (props ListItem) Render() {
 	<div class="w-full join flex flex-row" id={ "list-item-" + props.Item.ID }>
 		@common.Button("join-item shrink grow flex flex-row flex-nowrap gap-2 justify-start items-center").Attrs(templ.Attributes{
+			"disabled":    props.Disabled,
 			"hx-swap":     "outerHTML",
 			"hx-target":   "#list-item-" + props.Item.ID,
 			"hx-selector": "#list-item-" + props.Item.ID,
 			"hx-put":      fmt.Sprintf("/api/groups/%s/lists/%s/items/%s/checked/?checked=%t", props.GroupID, props.Item.ListID, props.Item.ID, !props.Item.Checked),
 		}).Render() {
-			<input name="checked" type="checkbox" checked?={ props.Item.Checked } class={ "checkbox" + conditionalClass(props.Item.Checked, " checkbox-success") }/>
+			<input name="checked" type="checkbox" checked?={ props.Item.Checked } disabled?={ props.Disabled } class={ "checkbox" + conditionalClass(props.Item.Checked, " checkbox-success") }/>
 			@itemQuantityBadge(props.Item.Quantity)
 			<span class={ "break-all line-clamp-1" + conditionalClass(props.Item.Checked, " line-through") }>
 				{ props.Item.Name }

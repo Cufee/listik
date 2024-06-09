@@ -15,6 +15,7 @@ import "github.com/cufee/shopping-list/internal/templates/componenets"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "fmt"
 import "github.com/cufee/shopping-list/internal/templates/componenets/list"
+import "github.com/cufee/shopping-list/internal/logic"
 
 type List struct {
 	List  *db.ListModel
@@ -41,7 +42,7 @@ func (props List) Render() templ.Component {
 				{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.List.GroupID)},
 				{Label: props.List.Name},
 			},
-		), common.WithDescription(props.List.Desc), manageListButton(props.Group.ID, props.List.ID)).Render(ctx, templ_7745c5c3_Buffer)
+		), common.WithDescription(props.List.Desc), completeListButton(props.Group.ID, props.List.ID, props.List.Complete)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +51,7 @@ func (props List) Render() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range props.Items {
-			templ_7745c5c3_Err = list.ListItem{Item: &item, GroupID: props.Group.ID}.Render().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = list.ListItem{Item: &item, GroupID: props.Group.ID, Disabled: props.List.Complete}.Render().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -59,9 +60,11 @@ func (props List) Render() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = list.NewListItem(props.List.GroupID, props.List.ID, "list-items", nil, nil).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		if !props.List.Complete {
+			templ_7745c5c3_Err = list.NewListItem(props.List.GroupID, props.List.ID, "list-items", nil, nil).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
@@ -74,7 +77,7 @@ func (props List) Render() templ.Component {
 	})
 }
 
-func manageListButton(groupId, listId string) templ.Component {
+func completeListButton(groupId, listId string, complete bool) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -87,16 +90,20 @@ func manageListButton(groupId, listId string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><div class=\"tooltip tooltip-left\" data-tip=\"Manage List\"><a href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><div class=\"tooltip tooltip-left\" data-tip=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 templ.SafeURL = templ.URL(fmt.Sprintf("/app/group/%s/list/%s/manage", groupId, listId))
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(logic.StringIfElse(complete, "Mark not complete", "Mark complete"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/app/list.templ`, Line: 39, Col: 113}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-boost=\"true\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -106,20 +113,33 @@ func manageListButton(groupId, listId string) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = components.IconCog().Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+			if complete {
+				templ_7745c5c3_Err = components.IconUndo().Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = components.IconDoubleCheck().Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 			if !templ_7745c5c3_IsBuffer {
 				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = common.Button("btn-square").Neutral().Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = common.Button("btn-square").Attrs(templ.Attributes{
+			"hx-swap":    "outerHTML",
+			"hx-target":  "main",
+			"hx-select":  "main",
+			"hx-trigger": "click",
+			"hx-patch":   fmt.Sprintf("/api/groups/%s/lists/%s/complete?checked=%t", groupId, listId, !complete),
+		}).Neutral().Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

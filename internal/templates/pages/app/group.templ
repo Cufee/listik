@@ -21,14 +21,27 @@ templ (props Group) Render() {
 	<div class="divider"></div>
 	<div class="flex flex-row flex-wrap gap-2">
 		for _, l := range props.Lists {
-			<a class="flex-grow" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
-				@common.Button("text-start").Wrap() {
-					@list.OverviewCard(l)
-				}
-			</a>
+			if !l.Complete {
+				<a class="flex-grow" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
+					@common.Button("text-start").Wrap() {
+						@list.OverviewCard(l)
+					}
+				</a>
+			}
 		}
 	</div>
 	@CreateListDialog(props.Group.ID, false, nil, nil)
+	<div class="flex flex-row flex-wrap gap-2">
+		for _, l := range props.Lists {
+			if l.Complete {
+				<a class="flex-grow" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
+					@common.Button("text-start").Wrap() {
+						@list.OverviewCard(l)
+					}
+				</a>
+			}
+		}
+	</div>
 }
 
 templ manageGroupButton(groupId string) {

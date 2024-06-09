@@ -16,8 +16,9 @@ import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "github.com/cufee/shopping-list/internal/logic"
 
 type ListItem struct {
-	Item    *db.ListItemModel
-	GroupID string
+	Item     *db.ListItemModel
+	GroupID  string
+	Disabled bool
 }
 
 func conditionalClass(condition bool, class string) string {
@@ -47,7 +48,7 @@ func (props ListItem) Render() templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("list-item-" + props.Item.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 21, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 22, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -74,6 +75,12 @@ func (props ListItem) Render() templ.Component {
 			}
 			if props.Item.Checked {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			if props.Disabled {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" disabled")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -128,7 +135,7 @@ func (props ListItem) Render() templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.Item.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 31, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 33, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -144,6 +151,7 @@ func (props ListItem) Render() templ.Component {
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = common.Button("join-item shrink grow flex flex-row flex-nowrap gap-2 justify-start items-center").Attrs(templ.Attributes{
+			"disabled":    props.Disabled,
 			"hx-swap":     "outerHTML",
 			"hx-target":   "#list-item-" + props.Item.ID,
 			"hx-selector": "#list-item-" + props.Item.ID,
@@ -246,7 +254,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["name"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 63, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 65, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -264,7 +272,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(logic.StringIfElse(errors["name"] != "", errors["name"], "bananas"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 65, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 67, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -341,7 +349,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["price"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 93, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 95, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -359,7 +367,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 100, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 102, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -399,7 +407,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["quantity"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 114, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 116, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -417,7 +425,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 121, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 123, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -457,7 +465,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["description"])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 141, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 143, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -475,7 +483,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 145, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 147, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
