@@ -71,7 +71,7 @@ templ ManageGroupTags(groupID string, groupTags []db.ItemTagModel) {
 		<span class="font-bold text-xl">
 			Item Tags
 		</span>
-		<div class="flex flex-row gap-2 flex-wrap">
+		<div class="flex flex-row gap-2 flex-wrap items-center">
 			for _, tag := range groupTags {
 				@tags.ItemTag(groupID, tag)
 			}

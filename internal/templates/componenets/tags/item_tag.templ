@@ -3,7 +3,7 @@ package tags
 import "github.com/cufee/shopping-list/prisma/db"
 
 templ ItemTag(groupID string, tag db.ItemTagModel, actions ...templ.Component) {
-	<span id={ "item-tag-" + tag.ID } class="">
+	<span id={ "item-tag-" + tag.ID } class="bg-neutral text-neutral-content rounded-xl px-2 py-1 cursor-default">
 		{ tag.Name }
 	</span>
 }

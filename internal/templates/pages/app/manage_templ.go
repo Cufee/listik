@@ -119,7 +119,7 @@ func ManageGroupTags(groupID string, groupTags []db.ItemTagModel) templ.Componen
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-2\" id=\"manage-group-tags\"><span class=\"font-bold text-xl\">Item Tags</span><div class=\"flex flex-row gap-2 flex-wrap\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col gap-2\" id=\"manage-group-tags\"><span class=\"font-bold text-xl\">Item Tags</span><div class=\"flex flex-row gap-2 flex-wrap items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
