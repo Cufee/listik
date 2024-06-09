@@ -113,29 +113,22 @@ func completeListButton(groupId, listId string, complete bool) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			if complete {
-				templ_7745c5c3_Err = components.IconUndo().Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = components.IconDoubleCheck().Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+			templ_7745c5c3_Err = components.IconCheckCircled().Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
 			if !templ_7745c5c3_IsBuffer {
 				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = common.Button("btn-square").Attrs(templ.Attributes{
+		templ_7745c5c3_Err = common.Button("btn-square", logic.StringIfElse(complete, "btn-info", "btn-neutral")).Attrs(templ.Attributes{
 			"hx-swap":    "outerHTML",
 			"hx-target":  "main",
 			"hx-select":  "main",
 			"hx-trigger": "click",
 			"hx-patch":   fmt.Sprintf("/api/groups/%s/lists/%s/complete?checked=%t", groupId, listId, !complete),
-		}).Neutral().Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
+		}).Render().Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

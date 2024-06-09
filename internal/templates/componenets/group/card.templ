@@ -2,6 +2,8 @@ package group
 
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/logic"
+import "fmt"
 
 templ OverviewCard(group db.GroupModel) {
 	@common.Card{
@@ -17,6 +19,6 @@ templ groupCardBody(group db.GroupModel) {
 		} else {
 			...
 		}
-		@common.Text(group.CreatedAt.String(), "text-sm")
+		@common.Text(fmt.Sprintf("created %s", logic.FormatTimestamp(group.UpdatedAt)), "text-sm")
 	</div>
 }

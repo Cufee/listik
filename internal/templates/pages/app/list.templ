@@ -37,18 +37,14 @@ templ (props List) Render() {
 templ completeListButton(groupId, listId string, complete bool) {
 	<div>
 		<div class="tooltip tooltip-left" data-tip={ logic.StringIfElse(complete, "Mark not complete", "Mark complete") }>
-			@common.Button("btn-square").Attrs(templ.Attributes{
+			@common.Button("btn-square", logic.StringIfElse(complete, "btn-info", "btn-neutral")).Attrs(templ.Attributes{
 				"hx-swap":    "outerHTML",
 				"hx-target":  "main",
 				"hx-select":  "main",
 				"hx-trigger": "click",
 				"hx-patch":   fmt.Sprintf("/api/groups/%s/lists/%s/complete?checked=%t", groupId, listId, !complete),
-			}).Neutral() {
-				if complete {
-					@components.IconUndo()
-				} else {
-					@components.IconDoubleCheck()
-				}
+			}).Render() {
+				@components.IconCheckCircled()
 			}
 		</div>
 	</div>

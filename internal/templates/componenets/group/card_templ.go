@@ -12,6 +12,8 @@ import "bytes"
 
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "github.com/cufee/shopping-list/prisma/db"
+import "github.com/cufee/shopping-list/internal/logic"
+import "fmt"
 
 func OverviewCard(group db.GroupModel) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -68,7 +70,7 @@ func groupCardBody(group db.GroupModel) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = common.Text(group.CreatedAt.String(), "text-sm").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = common.Text(fmt.Sprintf("created %s", logic.FormatTimestamp(group.UpdatedAt)), "text-sm").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

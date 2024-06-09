@@ -64,7 +64,7 @@ func listCardTitle(list db.ListModel) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if list.Complete {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"tooltip tooltip-left text-secondary\" data-tip=\"Completed\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"tooltip tooltip-left text-info\" data-tip=\"Completed\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -116,7 +116,7 @@ func listCardBody(list db.ListModel) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = common.Text(list.CreatedAt.String(), "text-sm").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = common.Text("updated "+logic.FormatTimestamp(list.UpdatedAt), "text-sm").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

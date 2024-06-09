@@ -16,7 +16,7 @@ templ listCardTitle(list db.ListModel) {
 	<div class="flex flex-row flex-nowrap items-center justify-between grow">
 		@common.Text(list.Name, logic.StringIfElse(list.Complete, "line-through", ""))
 		if list.Complete {
-			<div class="tooltip tooltip-left text-secondary" data-tip="Completed">
+			<div class="tooltip tooltip-left text-info" data-tip="Completed">
 				@components.IconCheckCircled()
 			</div>
 		}
@@ -30,6 +30,6 @@ templ listCardBody(list db.ListModel) {
 		} else {
 			...
 		}
-		@common.Text(list.CreatedAt.String(), "text-sm")
+		@common.Text("updated "+logic.FormatTimestamp(list.UpdatedAt), "text-sm")
 	</div>
 }
