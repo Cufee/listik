@@ -22,7 +22,7 @@ templ (props Group) Render() {
 	<div class="flex flex-row flex-wrap -m-1.5">
 		for _, l := range props.Lists {
 			if !l.Complete {
-				<a class="flex-grow basis-1/3 p-1.5" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
+				<a class="flex-grow basis-full xs:basis-1/2 sm:basis-1/3 p-1.5" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
 					@common.Button("text-start").Wrap() {
 						@list.OverviewCard(l)
 					}
@@ -34,7 +34,7 @@ templ (props Group) Render() {
 	<div class="flex flex-row flex-wrap -m-1.5">
 		for _, l := range props.Lists {
 			if l.Complete {
-				<a class="flex-grow p-1.5 basis-1/3" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
+				<a class="flex-grow p-1.5 basis-full xs:basis-1/2 sm:basis-1/3" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
 					@common.Button("text-start").Wrap() {
 						@list.OverviewCard(l)
 					}
