@@ -21,6 +21,7 @@ type ListItem struct {
 	Item     *db.ListItemModel
 	GroupID  string
 	Disabled bool
+	ViewMode bool
 }
 
 func conditionalClass(condition bool, class string) string {
@@ -50,7 +51,7 @@ func (props ListItem) Render() templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("list-item-" + props.Item.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 24, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 25, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -137,7 +138,7 @@ func (props ListItem) Render() templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.Item.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 35, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 37, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -153,43 +154,50 @@ func (props ListItem) Render() templ.Component {
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = common.Button("join-item shrink grow flex flex-row flex-nowrap gap-2 justify-start items-center").Attrs(templ.Attributes{
-			"disabled":    props.Disabled,
-			"hx-swap":     "outerHTML",
-			"hx-target":   "#list-item-" + props.Item.ID,
-			"hx-selector": "#list-item-" + props.Item.ID,
-			"hx-put":      fmt.Sprintf("/api/groups/%s/lists/%s/items/%s/checked/?checked=%t", props.GroupID, props.Item.ListID, props.Item.ID, !props.Item.Checked),
+			"disabled":             props.Disabled,
+			"hx-target":            "#list-items",
+			"hx-selector":          "#list-item-" + props.Item.ID,
+			"hx-on::after-request": "this.parentElement?.remove()",
+			"hx-swap":              logic.StringIfElse(props.Item.Checked, "afterbegin", "beforeend"),
+			"hx-put":               fmt.Sprintf("/api/groups/%s/lists/%s/items/%s/checked/?checked=%t&mode=%s", props.GroupID, props.Item.ListID, props.Item.ID, !props.Item.Checked, logic.StringIfElse(props.ViewMode, "view", "")),
 		}).Render().Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"tooltip tooltip-left\" data-tip=\"Delete\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var9 := templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
-			if !templ_7745c5c3_IsBuffer {
-				templ_7745c5c3_Buffer = templ.GetBuffer()
-				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
-			}
-			templ_7745c5c3_Err = components.IconTrash().Render(ctx, templ_7745c5c3_Buffer)
+		if !props.ViewMode {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"tooltip tooltip-left\" data-tip=\"Delete\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if !templ_7745c5c3_IsBuffer {
-				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Var9 := templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+				if !templ_7745c5c3_IsBuffer {
+					templ_7745c5c3_Buffer = templ.GetBuffer()
+					defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+				}
+				templ_7745c5c3_Err = components.IconTrash().Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if !templ_7745c5c3_IsBuffer {
+					_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
+				}
+				return templ_7745c5c3_Err
+			})
+			templ_7745c5c3_Err = common.Button("join-item btn-square").Attrs(templ.Attributes{
+				"hx-delete": fmt.Sprintf("/api/groups/%s/lists/%s/items/%s", props.GroupID, props.Item.ListID, props.Item.ID),
+				"hx-target": "#list-item-" + props.Item.ID,
+				"hx-swap":   "delete",
+			}).Neutral().Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
-			return templ_7745c5c3_Err
-		})
-		templ_7745c5c3_Err = common.Button("join-item btn-square").Attrs(templ.Attributes{
-			"hx-delete": fmt.Sprintf("/api/groups/%s/lists/%s/items/%s", props.GroupID, props.Item.ListID, props.Item.ID),
-			"hx-target": "#list-item-" + props.Item.ID,
-			"hx-swap":   "delete",
-		}).Neutral().Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -260,7 +268,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(inputs["name"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 69, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 73, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -278,7 +286,7 @@ func NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors 
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(logic.StringIfElse(errors["name"] != "", errors["name"], "bananas"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 71, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/componenets/list/items.templ`, Line: 75, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {

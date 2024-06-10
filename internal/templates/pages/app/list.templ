@@ -8,9 +8,10 @@ import "github.com/cufee/shopping-list/internal/templates/componenets/list"
 import "github.com/cufee/shopping-list/internal/logic"
 
 type List struct {
-	List  *db.ListModel
-	Group *db.GroupModel
-	Items []db.ListItemModel
+	List     *db.ListModel
+	Group    *db.GroupModel
+	Items    []db.ListItemModel
+	ViewMode bool
 }
 
 templ (props List) Render() {
@@ -20,7 +21,7 @@ templ (props List) Render() {
 			{Label: props.Group.Name, Href: fmt.Sprintf("/app/group/%s", props.List.GroupID)},
 			{Label: props.List.Name},
 		},
-	), common.WithDescription(props.List.Desc), completeListButton(props.Group.ID, props.List.ID, props.List.Complete))
+	), common.WithDescription(props.List.Desc), props.viewModeListButton(), props.completeListButton())
 	<div class="divider"></div>
 	<div class="flex flex-col gap-4">
 		<div id="list-items" class="flex flex-col gap-1">
@@ -30,27 +31,41 @@ templ (props List) Render() {
 				</div>
 			}
 			for _, item := range props.Items {
-				@list.ListItem{Item: &item, GroupID: props.Group.ID, Disabled: props.List.Complete}.Render()
+				@list.ListItem{Item: &item, GroupID: props.Group.ID, Disabled: props.List.Complete, ViewMode: props.ViewMode}.Render()
 			}
 		</div>
-		if !props.List.Complete {
+		if !props.List.Complete && !props.ViewMode {
 			@list.NewListItem(props.List.GroupID, props.List.ID, "list-items", nil, nil)
 		}
 	</div>
 }
 
-templ completeListButton(groupId, listId string, complete bool) {
+templ (props List) completeListButton() {
 	<div>
-		<div class="tooltip tooltip-left" data-tip={ logic.StringIfElse(complete, "Mark not complete", "Mark complete") }>
-			@common.Button("btn-square", logic.StringIfElse(complete, "btn-info", "btn-neutral")).Attrs(templ.Attributes{
+		<div class="tooltip tooltip-left" data-tip={ logic.StringIfElse(props.List.Complete, "Mark not complete", "Mark complete") }>
+			@common.Button("btn-square", logic.StringIfElse(props.List.Complete, "btn-info", "btn-neutral")).Attrs(templ.Attributes{
 				"hx-swap":    "outerHTML",
 				"hx-target":  "main",
 				"hx-select":  "main",
 				"hx-trigger": "click",
-				"hx-patch":   fmt.Sprintf("/api/groups/%s/lists/%s/complete?checked=%t", groupId, listId, !complete),
+				"hx-patch":   fmt.Sprintf("/api/groups/%s/lists/%s/complete?checked=%t", props.Group.ID, props.List.ID, !props.List.Complete),
 			}).Render() {
 				@components.IconCheckCircled()
 			}
 		</div>
 	</div>
+}
+
+templ (props List) viewModeListButton() {
+	if !props.List.Complete {
+		<div>
+			<div class="tooltip tooltip-left" data-tip="Open in Shopping Mode">
+				<a href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s/%s", props.Group.ID, props.List.ID, logic.StringIfElse(props.ViewMode, "", "?mode=view"))) } hx-boost="true">
+					@common.Button("btn-square", logic.StringIfElse(props.ViewMode, "btn-info", "btn-primary")).Attrs(templ.Attributes{}).Render() {
+						@components.IconEye()
+					}
+				</a>
+			</div>
+		</div>
+	}
 }

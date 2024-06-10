@@ -69,10 +69,10 @@ func New(db *db.PrismaClient, assets fs.FS) *echo.Echo {
 	eApp := e.Group("/app", sessionCheckMiddleware(db))
 
 	eApp.Any("/", withContext(app.Home))
-	eApp.GET("/group/:groupId/", withContext(app.Group))
-	eApp.GET("/group/:groupId/manage/", withContext(app.ManageGroup))
-	eApp.GET("/group/:groupId/list/:listId/", withContext(app.List))
-	eApp.GET("/settings/", withContext(app.Settings))
+	eApp.Any("/group/:groupId/", withContext(app.Group))
+	eApp.Any("/group/:groupId/manage/", withContext(app.ManageGroup))
+	eApp.Any("/group/:groupId/list/:listId/", withContext(app.List))
+	eApp.Any("/settings/", withContext(app.Settings))
 
 	eApi := e.Group("/api", sessionCheckMiddleware(db))
 

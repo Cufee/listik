@@ -70,10 +70,15 @@ func ListSetComplete(c *handlers.Context) error {
 
 	// Update the list
 	newValue := c.QueryParam("checked") == "true"
-	list, err := c.DB().List.FindUnique(db.List.ID.Equals(data.ListID)).With(db.List.Group.Fetch(), db.List.Items.Fetch()).Update(db.List.Complete.Set(newValue)).Exec(c.Request().Context())
+	list, err := c.DB().List.FindUnique(db.List.ID.Equals(data.ListID)).With(db.List.Group.Fetch()).Update(db.List.Complete.Set(newValue)).Exec(c.Request().Context())
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new list&context="+err.Error())
 	}
 
-	return c.Page(http.StatusOK, app.List{List: list, Group: list.Group(), Items: list.Items()}.Render())
+	items, err := c.DB().ListItem.FindMany(db.ListItem.ListID.Equals(list.ID)).OrderBy(db.ListItem.Checked.Order(db.ASC), db.ListItem.Name.Order(db.ASC)).Exec(c.Request().Context())
+	if err != nil {
+		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
+	}
+
+	return c.Page(http.StatusOK, app.List{List: list, Group: list.Group(), Items: items, ViewMode: c.QueryParam("mode") == "view"}.Render())
 }

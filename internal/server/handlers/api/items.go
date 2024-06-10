@@ -165,5 +165,5 @@ func ItemSetChecked(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to update and item&context="+err.Error())
 	}
 
-	return c.Partial(http.StatusOK, list.ListItem{Item: updatedItem, GroupID: data.GroupID}.Render())
+	return c.Partial(http.StatusOK, list.ListItem{Item: updatedItem, GroupID: data.GroupID, ViewMode: c.QueryParam("mode") == "view"}.Render())
 }
