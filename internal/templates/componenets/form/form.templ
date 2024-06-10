@@ -1,0 +1,33 @@
+package form
+
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+
+type formField interface {
+	Render() templ.Component
+}
+
+type form struct {
+	fields []formField
+
+	style *common.Style
+}
+
+func (f form) Class(classes ...string) form {
+	f.style.WithClass(classes...)
+	return f
+}
+
+func Form(fields ...formField) form {
+	style := &common.Style{}
+	style.WithClass("form-control")
+	return form{fields: fields, style: style}
+}
+
+templ (f form) Render() {
+	<form class={ f.style.Class() } autocomplete="off">
+		for _, field := range f.fields {
+			@field.Render()
+		}
+		{ children... }
+	</form>
+}

@@ -5,6 +5,7 @@ import "fmt"
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
 import "github.com/cufee/shopping-list/internal/logic"
 import "github.com/cufee/shopping-list/internal/templates/componenets"
+import "github.com/cufee/shopping-list/internal/templates/componenets/form"
 
 type ListItem struct {
 	Item     *db.ListItemModel
@@ -76,7 +77,7 @@ templ NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors
 					"hx-swap":              "beforeend",
 					"hx-target":            "#" + itemsContainerSelector,
 					"hx-post":              fmt.Sprintf("/api/groups/%s/lists/%s/items?container=%s", groupID, listID, itemsContainerSelector),
-					"hx-on::after-request": "if(event.detail.xhr.status==201)document.getElementById('create-list-item-form').querySelectorAll('[name]').forEach(e=>{e.value='';e.innterText='';});",
+					"hx-on::after-request": afterPostRequestScript(),
 				}).Primary() {
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
@@ -84,73 +85,12 @@ templ NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors
 				}
 			</div>
 			<div class="collapse-content p-0 pb-2 rounded-xl flex flex-col mt-2 overflow-hidden" id="add-new-item-expanded">
-				<div class="flex flex-row flex-wrap gap-2">
-					<div class="form-control grow" id="create-list-item-form-price">
-						<div class={ "input input-bordered flex gap-2 items-center" + logic.StringIfElse(errors["price"] != "", " input-error", "") }>
-							Price
-							<input
-								type="text"
-								name="price"
-								maxlength="80"
-								placeholder="2.99"
-								aria-label="item price"
-								class="grow text-right"
-								value={ inputs["price"] }
-								onfocus="this.scrollIntoViewIfNeeded(true);"
-								hx-on:input="document.querySelector('#create-list-item-form-price div').classList.remove('input-error');document.querySelector('#create-list-item-form-price .error')?.remove();"
-							/>
-						</div>
-						if err, ok :=  errors["price"]; ok {
-							<div class="label error">
-								<span class="label-text-alt text-error">{ err }</span>
-							</div>
-						}
-					</div>
-					<div class="form-control grow" id="create-list-item-form-quantity">
-						<div class={ "input input-bordered flex gap-2 items-center" + logic.StringIfElse(errors["quantity"] != "", " input-error", "") }>
-							Quantity
-							<input
-								min="0"
-								type="number"
-								name="quantity"
-								placeholder="3"
-								class="grow text-right"
-								aria-label="item quantity"
-								value={ inputs["quantity"] }
-								onfocus="this.scrollIntoViewIfNeeded(true);"
-								hx-on:input="document.querySelector('#create-list-item-form-quantity div').classList.remove('input-error');document.querySelector('#create-list-item-form-quantity .error')?.remove();"
-							/>
-						</div>
-						if err, ok := errors["quantity"]; ok {
-							<div class="label error">
-								<span class="label-text-alt text-error">{ err }</span>
-							</div>
-						}
-					</div>
+				<div class="flex flex-row flex-wrap gap-2 grow">
+					@form.TextInput("price", "Price", "2.99", inputs["price"], errors["price"], form.InlineLabel(), form.Max("80")).Render()
+					@form.TextInput("quantity", "Quantity", "3", inputs["quantity"], errors["quantity"], form.InlineLabel(), form.Max("80"), form.Type("number")).Render()
 				</div>
-				<div id="create-list-item-form-description">
-					<div class="form-control">
-						<div class="label flex flex-row justify-between">
-							<span class="text-lg text-neutral-content">Description</span>
-						</div>
-						<textarea
-							maxlength="80"
-							type="text"
-							name="description"
-							aria-label="item description"
-							onfocus="this.scrollIntoViewIfNeeded(true);"
-							placeholder="only if it's on the 3rd shelf when counting from checkout #19"
-							class={ "textarea textarea-bordered" + logic.StringIfElse(errors["description"] != "", " textarea-error", "") }
-							hx-on:input="event.target.classList.remove('textarea-error');document.querySelector('#create-list-item-form-description .error')?.remove()"
-						>
-							{ inputs["description"] }
-						</textarea>
-						if err, ok :=  errors["description"]; ok {
-							<div class="label error">
-								<span class="label-text-alt text-error">{ err }</span>
-							</div>
-						}
-					</div>
+				<div id="create-list-item-form-description" class="flex flex-col text-neutral-content">
+					@form.TextAreaInput("description", "Description", "only if it's on the 3rd shelf when counting from checkout #19", inputs["description"], errors["description"], form.Max("80")).Render()
 				</div>
 			</div>
 		</div>
@@ -163,6 +103,15 @@ templ NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors
 			more fields
 		</button>
 	</form>
+}
+
+func afterPostRequestScript() string {
+	return common.MinifyScript(`
+		if (event.detail.xhr.status==201) {
+			document.getElementById('create-list-item-form').querySelectorAll('[name]').forEach(e=>{e.value='';e.innterText='';})
+			document.getElementById('list-empty-hint')?.remove()
+		}`,
+	)
 }
 
 script toggleMoreFields() {

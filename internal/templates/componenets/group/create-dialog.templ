@@ -1,6 +1,7 @@
 package group
 
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/internal/templates/componenets/form"
 
 type CreateGroupDialog struct {
 	Header string
@@ -18,57 +19,20 @@ func (d *CreateGroupDialog) GetID() string {
 }
 
 templ createGroupBody(selector string, inputs, errors map[string]string) {
-	<form autocomplete="off" class="flex flex-col gap-6 form-control">
-		<fieldset class="flex flex-col gap-2">
-			<div class="form-control">
-				<div class="label">
-					<span class="label-text-alt text-lg">Name</span>
-				</div>
-				<input
-					name="name"
-					type="text"
-					minlength="1"
-					maxlength="80"
-					aria-label="group name"
-					value={ inputs["name"] }
-					class="input input-bordered grow"
-					placeholder="my awesome group to organize lists"
-					onfocus="this.scrollIntoViewIfNeeded(true);"
-				/>
-				if err, ok := errors["name"]; ok {
-					<div class="label">
-						<span class="label-text-alt text-error">{ err }</span>
-					</div>
-				}
-			</div>
-			<div class="form-control">
-				<div class="label flex flex-row justify-between">
-					<span class="label-text-alt text-lg">Description</span>
-					<span class="badge badge-info">Optional</span>
-				</div>
-				<textarea
-					type="text"
-					maxlength="80"
-					name="description"
-					aria-label="group description"
-					class="textarea textarea-bordered"
-					placeholder="family shoppoing lists go here"
-					onfocus="this.scrollIntoViewIfNeeded(true);"
-				>{ inputs["description"] }</textarea>
-				if err, ok :=  errors["description"]; ok {
-					<div class="label">
-						<span class="label-text-alt text-error">{ err }</span>
-					</div>
-				}
-			</div>
-		</fieldset>
-		@common.Button().Attrs(templ.Attributes{
+	@form.Form(
+		form.TextInput("name", "Name", "my awesome group to organize lists", inputs["name"], errors["name"], form.Min("1"), form.Max("80")),
+		form.TextAreaInput("description", "Description", "family shoppoing lists go here", inputs["description"], errors["description"], form.Min("1"), form.Max("80"), form.Optional()),
+	).Class("flex flex-col gap-2").Render() {
+		@common.Button("grow").Attrs(templ.Attributes{
 			"hx-post":    "/api/groups/",
-			"hx-trigger": "click", "hx-target": selector, "hx-select": selector, "hx-swap": "outerHTML",
+			"hx-swap":    "outerHTML",
+			"hx-target":  selector,
+			"hx-select":  selector,
+			"hx-trigger": "click",
 		}).Primary() {
 			Create a new group
 		}
-	</form>
+	}
 }
 
 func (dialog CreateGroupDialog) Render(button templ.Component) templ.Component {

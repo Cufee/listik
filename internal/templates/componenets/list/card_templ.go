@@ -59,7 +59,7 @@ func listCardTitle(list db.ListModel) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = common.Text(list.Name, logic.StringIfElse(list.Complete, "line-through", "")).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = common.Text(list.Name, logic.StringIfElse(list.Complete, "line-through", ""), "line-clamp-1").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -106,7 +106,7 @@ func listCardBody(list db.ListModel) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if desc, ok := list.Desc(); ok && desc != "" {
-			templ_7745c5c3_Err = common.Text(desc, logic.StringIfElse(list.Complete, "text-lg line-through", "text-lg")).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = common.Text(desc, logic.StringIfElse(list.Complete, "line-through", ""), "line-clamp-3", "text-lg").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

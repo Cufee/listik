@@ -17,7 +17,7 @@ templ (props Home) Render() {
 	<div class="divider"></div>
 	<div class="flex flex-row flex-wrap -m-1.5">
 		for _, g := range props.Groups {
-			<a class="flex-grow m-1.5 basis-1/3" href={ templ.URL("/app/group/" + g.ID) } hx-boost="true">
+			<a class="flex-grow m-1.5 basis-full xs:basis-1/2 sm:basis-1/3" href={ templ.URL("/app/group/" + g.ID) } hx-boost="true">
 				@common.Button("text-start").Wrap() {
 					@group.OverviewCard(g)
 				}

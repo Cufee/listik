@@ -1,6 +1,8 @@
 package api
 
-import "reflect"
+import (
+	"reflect"
+)
 
 func makeInputsMap(data any) map[string]string {
 	dataType := reflect.TypeOf(data)
@@ -14,7 +16,7 @@ func makeInputsMap(data any) map[string]string {
 		field := dataType.Field(i)
 		value := dataValues.Field(i)
 		if name := field.Tag.Get("form"); name != "" {
-			inputs[field.Name] = value.String()
+			inputs[name] = value.String()
 		}
 	}
 

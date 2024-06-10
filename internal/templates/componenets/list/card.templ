@@ -14,7 +14,7 @@ templ OverviewCard(list db.ListModel) {
 
 templ listCardTitle(list db.ListModel) {
 	<div class="flex flex-row flex-nowrap items-center justify-between grow">
-		@common.Text(list.Name, logic.StringIfElse(list.Complete, "line-through", ""))
+		@common.Text(list.Name, logic.StringIfElse(list.Complete, "line-through", ""), "line-clamp-1")
 		if list.Complete {
 			<div class="tooltip tooltip-left text-info" data-tip="Completed">
 				@components.IconCheckCircled()
@@ -26,7 +26,7 @@ templ listCardTitle(list db.ListModel) {
 templ listCardBody(list db.ListModel) {
 	<div class="flex flex-col gap-3 grow">
 		if desc, ok := list.Desc(); ok && desc != "" {
-			@common.Text(desc, logic.StringIfElse(list.Complete, "text-lg line-through", "text-lg"))
+			@common.Text(desc, logic.StringIfElse(list.Complete, "line-through", ""), "line-clamp-3", "text-lg")
 		} else {
 			...
 		}

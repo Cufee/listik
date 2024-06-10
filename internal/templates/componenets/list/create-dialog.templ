@@ -3,6 +3,7 @@ package list
 import "fmt"
 
 import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+import "github.com/cufee/shopping-list/internal/templates/componenets/form"
 
 type CreateListDialog struct {
 	Header  string
@@ -21,57 +22,20 @@ func (d *CreateListDialog) GetID() string {
 }
 
 templ createListBody(groupId string, selector string, inputs map[string]string, errors map[string]string) {
-	<form autocomplete="off" class="flex flex-col gap-6 form-control">
-		<fieldset class="flex flex-col gap-2">
-			<div class="form-control">
-				<div class="label">
-					<span class="label-text-alt text-lg">Name</span>
-				</div>
-				<input
-					name="name"
-					type="text"
-					minlength="1"
-					maxlength="80"
-					aria-label="group name"
-					value={ inputs["name"] }
-					class="input input-bordered grow"
-					placeholder="pokemon cards to buy"
-					onfocus="this.scrollIntoViewIfNeeded(true);"
-				/>
-				if err, ok := errors["name"]; ok {
-					<div class="label">
-						<span class="label-text-alt text-error">{ err }</span>
-					</div>
-				}
-			</div>
-			<div class="form-control">
-				<div class="label flex flex-row justify-between">
-					<span class="label-text-alt text-lg">Description</span>
-					<span class="badge badge-info">Optional</span>
-				</div>
-				<textarea
-					maxlength="80"
-					type="text"
-					name="description"
-					aria-label="group description"
-					class="textarea textarea-bordered"
-					placeholder="a super secret list, please don't look"
-					onfocus="this.scrollIntoViewIfNeeded(true);"
-				>{ inputs["description"] }</textarea>
-				if err, ok := errors["description"]; ok {
-					<div class="label">
-						<span class="label-text-alt text-error">{ err }</span>
-					</div>
-				}
-			</div>
-		</fieldset>
+	@form.Form(
+		form.TextInput("name", "Name", "pokemon cards to buy", inputs["name"], errors["name"], form.Min("1"), form.Max("80")),
+		form.TextAreaInput("description", "Description", "a super secret list, please don't look", inputs["description"], errors["description"], form.Min("1"), form.Max("80"), form.Optional()),
+	).Class("flex flex-col gap-2").Render() {
 		@common.Button().Attrs(templ.Attributes{
 			"hx-post":    fmt.Sprintf("/api/groups/%s/lists", groupId),
-			"hx-trigger": "click", "hx-target": selector, "hx-select": selector, "hx-swap": "outerHTML",
+			"hx-swap":    "outerHTML",
+			"hx-target":  selector,
+			"hx-select":  selector,
+			"hx-trigger": "click",
 		}).Primary() {
 			Create a new list
 		}
-	</form>
+	}
 }
 
 func (dialog CreateListDialog) Render(button templ.Component) templ.Component {

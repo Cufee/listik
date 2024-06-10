@@ -1,0 +1,188 @@
+package form
+
+import "github.com/cufee/shopping-list/internal/logic"
+import "strings"
+import "github.com/cufee/shopping-list/internal/templates/componenets/common"
+
+type inputOptions struct {
+	min         string
+	max         string
+	optional    bool
+	inlineLabel bool
+	inputType   string
+	ariaLabel   string
+}
+
+type inputOption func(*inputOptions)
+
+type input struct {
+	name        string
+	label       string
+	placeholder string
+
+	err   string
+	value string
+
+	inputOptions
+	style *common.Style
+}
+
+templ (i *input) wrapInput() {
+	if i.inlineLabel {
+		<div class={ "grow input input-bordered flex gap-2 items-center" + logic.StringIfElse(i.err != "", " input-error", "") }>
+			{ children... }
+		</div>
+	} else {
+		{ children... }
+	}
+}
+
+func InlineLabel() inputOption {
+	return func(io *inputOptions) {
+		io.inlineLabel = true
+	}
+}
+
+func Optional() inputOption {
+	return func(io *inputOptions) {
+		io.optional = true
+	}
+}
+
+func Type(value string) inputOption {
+	return func(io *inputOptions) {
+		io.inputType = value
+	}
+}
+
+func AriaLabel(value string) inputOption {
+	return func(io *inputOptions) {
+		io.ariaLabel = value
+	}
+}
+
+func Min(value string) inputOption {
+	return func(io *inputOptions) {
+		io.min = value
+	}
+}
+
+func Max(value string) inputOption {
+	return func(io *inputOptions) {
+		io.max = value
+	}
+}
+
+type textInput struct {
+	*input
+}
+
+func (i *textInput) Class(classes ...string) *textInput {
+	i.style.WithClass(classes...)
+	return i
+}
+
+func TextInput(name, label, placeholder, value, err string, opts ...inputOption) *textInput {
+	options := inputOptions{inputType: "text"}
+	for _, apply := range opts {
+		apply(&options)
+	}
+
+	style := &common.Style{}
+	style.WithClass("input input-bordered text-base-content grow")
+	return &textInput{input: &input{name: name, label: label, value: value, placeholder: placeholder, err: err, style: style, inputOptions: options}}
+}
+
+templ (el *textInput) Render() {
+	if !el.inlineLabel && el.label != "" {
+		<div class="label flex flex-row justify-between">
+			<span class="text-lg">{ el.label }</span>
+			if el.optional {
+				<span class="badge badge-info">Optional</span>
+			}
+		</div>
+	}
+	@el.wrapInput() {
+		if el.inlineLabel && el.label != "" {
+			{ el.label }
+		}
+		<input
+			name={ el.name }
+			value={ el.value }
+			class={ logic.StringIfElse(!el.inlineLabel, el.style.Class(), "grow text-right") }
+			type={ el.inputType }
+			if el.min != "" {
+				if el.inputType == "text" {
+					minlength={ el.min }
+				}
+				if el.inputType == "number" {
+					min={ el.min }
+				}
+			}
+			if el.max != "" {
+				if el.inputType == "text" {
+					maxlength={ el.max }
+				}
+				if el.inputType == "number" {
+					max={ el.max }
+				}
+			}
+			placeholder={ el.placeholder }
+			onfocus="this.scrollIntoViewIfNeeded(true);"
+			aria-label={ logic.StringIfElse(el.ariaLabel != "", el.ariaLabel, strings.ToLower(el.label)) }
+			oninput="this.parentElement.classList.remove('input-error');this.parentElement.querySelector('.error')?.remove();"
+		/>
+	}
+	if el.err != "" {
+		<div class="label error">
+			<span class="text-error">{ el.err }</span>
+		</div>
+	}
+}
+
+type textAreaInput struct {
+	*input
+}
+
+func (i *textAreaInput) Class(classes ...string) *textAreaInput {
+	i.style.WithClass(classes...)
+	return i
+}
+
+func TextAreaInput(name, label, placeholder, value, err string, opts ...inputOption) *textAreaInput {
+	options := inputOptions{inputType: "text"}
+	for _, apply := range opts {
+		apply(&options)
+	}
+
+	style := &common.Style{}
+	style.WithClass("textarea textarea-bordered grow text-base-content")
+	return &textAreaInput{input: &input{name: name, label: label, value: value, placeholder: placeholder, err: err, style: style, inputOptions: options}}
+}
+
+templ (el *textAreaInput) Render() {
+	if el.label != "" {
+		<div class="label flex flex-row justify-between">
+			<span class="text-lg">{ el.label }</span>
+			if el.optional {
+				<span class="badge badge-info">Optional</span>
+			}
+		</div>
+	}
+	@el.wrapInput() {
+		<textarea
+			name={ el.name }
+			class={ el.style.Class() }
+			type={ el.inputType }
+			placeholder={ el.placeholder }
+			onfocus="this.scrollIntoViewIfNeeded(true);"
+			aria-label={ logic.StringIfElse(el.ariaLabel != "", el.ariaLabel, strings.ToLower(el.label)) }
+			oninput="this.parentElement.classList.remove('input-error');this.parentElement.querySelector('.error')?.remove();"
+		>{ el.value }</textarea>
+		if el.err != "" {
+			<div class="label">
+				<span class="text-error">{ el.err }</span>
+			</div>
+		}
+	}
+}

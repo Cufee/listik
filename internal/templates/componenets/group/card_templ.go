@@ -29,7 +29,7 @@ func OverviewCard(group db.GroupModel) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = common.Card{
-			Title: common.Text(group.Name),
+			Title: common.Text(group.Name, "line-clamp-1"),
 			Body:  groupCardBody(group),
 		}.Render().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -60,7 +60,7 @@ func groupCardBody(group db.GroupModel) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if desc, ok := group.Desc(); ok && desc != "" {
-			templ_7745c5c3_Err = common.Text(desc, "text-lg").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = common.Text(desc, "text-lg", "line-clamp-3").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

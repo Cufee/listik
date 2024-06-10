@@ -44,7 +44,7 @@ func (props Home) Render() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, g := range props.Groups {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow m-1.5 basis-1/3\" href=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"flex-grow m-1.5 basis-full xs:basis-1/2 sm:basis-1/3\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
