@@ -20,7 +20,7 @@ func Login(c *Context) error {
 		return c.Page(http.StatusOK, pages.Login())
 	}
 
-	_, err = logic.GetAndVerifyUserSession(c.Request().Context(), c.DB(), sessionCookie.Value, logic.StringToIdentifier(c.RealIP()))
+	_, err = logic.GetAndVerifyUserSession(c.Request().Context(), c.DB(), sessionCookie.Value)
 	if err != nil {
 		return c.Page(http.StatusOK, pages.Login())
 	}
@@ -37,7 +37,7 @@ func Logout(c *Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/")
 	}
 
-	session, err := logic.GetAndVerifyUserSession(c.Request().Context(), c.DB(), sessionCookie.Value, logic.StringToIdentifier(c.RealIP()))
+	session, err := logic.GetAndVerifyUserSession(c.Request().Context(), c.DB(), sessionCookie.Value)
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/")
 	}

@@ -31,7 +31,7 @@ func sessionCheckMiddleware(client *db.PrismaClient) echo.MiddlewareFunc {
 				return c.Redirect(http.StatusTemporaryRedirect, "/login")
 			}
 
-			session, err := logic.GetAndVerifyUserSession(c.Request().Context(), client, sessionCookie.Value, logic.StringToIdentifier(c.RealIP()))
+			session, err := logic.GetAndVerifyUserSession(c.Request().Context(), client, sessionCookie.Value)
 			if err != nil {
 				if !db.IsErrNotFound(err) {
 					log.Err(err).Str("sessionValue", sessionCookie.Value).Msg("failed to retrieve a session")

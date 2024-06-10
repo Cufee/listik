@@ -50,8 +50,8 @@ func NewUserSession(ctx context.Context, client *db.PrismaClient, userID string,
 	return session, nil
 }
 
-func GetAndVerifyUserSession(ctx context.Context, client *db.PrismaClient, sessionValue string, currentIdentifier Identifier) (*db.SessionModel, error) {
-	session, err := client.Session.FindFirst(db.Session.CookieValue.Equals(sessionValue), db.Session.Identifier.Equals(currentIdentifier.String())).With(db.Session.User.Fetch()).Exec(ctx)
+func GetAndVerifyUserSession(ctx context.Context, client *db.PrismaClient, sessionValue string) (*db.SessionModel, error) {
+	session, err := client.Session.FindFirst(db.Session.CookieValue.Equals(sessionValue)).With(db.Session.User.Fetch()).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
