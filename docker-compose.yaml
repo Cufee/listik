@@ -2,8 +2,9 @@ services:
   listik-migrate:
     image: listik-migrate
     build:
-      dockerfile: Dockerfile
-    command: go run github.com/steebchen/prisma-client-go migrate deploy --schema /prisma/schema.prisma
+      dockerfile: Dockerfile.migrate
+    env_file:
+      - .env
     volumes:
       - ${DATABASE_PATH}:/data
     networks:
@@ -14,6 +15,8 @@ services:
     build:
       dockerfile: Dockerfile
     command: /app
+    env_file:
+      - .env
     environment:
       # the rest is imported from .env, which is going to be created by Dokploy automatically
       - PORT=3000 # the port does not matter, but it needs to match Traefik labels. we set it here explicitly in order to avoid any issues
