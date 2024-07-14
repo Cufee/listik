@@ -1,8 +1,10 @@
 FROM --platform=linux/amd64 node:latest
 
-COPY ./prisma/migrations /prisma/migrations
-COPY ./prisma/schema.prisma /schema.prisma
+WORKDIR /migrate
+
+COPY ./prisma/migrations ./prisma/migrations
+COPY ./prisma/schema.prisma ./prisma/schema.prisma
 
 RUN npx prisma -v
 
-ENTRYPOINT [ "npx", "prisma", "migrate", "deploy", "--schema", "./schema.prisma" ]
+ENTRYPOINT [ "npx", "prisma", "migrate", "deploy" ]
