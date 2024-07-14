@@ -37,5 +37,3 @@ COPY --from=builder /workspace/go.sum /go.sum
 # install prisma and prefetch binaries
 RUN go install github.com/steebchen/prisma-client-go
 RUN go run github.com/steebchen/prisma-client-go prefetch
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
