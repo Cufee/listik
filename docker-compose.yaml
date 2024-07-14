@@ -1,0 +1,36 @@
+services:
+  listik-migrate:
+    image: listik-migrate
+    build:
+      dockerfile: Dockerfile
+    command: go run github.com/steebchen/prisma-client-go migrate deploy --schema /prisma/schema.prisma
+    volumes:
+      - ${DATABASE_PATH}:/data
+    networks:
+      - dokploy-network
+
+  listik:
+    image: listik
+    build:
+      dockerfile: Dockerfile
+    command: /app
+    environment:
+      # the rest is imported from .env, which is going to be created by Dokploy automatically
+      - PORT=3000 # the port does not matter, but it needs to match Traefik labels. we set it here explicitly in order to avoid any issues
+    volumes:
+      - ${DATABASE_PATH}:/data
+    depends_on:
+      listik-migrate:
+        condition: service_completed_successfully
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.listik-compose.rule=Host(`listik.dev`)"
+      - "traefik.http.routers.listik-compose.entrypoints=websecure"
+      - "traefik.http.routers.listik-compose.tls.certResolver=letsencrypt"
+      - "traefik.http.services.listik-compose.loadbalancer.server.port=3000"
+
+networks:
+  dokploy-network:
+    external: true
