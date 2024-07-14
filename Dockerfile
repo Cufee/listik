@@ -24,9 +24,8 @@ FROM --platform=linux/amd64 debian:bookworm-slim
 # set timezone
 ENV TZ=Europe/Berlin
 
-# copy final binary
+# copy app binary
 COPY --from=builder /workspace/app /app
 
-# copy migrations and schema
-COPY --from=builder /workspace/prisma/migrations /prisma/migrations
+# copy prisma binaries
 COPY --from=builder /root/.cache/prisma/binaries /root/.cache/prisma/binaries
