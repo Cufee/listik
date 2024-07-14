@@ -4,7 +4,7 @@ dotenv:
   - ".env"
 
 vars:
-  PRISMA_CLIENT: github.com/steebchen/prisma-client-go@v0.37.0
+  PRISMA_CLIENT: github.com/steebchen/prisma-client-go
 
 tasks:
   prisma:
