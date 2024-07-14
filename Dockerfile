@@ -21,8 +21,11 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflag
 # in order to run migrations, we need to have go and prisma installed
 FROM --platform=linux/amd64 debian:bookworm-slim
 
-# set timezone
+# set timezone and copy certs
 ENV TZ=Europe/Berlin
+ENV ZONEINFO=/zoneinfo.zip
+COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # copy app binary
 COPY --from=builder /workspace/app /app
