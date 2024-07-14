@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -77,7 +78,7 @@ func CreateGroupInvite(c *handlers.Context) error {
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create an invite&context="+err.Error())
 	}
-	inviteCode := strings.ToLower(inviteCodeBase + "-" + logic.HashString(code + member.ID)[:4])
+	inviteCode := fmt.Sprintf("lk-%s-%s", inviteCodeBase, logic.HashString(code + member.ID)[:4])
 
 	invite, err := c.DB().GroupInvite.CreateOne(db.GroupInvite.ExpiresAt.Set(time.Now().Add(time.Hour*24*7)), db.GroupInvite.Group.Link(db.Group.ID.Equals(data.GroupID)), db.GroupInvite.CreatedBy.Link(db.User.ID.Equals(c.User().ID)), db.GroupInvite.Code.Set(inviteCode)).Exec(c.Request().Context())
 	if err != nil {
