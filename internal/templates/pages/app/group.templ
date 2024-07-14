@@ -1,10 +1,12 @@
 package app
 
-import "github.com/cufee/shopping-list/prisma/db"
-import "fmt"
-import "github.com/cufee/shopping-list/internal/templates/componenets"
-import "github.com/cufee/shopping-list/internal/templates/componenets/common"
-import "github.com/cufee/shopping-list/internal/templates/componenets/list"
+import (
+	"fmt"
+	components "github.com/cufee/shopping-list/internal/templates/componenets"
+	"github.com/cufee/shopping-list/internal/templates/componenets/common"
+	"github.com/cufee/shopping-list/internal/templates/componenets/list"
+	"github.com/cufee/shopping-list/prisma/db"
+)
 
 type Group struct {
 	Group *db.GroupModel
@@ -30,18 +32,7 @@ templ (props Group) Render() {
 			}
 		}
 	</div>
-	@CreateListDialog(props.Group.ID, false, nil, nil)
-	<div class="flex flex-row flex-wrap -m-1.5">
-		for _, l := range props.Lists {
-			if l.Complete {
-				<a class="flex-grow p-1.5 basis-full xs:basis-1/2 sm:basis-1/3" href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s", l.GroupID, l.ID)) } hx-boost="true">
-					@common.Button("text-start").Wrap() {
-						@list.OverviewCard(l)
-					}
-				</a>
-			}
-		}
-	</div>
+	@createListButton(props.Group.ID)
 }
 
 templ manageGroupButton(groupId string) {
@@ -56,16 +47,9 @@ templ manageGroupButton(groupId string) {
 	</div>
 }
 
-func CreateListDialog(groupID string, open bool, inputs, errors map[string]string) templ.Component {
-	dialog := list.CreateListDialog{GroupID: groupID, Errors: errors, Inputs: inputs}
-	dialog.ID = "create-new-list-dialog"
-	dialog.StartOpen = open
-	return dialog.Render(createListButton(dialog.ShowScript()))
-}
-
-templ createListButton(actionScript templ.ComponentScript) {
+templ createListButton(groupId string) {
 	<div class="flex justify-center">
-		<button class="btn btn-link btn-lg" onclick={ actionScript }>
+		<button class="btn btn-link btn-lg" hx-post={ fmt.Sprintf("/api/groups/%s/lists", groupId) }>
 			create a new list
 		</button>
 	</div>

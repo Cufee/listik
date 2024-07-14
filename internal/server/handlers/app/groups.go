@@ -47,8 +47,8 @@ func ManageGroup(c *handlers.Context) error {
 
 	group, err := c.DB().Group.FindUnique(db.Group.ID.Equals(member.GroupID)).With(
 		db.Group.Invites.Fetch(db.GroupInvite.ExpiresAt.After(time.Now())),
+		db.Group.Lists.Fetch(db.List.Complete.Equals(false)),
 		db.Group.Members.Fetch(),
-		db.Group.Lists.Fetch(),
 		db.Group.Tags.Fetch(),
 	).Exec(c.Request().Context())
 	if db.IsErrNotFound(err) {

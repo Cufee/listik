@@ -1,5 +1,10 @@
 package common
 
+import (
+	"context"
+	"io"
+)
+
 templ PageHeader(title, subtitle templ.Component, actions ...templ.Component) {
 	<div class="flex flex-row gap-2 justify-between">
 		<div class="flex flex-col gap-1">

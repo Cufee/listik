@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/cufee/shopping-list/internal/logic"
 	"github.com/cufee/shopping-list/internal/server/handlers"
 	"github.com/cufee/shopping-list/internal/templates/pages/app"
 	"github.com/cufee/shopping-list/prisma/db"
@@ -16,8 +17,8 @@ type CommonPathParams struct {
 }
 
 type ListCreateForm struct {
-	Name        string `form:"name"`
-	Description string `form:"description"`
+	Name        string `query:"name"`
+	Description string `query:"description"`
 
 	CommonPathParams
 }
@@ -27,14 +28,6 @@ func CreateList(c *handlers.Context) error {
 	if err := c.Bind(&data); err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new list&context="+err.Error())
 	}
-
-	if len(data.Name) < 1 || len(data.Name) > 80 {
-		return c.Page(http.StatusUnprocessableEntity, app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"name": "list name should be between 1 and 80 characters"}))
-	}
-	if len(data.Description) > 80 {
-		return c.Page(http.StatusUnprocessableEntity, app.CreateListDialog(data.GroupID, true, makeInputsMap(data), map[string]string{"description": "list description is limited to 80 characters"}))
-	}
-
 	// Check if a user belong to this group
 	member, err := c.Member(data.GroupID)
 	if db.IsErrNotFound(err) {
@@ -42,6 +35,13 @@ func CreateList(c *handlers.Context) error {
 	}
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new list&context="+err.Error())
+	}
+
+	if data.Name == "" {
+		data.Name, err = logic.RandomName()
+		if err != nil {
+			return c.Redirect(http.StatusTemporaryRedirect, "/error?message=failed to create a new list&context="+err.Error())
+		}
 	}
 
 	// Create a list
