@@ -27,6 +27,10 @@ func SessionExpiration7Days() time.Time {
 	return time.Now().Add(time.Hour * 24 * 7)
 }
 
+func SessionExpiration30Days() time.Time {
+	return time.Now().Add(time.Hour * 24 * 30)
+}
+
 type Identifier string
 
 func (i Identifier) String() string {

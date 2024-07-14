@@ -1,7 +1,9 @@
 package components
 
-import "os"
-import "strings"
+import (
+	"os"
+	"strings"
+)
 
 templ Navbar(path string, authenticated bool) {
 	<div class="no-animation flex flex-row justify-between gap-2 py-2" hx-boost="true">

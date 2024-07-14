@@ -102,7 +102,7 @@ func GoogleAuthRedirect(c *Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Failed to log in with Google&context="+err.Error())
 	}
 
-	session, err := logic.NewUserSession(c.Request().Context(), c.DB(), user.ID, logic.StringToIdentifier(c.RealIP()), logic.SessionExpiration7Days())
+	session, err := logic.NewUserSession(c.Request().Context(), c.DB(), user.ID, logic.StringToIdentifier(c.RealIP()), logic.SessionExpiration30Days())
 	if err != nil {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=Failed to log in with Google&context="+err.Error())
 	}

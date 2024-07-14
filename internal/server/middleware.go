@@ -48,7 +48,7 @@ func sessionCheckMiddleware(client *db.PrismaClient) echo.MiddlewareFunc {
 				go func() {
 					ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 					defer cancel()
-					_, err := logic.UpdateSessionExpiration(ctx, client, session.ID, logic.SessionExpiration7Days())
+					_, err := logic.UpdateSessionExpiration(ctx, client, session.ID, logic.SessionExpiration30Days())
 					if err != nil {
 						log.Err(err).Str("sessionId", session.ID).Msg("failed to update session expiration")
 					}
