@@ -1,0 +1,8 @@
+{
+    "name": "Listik",
+    "short_name": "listik",
+    "description": "Simpler Shopping Lists",
+    "icons": [],
+    "start_url": "/app",
+    "display": "fullscreen"
+}
