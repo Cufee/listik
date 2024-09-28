@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 golang:1.22.2-alpine as builder
+FROM golang:1.22.2-alpine as builder
 
 WORKDIR /workspace
 
@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflag
 
 # <!> railway.app does not really have a way to run a migration container on the volume, so we have to improvise here
 # in order to run migrations, we need to have go and prisma installed
-FROM --platform=linux/amd64 debian:bookworm-slim
+FROM debian:bookworm-slim
 
 # set timezone and copy certs
 ENV TZ=Europe/Berlin
