@@ -11,6 +11,7 @@ import (
 )
 
 //go:generate go run github.com/steebchen/prisma-client-go generate
+//go:generate templ generate
 
 // go:embed assets/*
 var assets embed.FS
