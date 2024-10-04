@@ -1,17 +1,19 @@
 package app
 
-import "github.com/cufee/shopping-list/prisma/db"
-import "github.com/cufee/shopping-list/internal/templates/componenets"
-import "github.com/cufee/shopping-list/internal/templates/componenets/common"
-import "fmt"
-import "github.com/cufee/shopping-list/internal/templates/componenets/list"
-import "github.com/cufee/shopping-list/internal/logic"
+import (
+	"fmt"
+	"github.com/cufee/shopping-list/internal/logic"
+	components "github.com/cufee/shopping-list/internal/templates/componenets"
+	"github.com/cufee/shopping-list/internal/templates/componenets/common"
+	"github.com/cufee/shopping-list/internal/templates/componenets/list"
+	"github.com/cufee/shopping-list/prisma/db"
+)
 
 type List struct {
-	List     *db.ListModel
-	Group    *db.GroupModel
-	Items    []db.ListItemModel
-	ViewMode bool
+	List         *db.ListModel
+	Group        *db.GroupModel
+	Items        []db.ListItemModel
+	ShoppingMode bool
 }
 
 templ (props List) Render() {
@@ -31,10 +33,10 @@ templ (props List) Render() {
 				</div>
 			}
 			for _, item := range props.Items {
-				@list.ListItem{Item: &item, GroupID: props.Group.ID, Disabled: props.List.Complete, ViewMode: props.ViewMode}.Render()
+				@list.ListItem{Item: &item, GroupID: props.Group.ID, Disabled: props.List.Complete, ShoppingMode: props.ShoppingMode}.Render()
 			}
 		</div>
-		if !props.List.Complete && !props.ViewMode {
+		if !props.List.Complete && !props.ShoppingMode {
 			@list.NewListItem(props.List.GroupID, props.List.ID, "list-items", nil, nil)
 		}
 	</div>
@@ -59,10 +61,14 @@ templ (props List) completeListButton() {
 templ (props List) viewModeListButton() {
 	if !props.List.Complete {
 		<div>
-			<div class="tooltip tooltip-left" data-tip="Open in Shopping Mode">
-				<a href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s/%s", props.Group.ID, props.List.ID, logic.StringIfElse(props.ViewMode, "", "?mode=view"))) } hx-boost="true">
-					@common.Button("btn-square", logic.StringIfElse(props.ViewMode, "btn-info", "btn-primary")).Attrs(templ.Attributes{}).Render() {
-						@components.IconEye()
+			<div class="tooltip tooltip-left" data-tip={ logic.StringIfElse(props.ShoppingMode, "Edit List", "Open Shopping Mode") }>
+				<a href={ templ.URL(fmt.Sprintf("/app/group/%s/list/%s/%s", props.Group.ID, props.List.ID, logic.StringIfElse(props.ShoppingMode, "?mode=edit", "?mode=shopping"))) } hx-boost="true">
+					@common.Button("btn-square", "btn-info").Attrs(templ.Attributes{}).Render() {
+						if props.ShoppingMode {
+							@components.IconEdit()
+						} else {
+							@components.IconCart()
+						}
 					}
 				</a>
 			</div>

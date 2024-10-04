@@ -1,17 +1,28 @@
 package list
 
-import "github.com/cufee/shopping-list/prisma/db"
-import "fmt"
-import "github.com/cufee/shopping-list/internal/templates/componenets/common"
-import "github.com/cufee/shopping-list/internal/logic"
-import "github.com/cufee/shopping-list/internal/templates/componenets"
-import "github.com/cufee/shopping-list/internal/templates/componenets/form"
+import (
+	"fmt"
+	"github.com/cufee/shopping-list/internal/logic"
+	components "github.com/cufee/shopping-list/internal/templates/componenets"
+	"github.com/cufee/shopping-list/internal/templates/componenets/common"
+	"github.com/cufee/shopping-list/internal/templates/componenets/form"
+	"github.com/cufee/shopping-list/prisma/db"
+)
 
 type ListItem struct {
-	Item     *db.ListItemModel
-	GroupID  string
-	Disabled bool
-	ViewMode bool
+	Item         *db.ListItemModel
+	GroupID      string
+	Disabled     bool
+	ShoppingMode bool
+}
+
+func priceAndQuantity(item *db.ListItemModel) (string, string) {
+	var quantity string
+	if q, _ := item.Quantity(); q > 0 {
+		quantity = fmt.Sprint(q)
+	}
+	price, _ := item.Price()
+	return price, fmt.Sprint(quantity)
 }
 
 func conditionalClass(condition bool, class string) string {
@@ -29,15 +40,23 @@ templ (props ListItem) Render() {
 			"hx-selector":          "#list-item-" + props.Item.ID,
 			"hx-on::after-request": "this.parentElement?.remove()",
 			"hx-swap":              logic.StringIfElse(props.Item.Checked, "afterbegin", "beforeend"),
-			"hx-put":               fmt.Sprintf("/api/groups/%s/lists/%s/items/%s/checked/?checked=%t&mode=%s", props.GroupID, props.Item.ListID, props.Item.ID, !props.Item.Checked, logic.StringIfElse(props.ViewMode, "view", "")),
+			"hx-put":               fmt.Sprintf("/api/groups/%s/lists/%s/items/%s/checked/?checked=%t&mode=%s", props.GroupID, props.Item.ListID, props.Item.ID, !props.Item.Checked, logic.StringIfElse(props.ShoppingMode, "shopping", "")),
 		}).Render() {
 			<input name="checked" type="checkbox" checked?={ props.Item.Checked } disabled?={ props.Disabled } class={ "checkbox" + conditionalClass(props.Item.Checked, " checkbox-success") }/>
 			@itemQuantityBadge(props.Item.Quantity)
 			<span class={ "break-all line-clamp-1" + conditionalClass(props.Item.Checked, " line-through") }>
 				{ props.Item.Name }
 			</span>
+			if desc, _ := props.Item.Desc(); desc!="" {
+				<div class="tooltip tooltip-top flex items-center justify-center" data-tip={ desc }>
+					@components.IconContext()
+				</div>
+			}
 		}
-		if !props.ViewMode {
+		<div class="tooltip tooltip-left" data-tip="More Info">
+			@itemDetailsDialog(props).Render()
+		</div>
+		if !props.ShoppingMode {
 			<div class="tooltip tooltip-left" data-tip="Delete">
 				@common.Button("join-item btn-square").Attrs(templ.Attributes{
 					"hx-delete": fmt.Sprintf("/api/groups/%s/lists/%s/items/%s", props.GroupID, props.Item.ListID, props.Item.ID),
@@ -55,6 +74,52 @@ templ itemQuantityBadge(get func() (int, bool)) {
 	if quantity, _ := get(); quantity > 0 {
 		@common.Text(fmt.Sprint(quantity), "text-info", "text-lg")
 	}
+}
+
+func itemDetailsDialog(props ListItem) common.Dialog {
+	dialog := common.Dialog{
+		ID:   fmt.Sprintf("item-view-%s", props.Item.ID),
+		Body: itemDetails(props),
+	}
+	dialog.ActionButton = itemDetailsButton(dialog.ShowScript(), props.Item.Checked)
+	return dialog
+}
+
+templ itemDetailsButton(script templ.ComponentScript, checked bool) {
+	<button class={ "btn join-item btn-square btn-light" } onclick={ script }>
+		@components.IconDotsHorizontal()
+	</button>
+}
+
+templ itemDetails(item ListItem) {
+	<div class="flex flex-col w-full items-start gap-2">
+		<div class="flex flex-row gap-1 w-full">
+			@itemDetailsRow("Name", item.Item.Name)
+		</div>
+		if price, quantity := priceAndQuantity(item.Item); price != "" || quantity != "" {
+			<div class="flex flex-row w-full gap-2">
+				if quantity != "" {
+					@itemDetailsRow("Quantity", fmt.Sprint(quantity))
+				}
+				if price != "" {
+					@itemDetailsRow("Price", price)
+				}
+			</div>
+		}
+		if desc, _ := item.Item.Desc(); desc != "" {
+			<div class="flex flex-col rounded-lg overflow-hidden w-full">
+				<span class="bg-neutral text-neutral-content px-2 py-1">Description</span>
+				<span class="bg-base-300 px-2 py-1 text-start">{ desc }</span>
+			</div>
+		}
+	</div>
+}
+
+templ itemDetailsRow(label, value string) {
+	<div class="flex flex-row join items-center rounded-lg grow overflow-hidden">
+		<span class="bg-neutral text-neutral-content px-2 py-1">{ label }</span>
+		<span class="bg-base-300 px-2 py-1 w-full text-start">{ value }</span>
+	</div>
 }
 
 templ NewListItem(groupID, listID, itemsContainerSelector string, inputs, errors map[string]string) {

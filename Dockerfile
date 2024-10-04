@@ -6,6 +6,9 @@ WORKDIR /workspace
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Install templ
+RUN go install github.com/a-h/templ/cmd/templ@latest
+
 # prefetch the binaries, so that they will be cached and not downloaded on each change
 RUN go run github.com/steebchen/prisma-client-go prefetch
 

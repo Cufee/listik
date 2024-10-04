@@ -30,5 +30,5 @@ func List(c *handlers.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/error?message=group not found&context="+err.Error())
 	}
 
-	return c.Page(http.StatusOK, app.List{Group: list.Group(), List: list, Items: items, ViewMode: c.QueryParam("mode") == "view"}.Render())
+	return c.Page(http.StatusOK, app.List{Group: list.Group(), List: list, Items: items, ShoppingMode: c.QueryParam("mode") != "edit"}.Render())
 }
